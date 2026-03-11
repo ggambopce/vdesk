@@ -56,7 +56,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
             Map<String, Object> attributes = user.getAttributes();
 
             Oauth2UserInfo oauth2UserInfo = new GoogleUserInfo(attributes);
-            Users u = saveOrLogin(oauth2UserInfo.getId(), oauth2UserInfo.getEmail(), requestId);
+            Users u = saveOrLogin(oauth2UserInfo.getId(), oauth2UserInfo.getEmail(), oauth2UserInfo.getName(), requestId);
 
             return new PrincipalDetails(u);
 

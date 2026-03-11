@@ -52,6 +52,10 @@ public class SecurityConfig {
                                 "/signup", "/login", "/logout","/privacy","/terms",
                                 "/","/checkout", "/payments/**","/billing").permitAll()
                         .requestMatchers(
+                                "/api/hosts/register",
+                                "/api/hosts/heartbeat"
+                                ).permitAll()
+                        .requestMatchers(
                                 "/api/auth/login",
                                 "/api/auth/signup",
                                 "/api/auth/logout",
