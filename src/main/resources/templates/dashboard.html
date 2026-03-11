@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>내 기기 — Vdesk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; }
+
+    /* Layout */
+    body { background: #f8f9fa; min-height: 100vh; }
+
+    /* Header */
+    .header { background: #fff; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 100; }
+
+    /* Device Cards */
+    .device-card {
+      background: #fff; border-radius: 12px;
+      border: 1.5px solid #f0f0f0;
+      padding: 1.1rem 1.1rem 1rem;
+      cursor: pointer; position: relative;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+      user-select: none;
+    }
+    .device-card:hover {
+      border-color: #fca5a5;
+      box-shadow: 0 4px 16px rgba(239,68,68,0.08);
+      transform: translateY(-1px);
+    }
+    .device-card.selected {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 2px rgba(239,68,68,0.15);
+    }
+    .device-card .connect-overlay {
+      position: absolute; inset: 0; border-radius: 11px;
+      background: rgba(239,68,68,0.92);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 6px;
+      opacity: 0; transition: opacity 0.18s;
+      color: #fff; font-weight: 600;
+    }
+    .device-card:hover .connect-overlay { opacity: 1; }
+
+    /* Status dots */
+    .dot-online  { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; flex-shrink: 0; box-shadow: 0 0 0 2px rgba(34,197,94,0.2); }
+    .dot-offline { width: 8px; height: 8px; border-radius: 50%; background: #d1d5db; flex-shrink: 0; }
+
+    /* Buttons */
+    .btn-red {
+      padding: 0.5rem 1.1rem; background: #ef4444; color: #fff;
+      border-radius: 7px; font-weight: 600; font-size: 0.875rem;
+      border: none; cursor: pointer; transition: background 0.15s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-red:hover { background: #dc2626; }
+    .btn-outline-sm {
+      padding: 0.45rem 0.9rem; background: #fff;
+      border: 1.5px solid #e5e7eb; border-radius: 7px;
+      font-size: 0.82rem; font-weight: 500; cursor: pointer; color: #374151;
+      transition: border-color 0.15s; display: inline-flex; align-items: center; gap: 5px;
+    }
+    .btn-outline-sm:hover { border-color: #d1d5db; }
+    .btn-outline-sm.active { border-color: #ef4444; color: #ef4444; }
+
+    /* Modal */
+    .modal-bg {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 200; opacity: 0; transition: opacity 0.2s;
+      pointer-events: none;
+    }
+    .modal-bg.open { opacity: 1; pointer-events: all; }
+    .modal-box {
+      background: #fff; border-radius: 16px;
+      padding: 2rem; width: 100%; max-width: 400px; margin: 1rem;
+      transform: scale(0.96) translateY(8px); transition: transform 0.2s;
+    }
+    .modal-bg.open .modal-box { transform: scale(1) translateY(0); }
+
+    .input-field {
+      width: 100%; padding: 0.72rem 1rem;
+      border: 1.5px solid #e5e7eb; border-radius: 8px;
+      font-size: 0.9rem; outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s; background: #fafafa;
+    }
+    .input-field:focus {
+      border-color: #ef4444; background: #fff;
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.08);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(8px);
+      background: #1f2937; color: #fff; padding: 0.65rem 1.4rem;
+      border-radius: 8px; font-size: 0.875rem; font-weight: 500;
+      opacity: 0; transition: opacity 0.2s, transform 0.2s; z-index: 300;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Skeleton */
+    .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; }
+    @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+    /* Card grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 1280px) { .card-grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 900px)  { .card-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 640px)  { .card-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    /* Empty state */
+    .empty-state { text-align: center; padding: 5rem 2rem; }
+
+    /* Viewer modal */
+    .viewer-modal-bg {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+      z-index: 500; display: none; flex-direction: column;
+    }
+    .viewer-modal-bg.open { display: flex; }
+    .viewer-header {
+      background: #1a1a1a; padding: 0.75rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header px-6 py-3.5">
+  <div class="max-w-screen-2xl mx-auto flex items-center justify-between">
+    <div class="flex items-center gap-6">
+      <a href="/" class="flex items-center gap-2">
+        <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+          <rect width="28" height="28" rx="7" fill="#ef4444"/>
+          <path d="M7 9h14M7 14h10M7 19h6" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        <span class="text-lg font-bold text-gray-900">Vdesk</span>
+      </a>
+      <button class="text-sm text-gray-500 hover:text-gray-700 transition-colors">사용방법</button>
+    </div>
+    <div class="flex items-center gap-3">
+      <button class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z" fill="#6b7280"/><path d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" fill="#ef4444"/></svg>
+      </button>
+      <a href="/mypage" class="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">마이페이지</a>
+      <button onclick="doLogout()" class="text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors">로그아웃</button>
+    </div>
+  </div>
+</header>
+
+<!-- Toolbar -->
+<div class="bg-white border-b border-gray-100 px-6 py-2.5">
+  <div class="max-w-screen-2xl mx-auto flex items-center gap-2 flex-wrap">
+    <button onclick="selectAll()" class="btn-outline-sm">
+      <svg width="13" height="13" fill="none" viewBox="0 0 20 20"><rect x="2" y="2" width="16" height="16" rx="3" stroke="#6b7280" stroke-width="1.8"/></svg>
+      전체 선택
+    </button>
+    <button onclick="clearSelect()" class="btn-outline-sm">
+      <svg width="13" height="13" fill="none" viewBox="0 0 20 20"><path d="M6 6l8 8M14 6l-8 8" stroke="#6b7280" stroke-width="1.8" stroke-linecap="round"/></svg>
+      선택 취소
+    </button>
+    <div id="selectedCount" class="text-sm text-gray-500 ml-1">0개 선택됨</div>
+    <div class="flex-1"></div>
+    <button onclick="openAddModal()" class="btn-red">
+      <svg width="14" height="14" fill="none" viewBox="0 0 20 20"><path d="M10 4v12M4 10h12" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+      기기 추가
+    </button>
+  </div>
+</div>
+
+<!-- Main content -->
+<main class="max-w-screen-2xl mx-auto px-6 py-5">
+
+  <!-- Loading skeletons -->
+  <div id="skeletonGrid" class="card-grid">
+    <div th:each="i : ${#numbers.sequence(1,12)}" style="height:130px" class="skeleton rounded-xl"></div>
+  </div>
+
+  <!-- Device grid -->
+  <div id="deviceGrid" class="card-grid" style="display:none"></div>
+
+  <!-- Empty state -->
+  <div id="emptyState" class="empty-state" style="display:none">
+    <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5">
+      <svg width="36" height="36" fill="none" viewBox="0 0 24 24">
+        <rect x="2" y="3" width="20" height="14" rx="2" stroke="#ef4444" stroke-width="1.8"/>
+        <path d="M8 21h8M12 17v4" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h3 class="text-lg font-bold text-gray-800 mb-2">등록된 기기가 없습니다</h3>
+    <p class="text-sm text-gray-500 mb-5">호스트 프로그램을 설치하고 접속키를 입력하세요</p>
+    <button onclick="openAddModal()" class="btn-red mx-auto">기기 추가하기</button>
+  </div>
+</main>
+
+<!-- 기기 추가 Modal -->
+<div id="addModal" class="modal-bg" onclick="handleModalBgClick(event)">
+  <div class="modal-box">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="text-lg font-bold text-gray-900">기기 추가</h2>
+      <button onclick="closeAddModal()" class="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+        <svg width="14" height="14" fill="none" viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15" stroke="#6b7280" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <p class="text-sm text-gray-500 mb-4">호스트 프로그램에 표시된 접속키를 입력하세요</p>
+    <div class="mb-1">
+      <label class="block text-sm font-medium text-gray-700 mb-1.5">접속키</label>
+      <input id="addDeviceKey" type="text" class="input-field" placeholder="BX_XXXXXXXXXXXXXXXXX"
+             oninput="this.value = this.value.toUpperCase()" style="font-family: monospace; letter-spacing: 0.05em"/>
+      <p id="addDeviceErr" class="text-red-500 text-xs mt-1.5" style="display:none"></p>
+    </div>
+    <div class="flex gap-2 mt-5">
+      <button onclick="closeAddModal()" class="btn-outline-sm flex-1 justify-center py-2.5">취소</button>
+      <button onclick="doLinkDevice()" class="btn-red flex-1 justify-center">연결</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script>
+  let allDevices = [];
+  let selected = new Set();
+
+  // ── 초기 로드 ─────────────────────────────────────────
+  async function loadDevices() {
+    try {
+      const res = await fetch('/api/user/device/list', { credentials: 'include' });
+      if (res.status === 401) { window.location.href = '/login'; return; }
+      const data = await res.json();
+      allDevices = data.result?.items || [];
+    } catch {
+      allDevices = [];
+    } finally {
+      document.getElementById('skeletonGrid').style.display = 'none';
+      renderDevices(allDevices);
+    }
+  }
+
+  function renderDevices(devices) {
+    const grid = document.getElementById('deviceGrid');
+    const empty = document.getElementById('emptyState');
+
+    if (!devices.length) {
+      grid.style.display = 'none';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    grid.style.display = 'grid';
+    grid.innerHTML = devices.map(d => deviceCardHtml(d)).join('');
+  }
+
+  function deviceCardHtml(d) {
+    const online = d.hostStatus === 'ONLINE';
+    const sel = selected.has(d.deviceId);
+    const dateStr = d.createdAt ? new Date(d.createdAt).toLocaleDateString('ko-KR', { year:'numeric', month:'2-digit', day:'2-digit'}).replace(/\. /g, '.').replace('.', '') : '';
+    const osIcon = osIconSvg(d.platform);
+
+    return `
+    <div class="device-card${sel ? ' selected' : ''}"
+         id="card-${d.deviceId}"
+         onclick="handleCardClick(event, ${d.deviceId})"
+         ondblclick="connectDevice(${d.deviceId})">
+
+      <!-- connect overlay (hover) -->
+      <div class="connect-overlay">
+        <svg width="26" height="26" fill="none" viewBox="0 0 24 24">
+          <path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653z" fill="white"/>
+        </svg>
+        <span style="font-size:0.82rem">연결하기</span>
+      </div>
+
+      <!-- Card header -->
+      <div class="flex items-start justify-between mb-2.5">
+        <div class="flex items-center gap-1.5 min-w-0">
+          <div class="${online ? 'dot-online' : 'dot-offline'} flex-shrink-0 mt-0.5"></div>
+          <span class="font-semibold text-gray-900 text-sm truncate">${escHtml(d.deviceName || 'Unknown')}</span>
+        </div>
+        <button onclick="openContextMenu(event, ${d.deviceId})"
+                class="flex-shrink-0 w-6 h-6 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors ml-1"
+                style="position:relative;z-index:10">
+          <svg width="14" height="14" fill="#9ca3af" viewBox="0 0 20 20">
+            <circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- OS -->
+      <div class="flex items-center gap-1.5 mb-1">
+        ${osIcon}
+        <span class="text-xs text-gray-500">${escHtml(d.platform || '')}</span>
+      </div>
+
+      <!-- Device key -->
+      <div class="text-xs text-gray-400 font-mono mb-3 truncate">${escHtml(d.deviceKey || '')}</div>
+
+      <!-- Footer -->
+      <div class="flex items-center justify-between">
+        <span class="text-xs px-2 py-0.5 rounded-full font-medium
+          ${online ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}">
+          ${online ? 'ONLINE' : 'OFFLINE'}
+        </span>
+        <span class="text-xs text-gray-400">${dateStr}</span>
+      </div>
+    </div>`;
+  }
+
+  function osIconSvg(platform) {
+    if (!platform) return '';
+    const p = platform.toUpperCase();
+    if (p === 'WINDOWS') return `<svg width="13" height="13" viewBox="0 0 24 24" fill="#0078d4"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>`;
+    if (p === 'MAC' || p === 'MACOS') return `<svg width="13" height="13" viewBox="0 0 24 24" fill="#6b7280"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>`;
+    return `<svg width="13" height="13" viewBox="0 0 24 24" fill="#6b7280"><path d="M20.26 11.09C19.85 6.96 16.5 3.75 12.4 3.36V1h-1v2.34C7.5 3.63 4 6.65 3.74 10.91 2.11 11.43 1 12.84 1 14.5c0 1.93 1.57 3.5 3.5 3.5H5v2.5c0 .83.67 1.5 1.5 1.5h1c.83 0 1.5-.67 1.5-1.5V18h8v2.5c0 .83.67 1.5 1.5 1.5h1c.83 0 1.5-.67 1.5-1.5V18h.5c1.93 0 3.5-1.57 3.5-3.5 0-1.66-1.11-3.07-2.74-3.41zM9 14.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm6 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>`;
+  }
+
+  // ── 선택 처리 ───────────────────────────────────────
+  function handleCardClick(e, deviceId) {
+    if (e.target.closest('.connect-overlay') || e.target.closest('button[onclick*="openContextMenu"]')) return;
+    if (selected.has(deviceId)) { selected.delete(deviceId); }
+    else { selected.add(deviceId); }
+    document.getElementById(`card-${deviceId}`).classList.toggle('selected', selected.has(deviceId));
+    document.getElementById('selectedCount').textContent = `${selected.size}개 선택됨`;
+  }
+
+  function selectAll() {
+    allDevices.forEach(d => { selected.add(d.deviceId); document.getElementById(`card-${d.deviceId}`)?.classList.add('selected'); });
+    document.getElementById('selectedCount').textContent = `${selected.size}개 선택됨`;
+  }
+
+  function clearSelect() {
+    selected.forEach(id => document.getElementById(`card-${id}`)?.classList.remove('selected'));
+    selected.clear();
+    document.getElementById('selectedCount').textContent = '0개 선택됨';
+  }
+
+  // ── 연결 ────────────────────────────────────────────
+  async function connectDevice(deviceId) {
+    const device = allDevices.find(d => d.deviceId === deviceId);
+    if (!device) return;
+    if (device.hostStatus !== 'ONLINE') { showToast('기기가 오프라인 상태입니다.'); return; }
+
+    showToast('세션을 시작하는 중...');
+    try {
+      const res = await fetch('/api/remote/sessions', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ deviceId }), credentials: 'include'
+      });
+      const data = await res.json();
+      if (res.ok && data.result?.viewerUrl) {
+        window.open(data.result.viewerUrl, '_blank', 'width=1200,height=800,menubar=no,toolbar=no');
+      } else {
+        showToast(data.message || '연결에 실패했습니다.');
+      }
+    } catch {
+      showToast('서버와 연결할 수 없습니다.');
+    }
+  }
+
+  // ── 기기 추가 Modal ──────────────────────────────────
+  function openAddModal() {
+    document.getElementById('addModal').classList.add('open');
+    document.getElementById('addDeviceKey').value = '';
+    document.getElementById('addDeviceErr').style.display = 'none';
+    setTimeout(() => document.getElementById('addDeviceKey').focus(), 100);
+  }
+  function closeAddModal() {
+    document.getElementById('addModal').classList.remove('open');
+  }
+  function handleModalBgClick(e) {
+    if (e.target === document.getElementById('addModal')) closeAddModal();
+  }
+
+  async function doLinkDevice() {
+    const key = document.getElementById('addDeviceKey').value.trim();
+    const err = document.getElementById('addDeviceErr');
+    err.style.display = 'none';
+
+    if (!key) { err.textContent = '접속키를 입력해주세요.'; err.style.display = 'block'; return; }
+
+    const btn = document.querySelector('#addModal .btn-red');
+    btn.textContent = '연결 중...'; btn.disabled = true;
+
+    try {
+      const res = await fetch('/api/user/device/link', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ deviceKey: key }), credentials: 'include'
+      });
+      const data = await res.json();
+      if (res.ok) {
+        closeAddModal();
+        showToast('기기가 연결됐습니다.');
+        await loadDevices();
+      } else {
+        err.textContent = data.message || '연결에 실패했습니다.'; err.style.display = 'block';
+      }
+    } catch {
+      err.textContent = '서버와 연결할 수 없습니다.'; err.style.display = 'block';
+    } finally {
+      btn.textContent = '연결'; btn.disabled = false;
+    }
+  }
+
+  // ── 컨텍스트 메뉴 ────────────────────────────────────
+  function openContextMenu(e, deviceId) {
+    e.stopPropagation();
+    const existing = document.getElementById('ctxMenu');
+    if (existing) existing.remove();
+
+    const menu = document.createElement('div');
+    menu.id = 'ctxMenu';
+    menu.style.cssText = `position:fixed;z-index:400;background:#fff;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.12);padding:6px;min-width:140px;`;
+    const rect = e.currentTarget.getBoundingClientRect();
+    menu.style.top = rect.bottom + 4 + 'px';
+    menu.style.right = (window.innerWidth - rect.right) + 'px';
+
+    menu.innerHTML = `
+      <button onclick="connectDevice(${deviceId}); closeCtx()" class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md flex items-center gap-2">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653z" fill="#374151"/></svg>
+        원격 연결
+      </button>
+      <hr class="my-1 border-gray-100"/>
+      <button onclick="deleteDevice(${deviceId})" class="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-md flex items-center gap-2">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        기기 제거
+      </button>`;
+
+    document.body.appendChild(menu);
+    setTimeout(() => document.addEventListener('click', closeCtx, { once: true }), 0);
+  }
+  function closeCtx() { document.getElementById('ctxMenu')?.remove(); }
+
+  async function deleteDevice(deviceId) {
+    closeCtx();
+    if (!confirm('이 기기를 내 계정에서 제거할까요?')) return;
+    try {
+      const res = await fetch(`/api/user/device/delete/${deviceId}`, { method: 'DELETE', credentials: 'include' });
+      if (res.ok) { showToast('기기가 제거됐습니다.'); await loadDevices(); }
+      else { showToast('제거에 실패했습니다.'); }
+    } catch { showToast('서버와 연결할 수 없습니다.'); }
+  }
+
+  // ── 로그아웃 ─────────────────────────────────────────
+  async function doLogout() {
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    window.location.href = '/login';
+  }
+
+  // ── 유틸 ─────────────────────────────────────────────
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  // Enter key in add modal
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('addDeviceKey').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doLinkDevice();
+    });
+    loadDevices();
+  });
+</script>
+</body>
+</html>

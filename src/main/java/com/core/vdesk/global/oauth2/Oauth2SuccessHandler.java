@@ -39,12 +39,8 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
         // 동일 포맷 쿠키 세팅 (HttpOnly, SameSite 등 일괄 관리)
         AuthCookieUtil.writeAuthCookies(res, pair.at(), pair.rt(), isHttps(req));
 
-        // 로그인 후 JSON 응답
-        res.setStatus(HttpServletResponse.SC_OK);
-        res.setContentType("application/json;charset=UTF-8");
-
-        String redirectUri = getFrontendSuccessRedirect(req);
-
+        // 로그인 성공 후 대시보드로 이동
+        String redirectUri = "/";
         log.info("OAuth2 로그인 성공 → redirect: {}", redirectUri);
         res.sendRedirect(redirectUri);
 
@@ -53,15 +49,6 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
     private boolean isHttps(HttpServletRequest req) {
         String proto = req.getHeader("X-Forwarded-Proto");
         return "https".equalsIgnoreCase(proto) || req.isSecure();
-    }
-
-    private String getFrontendSuccessRedirect(HttpServletRequest req) {
-        // 운영 환경
-        if (isHttps(req)) {
-            return "https://matatabi-pkbe.vercel.app/auth/callback";
-        }
-        // 로컬 개발
-        return "http://localhost:5174/auth/callback";
     }
 
 }
