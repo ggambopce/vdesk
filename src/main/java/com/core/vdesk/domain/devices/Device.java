@@ -3,6 +3,7 @@ package com.core.vdesk.domain.devices;
 import java.time.Instant;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,16 +24,17 @@ public class Device {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** VM/PC 고유 식별값 (접속기가 생성) */
+    /** VM/PC 고유 식별값 (접속기가 생성, 예: box56484984) */
     @Column(nullable = false, unique = true, length = 100)
-    private String machineId;
+    private String localBox;
 
-    /** 사용자에게 보여주는 접속번호 (예: A1B2-C3D4) */
-    @Column(nullable = false, unique = true, length = 10)
-    private String deviceCode;
+    /** 서버 발급 접속키 (예: BX_RKCAJSY5FL7KUSVDXMAA) */
+    @Column(nullable = false, unique = true, length = 30)
+    private String deviceKey;
 
+    /** 호스트 프로그램이 등록한 기기 이름 */
     @Column(nullable = false)
-    private String deviceName;
+    private String hostName;
 
     /** WINDOWS / LINUX / MAC */
     @Column(nullable = false, length = 20)
@@ -40,7 +42,7 @@ public class Device {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private DeviceStatus status = DeviceStatus.OFFLINE;
+    private DeviceStatus hostStatus = DeviceStatus.OFFLINE;
 
     @Column(length = 20)
     private String appVersion;
@@ -49,4 +51,7 @@ public class Device {
 
     @CreationTimestamp
     private Instant createdAt;
+
+    @UpdateTimestamp
+    private Instant updatedAt;
 }

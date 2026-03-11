@@ -52,8 +52,8 @@ public class SecurityConfig {
                                 "/signup", "/login", "/logout","/privacy","/terms",
                                 "/","/checkout", "/payments/**","/billing").permitAll()
                         .requestMatchers(
-                                "/api/hosts/register",
-                                "/api/hosts/heartbeat"
+                                "/api/host/register",
+                                "/api/host/heartbeat"
                                 ).permitAll()
                         .requestMatchers(
                                 "/api/auth/login",
@@ -102,6 +102,14 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/me",
                                 "/api/auth/withdraw",
+                                // User Device API
+                                "/api/user/device/link",
+                                "/api/user/device/list",
+                                "/api/user/device/**",
+                                // Remote Session API
+                                "/api/remote/sessions",
+                                "/api/remote/session/**",
+                                "/api/remote/sessions/**",
                                 "/api/orders/**",
                                 "/api/payments/welcome/billing/billkey",
                                 "/api/payments/welcome/billing/issue-params",

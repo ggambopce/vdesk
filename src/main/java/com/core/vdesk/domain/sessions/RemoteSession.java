@@ -38,7 +38,7 @@ public class RemoteSession {
     private Device device;
 
     @Column(nullable = false, unique = true)
-    private String sessionToken;
+    private String sessionKey;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
