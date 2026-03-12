@@ -13,20 +13,17 @@ public class MeProfileResponseDto {
     private String email;
     private String loginType;
     private String userName;
+    private String roles;
     private Instant createdAt;
     private Instant firstJoinedAt;
 
-
     public static MeProfileResponseDto of(Users user) {
-
-  
-
-
         return MeProfileResponseDto.builder()
                 .email(user.getEmail())
                 .loginType(user.getLoginType())
                 .createdAt(user.getCreatedAt())
                 .userName(user.getUserName())
+                .roles(user.getRoles())
                 .build();
     }
 }

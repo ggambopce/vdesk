@@ -36,8 +36,8 @@
     <!-- Right buttons -->
     <div class="flex items-center gap-2.5">
 
-      <!-- 비로그인 (JS-controlled) -->
-      <div id="nav-guest" class="flex items-center gap-2">
+      <!-- 비로그인 -->
+      <div sec:authorize="!isAuthenticated()" class="flex items-center gap-2">
         <a href="/login"
            class="px-4 py-[7px] border border-[#e5e7eb] border-[1.5px] rounded-[7px] text-[14px] font-medium text-[#374151] no-underline bg-white hover:border-[#d1d5db] transition-colors">
           로그인
@@ -48,8 +48,8 @@
         </a>
       </div>
 
-      <!-- 로그인 (JS-controlled) -->
-      <div id="nav-auth" style="display:none" class="flex items-center gap-2">
+      <!-- 로그인 - 일반 사용자 -->
+      <div sec:authorize="isAuthenticated() and !hasRole('ROLE_ADMIN')" class="flex items-center gap-2">
         <button onclick="doLogout()"
                 class="px-3 py-[7px] border-0 bg-transparent cursor-pointer text-[14px] font-medium text-[#6b7280] hover:text-[#374151] transition-colors">
           로그아웃
@@ -61,6 +61,18 @@
         <a href="/dashboard"
            class="px-4 py-[7px] bg-[#ef4444] rounded-[7px] text-[14px] font-semibold text-white no-underline hover:bg-[#dc2626] transition-colors border-0">
           접속기
+        </a>
+      </div>
+
+      <!-- 로그인 - 관리자 -->
+      <div sec:authorize="hasRole('ROLE_ADMIN')" class="flex items-center gap-2">
+        <button onclick="doLogout()"
+                class="px-3 py-[7px] border-0 bg-transparent cursor-pointer text-[14px] font-medium text-[#6b7280] hover:text-[#374151] transition-colors">
+          로그아웃
+        </button>
+        <a href="/admin"
+           class="px-4 py-[7px] border border-[#e5e7eb] border-[1.5px] rounded-[7px] text-[14px] font-medium text-[#374151] no-underline bg-white hover:border-[#d1d5db] transition-colors">
+          관리자 페이지
         </a>
       </div>
 
@@ -85,16 +97,25 @@
       <a href="/support" class="block px-2 py-2 text-[15px] font-medium text-[#374151] no-underline rounded-md hover:bg-gray-50 transition-colors">고객센터</a>
       <hr class="border-none border-t border-gray-100 my-2"/>
 
-      <!-- 모바일 비로그인 (JS-controlled) -->
-      <div id="mob-guest">
+      <!-- 모바일 비로그인 -->
+      <div sec:authorize="!isAuthenticated()">
         <a href="/login"  class="block px-2 py-2 text-[15px] font-medium text-[#374151] no-underline rounded-md hover:bg-gray-50 transition-colors">로그인</a>
         <a href="/signup" class="block px-2 py-2 text-[15px] font-medium text-[#374151] no-underline rounded-md hover:bg-gray-50 transition-colors">회원가입</a>
       </div>
 
-      <!-- 모바일 로그인 (JS-controlled) -->
-      <div id="mob-auth" style="display:none">
+      <!-- 모바일 로그인 - 일반 사용자 -->
+      <div sec:authorize="isAuthenticated() and !hasRole('ROLE_ADMIN')">
         <a href="/dashboard" class="block px-2 py-2 text-[15px] font-semibold text-[#ef4444] no-underline rounded-md hover:bg-gray-50 transition-colors">접속기</a>
         <a href="/mypage"    class="block px-2 py-2 text-[15px] font-medium text-[#374151] no-underline rounded-md hover:bg-gray-50 transition-colors">마이페이지</a>
+        <button onclick="doLogout()"
+                class="block w-full text-left px-2 py-2 text-[15px] font-medium text-[#6b7280] bg-transparent border-0 cursor-pointer rounded-md hover:bg-gray-50 transition-colors">
+          로그아웃
+        </button>
+      </div>
+
+      <!-- 모바일 로그인 - 관리자 -->
+      <div sec:authorize="hasRole('ROLE_ADMIN')">
+        <a href="/admin"  class="block px-2 py-2 text-[15px] font-semibold text-[#ef4444] no-underline rounded-md hover:bg-gray-50 transition-colors">관리자 페이지</a>
         <button onclick="doLogout()"
                 class="block w-full text-left px-2 py-2 text-[15px] font-medium text-[#6b7280] bg-transparent border-0 cursor-pointer rounded-md hover:bg-gray-50 transition-colors">
           로그아웃
@@ -153,43 +174,11 @@
 
     @media (max-width: 768px) {
       .landing-nav { display: none !important; }
-      #nav-guest, #nav-auth { display: none !important; }
       .mob-hamburger-btn { display: flex !important; }
     }
   </style>
 
   <script>
-    function applyAuthUI(loggedIn) {
-      var guest = document.getElementById('nav-guest');
-      var auth  = document.getElementById('nav-auth');
-      var mGuest = document.getElementById('mob-guest');
-      var mAuth  = document.getElementById('mob-auth');
-      if (guest) guest.style.display = loggedIn ? 'none' : 'flex';
-      if (auth)  auth.style.display  = loggedIn ? 'flex' : 'none';
-      if (mGuest) mGuest.style.display = loggedIn ? 'none' : 'block';
-      if (mAuth)  mAuth.style.display  = loggedIn ? 'block' : 'none';
-    }
-
-    function checkAuth() {
-      var cached = localStorage.getItem('vdesk_auth');
-      if (cached === '1') applyAuthUI(true);
-      fetch('/api/auth/me', { credentials: 'include' })
-        .then(function(res) {
-          applyAuthUI(res.ok);
-          localStorage.setItem('vdesk_auth', res.ok ? '1' : '0');
-        })
-        .catch(function() {
-          applyAuthUI(false);
-          localStorage.setItem('vdesk_auth', '0');
-        });
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', checkAuth);
-    } else {
-      checkAuth();
-    }
-
     function toggleMobMenu() {
       var m = document.getElementById('mobMenu');
       if (!m) return;
@@ -198,7 +187,7 @@
 
     async function doLogout() {
       try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch {}
-      localStorage.setItem('vdesk_auth', '0');
+      localStorage.removeItem('vdesk_auth');
       window.location.href = '/';
     }
   </script>

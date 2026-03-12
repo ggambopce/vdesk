@@ -61,4 +61,9 @@ public class PageController {
     public String mypage() {
         return "dashboard/mypage";
     }
+
+    @GetMapping("/forbidden")
+    public String forbidden() {
+        return "error/403";
+    }
 }

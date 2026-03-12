@@ -112,11 +112,15 @@
   </div>
 
   <script>
-    // 이미 로그인된 경우 대시보드로
+    // 이미 로그인된 경우 역할에 따라 리다이렉트
     (async () => {
       try {
         const r = await fetch('/api/auth/me', { credentials: 'include' });
-        if (r.ok) window.location.replace('/dashboard');
+        if (r.ok) {
+          const data = await r.json();
+          const isAdmin = data.result?.roles?.includes('ROLE_ADMIN');
+          window.location.replace(isAdmin ? '/admin' : '/dashboard');
+        }
       } catch {}
     })();
 
@@ -154,7 +158,10 @@
         const data = await res.json();
         if (res.ok) {
           localStorage.setItem('vdesk_auth', '1');
-          window.location.href = '/dashboard';
+          const me = await fetch('/api/auth/me', { credentials: 'include' });
+          const meData = await me.json();
+          const isAdmin = meData.result?.roles?.includes('ROLE_ADMIN');
+          window.location.href = isAdmin ? '/admin' : '/dashboard';
         } else {
           loginErr.textContent = data.message || '로그인에 실패했습니다.';
           loginErr.style.display = 'block';

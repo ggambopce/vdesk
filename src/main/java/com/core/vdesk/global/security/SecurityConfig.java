@@ -43,7 +43,32 @@ public class SecurityConfig {
                 .cors(cors -> {})                           // CORS: @Bean 으로 별도 구성(허용 origin, 메서드, 헤더, 크리덴셜) 가능
                 .formLogin(form -> form.disable())     // 기본 로그인 페이지 비활성화
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션을 생성하지 않음: JWT 기반 무상태 인증
-                .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))) // 인증 실패(미인증 접근) 시 401 응답 반환
+                .exceptionHandling(e -> e
+                        // 1) API는 401/403을 JSON/상태코드로 처리
+                    .defaultAuthenticationEntryPointFor(
+                        new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
+                        req -> req.getRequestURI().startsWith("/api/")
+                    )
+                    .defaultAccessDeniedHandlerFor(
+                        (req, res, ex) -> res.sendError(HttpStatus.FORBIDDEN.value()),
+                        req -> req.getRequestURI().startsWith("/api/")
+                    )
+    
+                    // 2) 관리자 페이지는 미인증이면 로그인 페이지로
+                    .defaultAuthenticationEntryPointFor(
+                        (req, res, ex) -> res.sendRedirect("/login"),
+                        req -> req.getRequestURI().startsWith("/admin")
+                    )
+    
+                    // 3) 관리자 페이지는 인증됐지만 권한 없으면 403 페이지나 대시보드로
+                    .defaultAccessDeniedHandlerFor(
+                        (req, res, ex) -> res.sendRedirect("/forbidden"),
+                        req -> req.getRequestURI().startsWith("/admin")
+                    )
+
+                    // 4) 그 외 기본 처리
+                    .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                )
                 .authorizeHttpRequests(auth -> auth    // 엔드포인트별 접근 규칙
                         .requestMatchers(
                                 // OAuth2 진입/콜백
@@ -151,8 +176,9 @@ public class SecurityConfig {
                                 "/api/stats/ads/click"
                                 ).authenticated() // 사용자 인증 필수
                         // 관리자 페이지 및 API
-                        .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+                        .anyRequest().permitAll()
                 )
                 /**
                  * OAuth2 Login 처리

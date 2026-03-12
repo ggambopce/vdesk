@@ -39,8 +39,10 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
         // 동일 포맷 쿠키 세팅 (HttpOnly, SameSite 등 일괄 관리)
         AuthCookieUtil.writeAuthCookies(res, pair.at(), pair.rt(), isHttps(req));
 
-        // 로그인 성공 후 대시보드로 이동
-        String redirectUri = "/dashboard";
+        // ROLE_ADMIN이면 관리자 페이지로, 그 외 일반 대시보드로
+        boolean isAdmin = principalDetails.getUser().getRoles() != null
+                && principalDetails.getUser().getRoles().contains("ROLE_ADMIN");
+        String redirectUri = isAdmin ? "/admin" : "/dashboard";
         log.info("OAuth2 로그인 성공 → redirect: {}", redirectUri);
         res.sendRedirect(redirectUri);
 
