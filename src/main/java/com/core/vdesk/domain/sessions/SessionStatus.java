@@ -1,5 +1,5 @@
 package com.core.vdesk.domain.sessions;
 
 public enum SessionStatus {
-    REQUESTED, RUNNING, ENDED, FAILED
+    REQUESTED, RUNNING, ENDED, FAILED, KILLED, TIMEOUT
 }

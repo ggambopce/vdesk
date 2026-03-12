@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>고객센터 — Vdesk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; background: #fff; color: #111; }
+    a { text-decoration: none; color: inherit; }
+
+    .page-banner {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff; text-align: center; padding: 5rem 1.5rem;
+    }
+    .page-banner h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; }
+    .page-banner p { font-size: 0.95rem; color: rgba(255,255,255,0.6); margin-top: 0.5rem; }
+
+    .section { padding: 4rem 1.5rem; }
+    .section-inner { max-width: 900px; margin: 0 auto; }
+
+    /* Support tabs */
+    .support-tabs {
+      display: flex; border-bottom: 2px solid #f0f0f0;
+      margin-bottom: 2.5rem;
+    }
+    .support-tab {
+      flex: 1; padding: 1rem 0; text-align: center;
+      font-size: 0.95rem; font-weight: 500; color: #9ca3af;
+      cursor: pointer; border-bottom: 2px solid transparent;
+      margin-bottom: -2px; transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none;
+    }
+    .support-tab.active { color: #ef4444; border-bottom-color: #ef4444; font-weight: 700; }
+    .support-content { display: none; }
+    .support-content.active { display: block; }
+
+    /* Notice board */
+    .board-header {
+      text-align: center; margin-bottom: 2rem;
+    }
+    .board-header h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.25rem; }
+    .board-header p { font-size: 0.875rem; color: #9ca3af; }
+
+    .board-table { width: 100%; border-collapse: collapse; }
+    .board-table th {
+      padding: 0.75rem 1rem; text-align: left; font-size: 0.8rem;
+      font-weight: 600; color: #6b7280; border-bottom: 2px solid #f0f0f0;
+    }
+    .board-table th:first-child { width: 80px; text-align: center; }
+    .board-table th:last-child { width: 120px; text-align: right; }
+    .board-table td {
+      padding: 1rem; font-size: 0.875rem; border-bottom: 1px solid #f9fafb;
+    }
+    .board-table td:first-child { text-align: center; color: #9ca3af; }
+    .board-table td:last-child { text-align: right; color: #9ca3af; }
+    .board-table tr:hover td { background: #fafafa; }
+    .board-table td a { color: #374151; transition: color 0.15s; }
+    .board-table td a:hover { color: #ef4444; }
+    .board-empty {
+      text-align: center; padding: 4rem 0; color: #9ca3af; font-size: 0.9rem;
+    }
+
+    /* FAQ */
+    .faq-item { border-bottom: 1px solid #f0f0f0; }
+    .faq-q {
+      width: 100%; text-align: left; padding: 1.25rem 0;
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      font-size: 0.95rem; font-weight: 600; color: #111;
+      background: none; border: none; cursor: pointer; transition: color 0.15s;
+    }
+    .faq-q:hover { color: #ef4444; }
+    .faq-q-badge {
+      font-size: 0.85rem; font-weight: 800; color: #ef4444;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .faq-q-text { flex: 1; text-align: left; }
+    .faq-q-arrow {
+      flex-shrink: 0; transition: transform 0.2s; color: #9ca3af;
+    }
+    .faq-item.open .faq-q-arrow { transform: rotate(180deg); }
+    .faq-a {
+      display: none; padding: 0 0 1.25rem 2rem;
+      font-size: 0.875rem; color: #6b7280; line-height: 1.8;
+    }
+    .faq-item.open .faq-a { display: block; }
+
+    /* 1:1 Contact */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; }
+    .contact-card {
+      border: 1.5px solid #f0f0f0; border-radius: 16px; padding: 1.75rem;
+      text-align: center; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .contact-card:hover { border-color: #fca5a5; box-shadow: 0 8px 24px rgba(239,68,68,0.08); }
+    .contact-icon {
+      width: 52px; height: 52px; border-radius: 14px; background: #fef2f2;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+    }
+    .contact-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.35rem; }
+    .contact-desc { font-size: 0.82rem; color: #9ca3af; margin-bottom: 1rem; line-height: 1.6; }
+    .contact-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 0.6rem 1.25rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .contact-btn-kakao { background: #FAE100; color: #3c1e1e; border: none; }
+    .contact-btn-kakao:hover { background: #f0d500; }
+    .contact-btn-mail { background: #fff; color: #374151; border: 1.5px solid #e5e7eb; }
+    .contact-btn-mail:hover { border-color: #9ca3af; }
+
+    /* Inquiry form */
+    .inquiry-form { background: #fafafa; border-radius: 16px; padding: 2rem; }
+    .form-label { display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem; }
+    .form-input {
+      width: 100%; padding: 0.72rem 1rem; border: 1.5px solid #e5e7eb; border-radius: 8px;
+      font-size: 0.9rem; outline: none; background: #fff; font-family: inherit;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus { border-color: #ef4444; }
+    .form-textarea { min-height: 120px; resize: vertical; }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-submit {
+      width: 100%; padding: 0.85rem; background: #ef4444; color: #fff;
+      border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; transition: background 0.15s; font-family: inherit;
+    }
+    .form-submit:hover { background: #dc2626; }
+    .form-success {
+      display: none; text-align: center; padding: 2rem;
+      color: #22c55e; font-weight: 600;
+    }
+
+    @media (max-width: 640px) {
+      .contact-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/landing-header :: header('support')}"></div>
+
+<div class="page-banner">
+  <h1>고객센터</h1>
+  <p>브이데스크 서비스에 대해 궁금한 점을 해결해 드립니다.</p>
+</div>
+
+<section class="section">
+  <div class="section-inner">
+
+    <!-- Tabs -->
+    <div class="support-tabs">
+      <button class="support-tab active" onclick="switchSupport(this, 'notice')">공지사항</button>
+      <button class="support-tab"        onclick="switchSupport(this, 'faq')">FAQ</button>
+      <button class="support-tab"        onclick="switchSupport(this, 'contact')">1:1 문의</button>
+    </div>
+
+    <!-- Notice -->
+    <div id="support-notice" class="support-content active">
+      <div class="board-header">
+        <h2>공지사항</h2>
+        <p>공지사항을 확인해주세요.</p>
+      </div>
+      <table class="board-table">
+        <thead>
+          <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성일</th>
+          </tr>
+        </thead>
+        <tbody id="noticeBody">
+          <tr>
+            <td>1</td>
+            <td><a href="#">브이데스크(V-Desk) 베타 서비스 오픈 안내</a></td>
+            <td>2025-09-09</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="text-align:center;margin-top:2rem;display:flex;justify-content:center;gap:0.5rem;">
+        <button style="width:32px;height:32px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#fff;font-size:0.8rem;" disabled>«</button>
+        <button style="width:32px;height:32px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#fff;font-size:0.8rem;" disabled>‹</button>
+        <button style="width:32px;height:32px;border:1.5px solid #ef4444;border-radius:6px;cursor:pointer;background:#ef4444;color:#fff;font-size:0.8rem;font-weight:700;">1</button>
+        <button style="width:32px;height:32px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#fff;font-size:0.8rem;" disabled>›</button>
+        <button style="width:32px;height:32px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#fff;font-size:0.8rem;" disabled>»</button>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div id="support-faq" class="support-content">
+      <div class="board-header">
+        <h2>자주 묻는 질문</h2>
+        <p>자주 문의하시는 내용을 모아놓았습니다.</p>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-badge">Q</span>
+          <span class="faq-q-text">브이데스크는 어떤 기기에서 사용할 수 있나요?</span>
+          <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="faq-a">Windows 10/11, macOS 12 이상의 PC와 Android 9.0+, iOS 15+ 스마트폰 및 태블릿에서 사용 가능합니다. 추가 OS 지원은 지속적으로 확대 예정입니다.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-badge">Q</span>
+          <span class="faq-q-text">구독을 취소하면 어떻게 되나요?</span>
+          <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="faq-a">정기결제를 취소하면 현재 구독 기간이 끝날 때까지는 정상적으로 서비스를 이용하실 수 있습니다. 다음 청구일에는 자동으로 갱신되지 않습니다. 마이페이지 > 결제 관리에서 취소하실 수 있습니다.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-badge">Q</span>
+          <span class="faq-q-text">접속이 끊겼을 때 어떻게 해야 하나요?</span>
+          <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="faq-a">인터넷 연결 상태를 확인하신 후 대시보드에서 기기 카드를 다시 더블 클릭하여 재연결을 시도하세요. 원격 PC의 호스트 프로그램이 실행 중인지도 확인해주세요. 문제가 지속되면 호스트 프로그램을 재시작해보세요.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-badge">Q</span>
+          <span class="faq-q-text">여러 명이 동시에 같은 PC에 접속할 수 있나요?</span>
+          <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="faq-a">현재는 1개의 PC에 동시에 1명만 접속 가능합니다. 새 연결이 시도되면 기존 세션은 자동으로 종료됩니다. 추후 멀티 세션 기능 추가를 검토 중입니다.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-badge">Q</span>
+          <span class="faq-q-text">파일 전송 용량 제한이 있나요?</span>
+          <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="faq-a">단일 파일 기준 최대 2GB까지 전송 가능합니다. 대용량 파일의 경우 분할 전송을 권장합니다. 전송 속도는 양쪽 기기의 인터넷 속도에 따라 달라질 수 있습니다.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-badge">Q</span>
+          <span class="faq-q-text">환불이 가능한가요?</span>
+          <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="faq-a">결제 후 7일 이내, 서비스를 사용하지 않은 경우 전액 환불이 가능합니다. 사용 이력이 있는 경우에는 사용 기간에 비례한 차감 후 환불됩니다. 환불 신청은 1:1 문의로 해주세요.</div>
+      </div>
+    </div>
+
+    <!-- Contact -->
+    <div id="support-contact" class="support-content">
+      <div class="board-header">
+        <h2>1:1 문의</h2>
+        <p>궁금하신 점을 편하게 문의해 주세요.</p>
+      </div>
+
+      <div class="contact-grid">
+        <div class="contact-card">
+          <div class="contact-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="#FAE100"><path d="M12 3C6.477 3 2 6.477 2 10.8c0 2.748 1.742 5.163 4.372 6.617L5.188 21l4.637-2.426c.7.133 1.427.206 2.175.206 5.523 0 10-3.477 10-7.8S17.523 3 12 3z"/></svg>
+          </div>
+          <div class="contact-title">카카오톡 상담</div>
+          <div class="contact-desc">실시간 채팅으로 빠른 답변을 받으세요.<br/>운영시간: 평일 09:00 ~ 18:00</div>
+          <a href="https://open.kakao.com/o/sGm2lByh" target="_blank" class="contact-btn contact-btn-kakao">
+            카카오톡 상담하기
+          </a>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">
+            <svg width="26" height="26" fill="none" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="contact-title">이메일 문의</div>
+          <div class="contact-desc">자세한 문의는 이메일로 보내주세요.<br/>coreplatform09@gmail.com</div>
+          <a href="mailto:coreplatform09@gmail.com" class="contact-btn contact-btn-mail">
+            이메일 보내기
+          </a>
+        </div>
+      </div>
+
+      <!-- Inquiry form -->
+      <div class="inquiry-form">
+        <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:1.5rem;">문의 남기기</h3>
+        <div id="inquirySuccess" class="form-success">
+          <svg width="40" height="40" fill="none" viewBox="0 0 24 24" style="margin:0 auto 1rem;display:block;"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#22c55e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          문의가 접수되었습니다.<br/>빠른 시일 내에 답변 드리겠습니다.
+        </div>
+        <form id="inquiryForm" onsubmit="submitInquiry(event)">
+          <div class="form-group">
+            <label class="form-label">이메일 <span style="color:#ef4444;">*</span></label>
+            <input type="email" class="form-input" id="inquiryEmail" placeholder="답변 받을 이메일" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">제목 <span style="color:#ef4444;">*</span></label>
+            <input type="text" class="form-input" id="inquirySubject" placeholder="문의 제목을 입력해주세요" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">내용 <span style="color:#ef4444;">*</span></label>
+            <textarea class="form-input form-textarea" id="inquiryBody" placeholder="문의 내용을 자세히 적어주세요" required></textarea>
+          </div>
+          <button type="submit" class="form-submit">문의 보내기</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div th:replace="~{fragments/landing-footer :: footer}"></div>
+
+<script>
+  function switchSupport(btn, id) {
+    document.querySelectorAll('.support-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.support-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('support-' + id).classList.add('active');
+  }
+
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    item.classList.toggle('open');
+  }
+
+  async function submitInquiry(e) {
+    e.preventDefault();
+    const email   = document.getElementById('inquiryEmail').value;
+    const subject = document.getElementById('inquirySubject').value;
+    const body    = document.getElementById('inquiryBody').value;
+
+    const btn = e.target.querySelector('button[type=submit]');
+    btn.textContent = '전송 중...'; btn.disabled = true;
+
+    try {
+      const res = await fetch('/api/landing/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, subject, message: body })
+      });
+      if (res.ok) {
+        document.getElementById('inquiryForm').style.display = 'none';
+        document.getElementById('inquirySuccess').style.display = 'block';
+      } else {
+        alert('전송에 실패했습니다. 이메일로 직접 문의해 주세요.');
+        btn.textContent = '문의 보내기'; btn.disabled = false;
+      }
+    } catch {
+      alert('서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.');
+      btn.textContent = '문의 보내기'; btn.disabled = false;
+    }
+  }
+
+  // URL hash로 탭 선택
+  const hash = window.location.hash.slice(1);
+  if (['notice','faq','contact'].includes(hash)) {
+    const btn = document.querySelector(`.support-tab[onclick*="${hash}"]`);
+    if (btn) switchSupport(btn, hash);
+  }
+</script>
+</body>
+</html>

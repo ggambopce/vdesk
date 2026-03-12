@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>사용방법 — Vdesk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; background: #fff; color: #111; }
+    a { text-decoration: none; color: inherit; }
+
+    .page-banner {
+      text-align: center; padding: 5rem 1.5rem; background: #fafafa;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .page-banner p { font-size: 0.95rem; color: #9ca3af; margin-bottom: 0.5rem; }
+    .page-banner h1 { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; }
+
+    .section { padding: 5rem 1.5rem; }
+    .section-inner { max-width: 1200px; margin: 0 auto; }
+
+    /* Method tabs */
+    .method-layout { display: grid; grid-template-columns: 220px 1fr; gap: 3rem; margin-top: 3rem; }
+    .method-sidebar { display: flex; flex-direction: column; gap: 0.35rem; }
+    .method-tab {
+      padding: 0.75rem 1.1rem; border-radius: 10px; cursor: pointer;
+      font-size: 0.9rem; font-weight: 500; color: #6b7280;
+      transition: all 0.15s; text-align: left; border: none; background: none;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .method-tab:hover { background: #f9fafb; color: #374151; }
+    .method-tab.active { background: #ef4444; color: #fff; font-weight: 600; }
+    .method-tab .tab-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; opacity: 0.6; flex-shrink: 0; }
+    .method-content { display: none; }
+    .method-content.active { display: block; }
+
+    /* Steps */
+    .step-list { display: flex; flex-direction: column; gap: 2rem; }
+    .step-item { display: flex; gap: 1.5rem; }
+    .step-num {
+      width: 40px; height: 40px; border-radius: 12px; background: #ef4444;
+      color: #fff; font-weight: 800; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .step-body { flex: 1; }
+    .step-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .step-desc { font-size: 0.9rem; color: #6b7280; line-height: 1.7; }
+    .step-tip {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      margin-top: 0.75rem; padding: 0.4rem 0.75rem;
+      background: #fef2f2; border-radius: 8px;
+      font-size: 0.8rem; color: #ef4444; font-weight: 500;
+    }
+
+    /* Screen mockup */
+    .screen-mock {
+      background: #1a1a2e; border-radius: 12px;
+      margin-top: 2rem; padding: 1.25rem 1.25rem 0.75rem;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+    }
+    .mock-bar { display: flex; align-items: center; gap: 6px; margin-bottom: 0.75rem; }
+    .mock-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .mock-screen { background: #0f0f1a; border-radius: 8px; padding: 1.5rem; min-height: 200px; }
+    .mock-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.75rem; }
+    .mock-card {
+      background: #1e1e30; border-radius: 8px; padding: 0.75rem 0.5rem;
+      text-align: center;
+    }
+    .mock-card.sel { background: #ef4444; }
+    .mock-dot2 { width: 8px; height: 8px; border-radius: 50%; margin: 0 auto 0.4rem; background: #22c55e; }
+    .mock-dot2.off { background: #4b5563; }
+    .mock-name { font-size: 0.55rem; color: #9ca3af; white-space: nowrap; overflow: hidden; }
+    .mock-card.sel .mock-name { color: #fff; }
+
+    /* FAQ / Tips */
+    .tip-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 3rem; }
+    .tip-card {
+      background: #fafafa; border: 1.5px solid #f0f0f0; border-radius: 14px;
+      padding: 1.5rem; transition: border-color 0.2s;
+    }
+    .tip-card:hover { border-color: #fca5a5; }
+    .tip-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    .tip-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .tip-desc { font-size: 0.85rem; color: #6b7280; line-height: 1.7; }
+
+    @media (max-width: 768px) {
+      .method-layout { grid-template-columns: 1fr; }
+      .method-sidebar { flex-direction: row; flex-wrap: wrap; }
+      .tip-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/landing-header :: header('method')}"></div>
+
+<div class="page-banner">
+  <p>사용환경에 따른 방법을 확인해보세요.</p>
+  <h1>사용방법</h1>
+</div>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="method-layout">
+
+      <!-- Sidebar tabs -->
+      <div class="method-sidebar">
+        <button class="method-tab active" onclick="switchTab(this, 'pc')">
+          <span class="tab-dot"></span> PC 사용환경
+        </button>
+        <button class="method-tab" onclick="switchTab(this, 'mobile')">
+          <span class="tab-dot"></span> 앱 사용환경
+        </button>
+        <button class="method-tab" onclick="switchTab(this, 'file')">
+          <span class="tab-dot"></span> 파일전송 방법
+        </button>
+        <button class="method-tab" onclick="switchTab(this, 'payment')">
+          <span class="tab-dot"></span> 결제 방법
+        </button>
+      </div>
+
+      <!-- Contents -->
+      <div style="min-height:500px;">
+
+        <!-- PC -->
+        <div id="tab-pc" class="method-content active">
+          <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:0.5rem;">PC 사용환경</h2>
+          <p style="color:#6b7280;font-size:0.9rem;margin-bottom:2rem;">Windows 또는 Mac PC에서 브이데스크를 사용하는 방법입니다.</p>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <div class="step-title">회원가입 및 로그인</div>
+                <p class="step-desc">브이데스크 홈페이지에서 회원가입 후 로그인하세요. 구글 계정으로도 간편 로그인이 가능합니다.</p>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <div class="step-title">플랜 구매</div>
+                <p class="step-desc">대시보드 상단 "구매하기" 버튼을 클릭하여 원하는 플랜을 선택하세요. 일반결제 또는 정기결제로 구독 가능합니다.</p>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <div class="step-title">호스트 프로그램 설치</div>
+                <p class="step-desc">원격 제어를 당할 PC에 브이데스크 호스트 프로그램을 설치하세요. 설치 후 프로그램을 실행하면 접속키가 표시됩니다.</p>
+                <div class="step-tip">
+                  <svg width="13" height="13" fill="none" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" stroke="#ef4444" stroke-width="1.5"/><path d="M10 9v5M10 7v.5" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  Windows: VdeskHost_Setup.exe 실행
+                </div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-body">
+                <div class="step-title">기기 추가 — 접속키 입력</div>
+                <p class="step-desc">대시보드의 "기기 추가" 버튼을 클릭하고 호스트 프로그램에 표시된 접속키(BX_XXXXXXXXXX)를 입력하세요.</p>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">5</div>
+              <div class="step-body">
+                <div class="step-title">원격 연결</div>
+                <p class="step-desc">등록된 기기 카드에서 더블 클릭하거나 "원격 연결" 버튼을 눌러 즉시 연결하세요. 마이페이지에서 "접속기" 버튼으로도 바로 진입할 수 있습니다.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Screen mockup -->
+          <div class="screen-mock">
+            <div class="mock-bar">
+              <div class="mock-dot" style="background:#ef4444;"></div>
+              <div class="mock-dot" style="background:#f59e0b;"></div>
+              <div class="mock-dot" style="background:#22c55e;"></div>
+              <div style="flex:1;font-size:0.6rem;color:#4b5563;text-align:center;">Vdesk — 대시보드</div>
+            </div>
+            <div class="mock-screen">
+              <div style="display:flex;gap:0.5rem;margin-bottom:1rem;">
+                <div style="background:#ef4444;border-radius:6px;padding:0.3rem 0.7rem;font-size:0.6rem;color:#fff;font-weight:600;">구매하기</div>
+                <div style="background:#ef4444;border-radius:6px;padding:0.3rem 0.7rem;font-size:0.6rem;color:#fff;font-weight:600;">기기 추가</div>
+              </div>
+              <div class="mock-grid">
+                <div class="mock-card sel"><div class="mock-dot2"></div><div class="mock-name">Vdesk PC-001</div></div>
+                <div class="mock-card"><div class="mock-dot2"></div><div class="mock-name">Vdesk PC-002</div></div>
+                <div class="mock-card"><div class="mock-dot2 off"></div><div class="mock-name">Vdesk PC-003</div></div>
+                <div class="mock-card"><div class="mock-dot2"></div><div class="mock-name">Vdesk PC-004</div></div>
+                <div class="mock-card"><div class="mock-dot2"></div><div class="mock-name">Vdesk PC-005</div></div>
+              </div>
+              <div style="margin-top:0.75rem;padding:0.6rem;background:#ef4444;border-radius:8px;text-align:center;">
+                <span style="font-size:0.65rem;color:#fff;font-weight:600;">① 사용방법 버튼</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile -->
+        <div id="tab-mobile" class="method-content">
+          <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:0.5rem;">앱 사용환경</h2>
+          <p style="color:#6b7280;font-size:0.9rem;margin-bottom:2rem;">스마트폰(Android/iOS)에서 브이데스크 앱으로 PC를 원격 제어하세요.</p>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <div class="step-title">앱 다운로드</div>
+                <p class="step-desc">Google Play Store 또는 Apple App Store에서 "Vdesk" 앱을 다운로드하세요.</p>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <div class="step-title">로그인</div>
+                <p class="step-desc">기존 계정으로 로그인하세요. 구글 계정 로그인도 지원합니다.</p>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <div class="step-title">기기 선택 후 연결</div>
+                <p class="step-desc">등록된 기기 목록에서 연결할 PC를 탭하세요. 자동으로 원격 세션이 시작됩니다.</p>
+                <div class="step-tip">
+                  <svg width="13" height="13" fill="none" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" stroke="#ef4444" stroke-width="1.5"/><path d="M10 9v5M10 7v.5" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  ONLINE 상태인 기기만 연결 가능합니다
+                </div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-body">
+                <div class="step-title">터치로 제어</div>
+                <p class="step-desc">스마트폰 화면을 터치하여 마우스처럼 PC를 제어하세요. 핀치 투 줌으로 화면을 확대/축소할 수 있습니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- File transfer -->
+        <div id="tab-file" class="method-content">
+          <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:0.5rem;">파일전송 방법</h2>
+          <p style="color:#6b7280;font-size:0.9rem;margin-bottom:2rem;">원격 PC와 내 기기 사이에서 파일을 쉽게 주고받을 수 있습니다.</p>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <div class="step-title">원격 세션 연결</div>
+                <p class="step-desc">파일을 전송할 PC와 원격 세션을 먼저 연결하세요.</p>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <div class="step-title">파일 전송 패널 열기</div>
+                <p class="step-desc">원격 뷰어 상단 도구 모음에서 파일 전송 아이콘을 클릭하세요. 왼쪽 패널(내 PC)과 오른쪽 패널(원격 PC)이 나타납니다.</p>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <div class="step-title">파일 선택 및 전송</div>
+                <p class="step-desc">전송할 파일을 선택하고 화살표 버튼을 클릭하거나 드래그 앤 드롭으로 파일을 이동하세요.</p>
+                <div class="step-tip">
+                  <svg width="13" height="13" fill="none" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" stroke="#ef4444" stroke-width="1.5"/><path d="M10 9v5M10 7v.5" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  한 번에 최대 2GB까지 전송 가능
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment -->
+        <div id="tab-payment" class="method-content">
+          <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:0.5rem;">결제 방법</h2>
+          <p style="color:#6b7280;font-size:0.9rem;margin-bottom:2rem;">일반결제와 정기결제 중 원하는 방식을 선택하세요.</p>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="step-num" style="background:#6366f1;">A</div>
+              <div class="step-body">
+                <div class="step-title">일반결제 (건별 결제)</div>
+                <p class="step-desc">원하는 기간(1, 3, 6, 9, 12개월)과 PC 대수를 선택하여 한 번에 결제합니다. 카드 결제를 지원합니다.</p>
+                <div style="margin-top:0.75rem;padding:1rem;background:#f9fafb;border-radius:10px;font-size:0.85rem;color:#6b7280;line-height:1.8;">
+                  <strong style="color:#111;display:block;margin-bottom:0.4rem;">일반결제 흐름</strong>
+                  구매하기 클릭 → 일반결제 탭 → 플랜·수량·기간 선택 → 결제 진행
+                </div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num" style="background:#ef4444;">B</div>
+              <div class="step-body">
+                <div class="step-title">정기결제 (자동 구독)</div>
+                <p class="step-desc">매월 자동으로 청구되는 구독형 결제입니다. 첫 결제 시 카드 정보를 등록하면 이후 자동으로 청구됩니다.</p>
+                <div style="margin-top:0.75rem;padding:1rem;background:#fef2f2;border-radius:10px;font-size:0.85rem;color:#6b7280;line-height:1.8;">
+                  <strong style="color:#111;display:block;margin-bottom:0.4rem;">정기결제 흐름</strong>
+                  구매하기 클릭 → 정기결제 탭 → 플랜·수량 선택 → 카드 등록 → 매월 자동 청구
+                </div>
+                <div class="step-tip">
+                  <svg width="13" height="13" fill="none" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" stroke="#ef4444" stroke-width="1.5"/><path d="M10 9v5M10 7v.5" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  마이페이지에서 언제든지 구독 취소 가능
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end content area -->
+    </div><!-- end method-layout -->
+
+    <!-- Tips -->
+    <div style="margin-top:5rem;">
+      <h3 style="font-size:1.3rem;font-weight:800;margin-bottom:0.5rem;">알아두면 유용한 팁</h3>
+      <p style="color:#6b7280;font-size:0.9rem;margin-bottom:2rem;">브이데스크를 더 편리하게 사용하세요.</p>
+      <div class="tip-grid">
+        <div class="tip-card">
+          <div class="tip-icon">⌨️</div>
+          <div class="tip-title">단축키 지원</div>
+          <p class="tip-desc">원격 세션 중 Ctrl+Alt+Del, Win 키 등 모든 단축키가 원격 PC에 전달됩니다.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🖥️</div>
+          <div class="tip-title">멀티 모니터</div>
+          <p class="tip-desc">원격 PC가 여러 모니터를 사용 중이라면 각 모니터를 개별로 선택하여 볼 수 있습니다.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🔒</div>
+          <div class="tip-title">세션 잠금</div>
+          <p class="tip-desc">원격 세션 중 실수로 창을 닫아도 세션은 계속 유지됩니다. 대시보드에서 다시 진입하세요.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div th:replace="~{fragments/landing-footer :: footer}"></div>
+
+<script>
+  function switchTab(btn, id) {
+    document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.method-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + id).classList.add('active');
+  }
+</script>
+</body>
+</html>

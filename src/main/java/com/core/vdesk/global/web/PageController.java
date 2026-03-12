@@ -9,18 +9,46 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class PageController {
 
+    // ── 랜딩 페이지 (공개) ──────────────────────────────
     @GetMapping("/")
-    public String dashboard() {
-        return "dashboard";
+    public String index() {
+        return "landing/index";
     }
 
+    @GetMapping("/intro")
+    public String intro() {
+        return "landing/intro";
+    }
+
+    @GetMapping("/method")
+    public String method() {
+        return "landing/method";
+    }
+
+    @GetMapping("/support")
+    public String support() {
+        return "landing/support";
+    }
+
+    // ── 인증 페이지 ─────────────────────────────────────
     @GetMapping("/login")
     public String login() {
-        return "login";
+        return "auth/login";
     }
 
     @GetMapping("/signup")
     public String signup() {
-        return "signup";
+        return "auth/signup";
+    }
+
+    // ── 앱 페이지 (인증 필요) ────────────────────────────
+    @GetMapping("/dashboard")
+    public String dashboard() {
+        return "dashboard/dashboard";
+    }
+
+    @GetMapping("/mypage")
+    public String mypage() {
+        return "dashboard/mypage";
     }
 }

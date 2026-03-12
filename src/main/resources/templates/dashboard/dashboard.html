@@ -498,7 +498,7 @@
     try {
       const res = await fetch('/api/remote/sessions', {
         method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ deviceId }), credentials: 'include'
+        body: JSON.stringify({ deviceId: deviceId }), credentials: 'include'
       });
       const data = await res.json();
       if (res.ok && data.result?.viewerUrl) {

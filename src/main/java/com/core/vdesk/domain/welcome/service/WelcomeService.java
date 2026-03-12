@@ -6,8 +6,6 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +14,6 @@ import com.core.vdesk.domain.payments.entity.Orders;
 import com.core.vdesk.domain.payments.entity.Payment;
 import com.core.vdesk.domain.payments.entity.Product;
 import com.core.vdesk.domain.payments.entity.UserPlan;
-import com.core.vdesk.domain.payments.enums.BillingProvider;
 import com.core.vdesk.domain.payments.enums.OrderStatus;
 import com.core.vdesk.domain.payments.enums.OrderType;
 import com.core.vdesk.domain.payments.enums.PayProvider;

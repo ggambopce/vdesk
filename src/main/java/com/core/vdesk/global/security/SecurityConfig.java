@@ -48,9 +48,10 @@ public class SecurityConfig {
                         .requestMatchers(
                                 // OAuth2 진입/콜백
                                 "/oauth2/authorization/**", "/login/oauth2/code/**",
-                                // 페이지 진입
-                                "/signup", "/login", "/logout","/privacy","/terms",
-                                "/","/checkout", "/payments/**","/billing").permitAll()
+                                // 랜딩 / 공개 페이지
+                                "/", "/intro", "/method", "/support", "/pricing",
+                                "/signup", "/login", "/logout", "/privacy", "/terms",
+                                "/checkout", "/payments/**", "/billing").permitAll()
                         .requestMatchers(
                                 "/api/host/register",
                                 "/api/host/heartbeat"

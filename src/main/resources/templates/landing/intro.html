@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>소개 — Vdesk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; background: #fff; color: #111; }
+    a { text-decoration: none; color: inherit; }
+
+    /* Page banner */
+    .page-banner {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff; text-align: center; padding: 5rem 1.5rem;
+      position: relative; overflow: hidden;
+    }
+    .page-banner::before {
+      content: ''; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ef4444' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .page-banner h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 1rem; position: relative; }
+    .page-banner p { font-size: 1.05rem; color: rgba(255,255,255,0.7); position: relative; }
+
+    .section { padding: 5rem 1.5rem; }
+    .section-inner { max-width: 1200px; margin: 0 auto; }
+
+    /* What is section */
+    .what-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+    .what-label { font-size: 0.8rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+    .what-title { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; line-height: 1.3; margin-bottom: 1rem; }
+    .what-title span { color: #ef4444; }
+    .what-desc { font-size: 0.95rem; color: #6b7280; line-height: 1.9; }
+
+    /* Icon ring diagram */
+    .icon-ring {
+      position: relative; width: 320px; height: 320px; margin: 0 auto;
+    }
+    .ring-center {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 90px; height: 90px; background: #fff; border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    }
+    .ring-item {
+      position: absolute; width: 52px; height: 52px;
+      background: #fff; border-radius: 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid #fef2f2;
+    }
+
+    /* Features rows */
+    .feat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; padding: 4rem 0; border-top: 1px solid #f3f4f6; }
+    .feat-row.reverse { direction: rtl; }
+    .feat-row.reverse > * { direction: ltr; }
+    .feat-num { font-size: 4rem; font-weight: 800; color: #fef2f2; line-height: 1; margin-bottom: 0.5rem; }
+    .feat-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .feat-desc { font-size: 0.95rem; color: #6b7280; line-height: 1.8; }
+    .feat-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.25rem; }
+    .feat-tag {
+      padding: 0.3rem 0.75rem; background: #fef2f2; color: #ef4444;
+      border-radius: 999px; font-size: 0.8rem; font-weight: 600;
+    }
+    .feat-visual {
+      background: linear-gradient(135deg, #f8f9fa, #fef2f2);
+      border-radius: 20px; aspect-ratio: 4/3;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid #f0f0f0;
+    }
+
+    /* OS support */
+    .os-section { background: #fafafa; }
+    .os-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 3rem; }
+    .os-card {
+      background: #fff; border: 1.5px solid #f0f0f0; border-radius: 16px;
+      padding: 2rem 1.5rem; text-align: center;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .os-card:hover { border-color: #fca5a5; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(239,68,68,0.08); }
+    .os-icon { width: 56px; height: 56px; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; background: #f9fafb; border-radius: 14px; }
+    .os-name { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .os-desc { font-size: 0.82rem; color: #9ca3af; }
+
+    /* CTA */
+    .cta-strip { background: #ef4444; padding: 4rem 1.5rem; text-align: center; }
+    .cta-strip h2 { font-size: 1.8rem; font-weight: 800; color: #fff; margin-bottom: 0.75rem; }
+    .cta-strip p { color: rgba(255,255,255,0.8); margin-bottom: 1.75rem; }
+    .cta-btn-white {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 0.85rem 2rem; background: #fff; color: #ef4444;
+      border-radius: 10px; font-weight: 700; font-size: 0.95rem;
+      transition: transform 0.15s;
+    }
+    .cta-btn-white:hover { transform: translateY(-2px); }
+
+    @media (max-width: 900px) {
+      .what-grid { grid-template-columns: 1fr; }
+      .feat-row { grid-template-columns: 1fr; }
+      .feat-row.reverse { direction: ltr; }
+      .os-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) { .os-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/landing-header :: header('intro')}"></div>
+
+<!-- Banner -->
+<div class="page-banner">
+  <h1>브이데스크 소개</h1>
+  <p>브이데스크는 어떤 서비스인가요?</p>
+</div>
+
+<!-- What is Vdesk -->
+<section class="section">
+  <div class="section-inner">
+    <div class="what-grid">
+      <div>
+        <div class="what-label">About Vdesk</div>
+        <h2 class="what-title">브이데스크는<br/><span>어떤 서비스</span>일까요?</h2>
+        <p class="what-desc">
+          브이데스크는 Windows, Mac은 물론 Android, iOS에서도 리소스 걱정 없이 24시간 내내 사용할 수 있는 최고의 원격제어 서비스입니다.<br/><br/>
+          복잡한 설정 없이 접속키 하나로 즉시 연결되며, 군사급 보안 기술로 모든 통신이 암호화됩니다. 언제 어디서나 내 PC를 내 손안에.
+        </p>
+      </div>
+      <!-- Icon ring diagram -->
+      <div>
+        <div class="icon-ring">
+          <!-- Center logo -->
+          <div class="ring-center">
+            <svg width="32" height="32" viewBox="0 0 28 28" fill="none">
+              <rect width="28" height="28" rx="7" fill="#ef4444"/>
+              <path d="M7 9h14M7 14h10M7 19h6" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+            </svg>
+            <span style="font-size:0.7rem;font-weight:700;color:#111;">Vdesk</span>
+          </div>
+          <!-- Ring items positioned around center -->
+          <div class="ring-item" style="top:0;left:50%;transform:translateX(-50%);">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke="#ef4444" stroke-width="1.8"/></svg>
+          </div>
+          <div class="ring-item" style="top:15%;right:5%;">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" stroke="#ef4444" stroke-width="1.8"/><path d="M8 21h8M12 17v4" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="ring-item" style="top:50%;right:-8%;transform:translateY(-50%);">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" stroke="#ef4444" stroke-width="1.8"/></svg>
+          </div>
+          <div class="ring-item" style="bottom:10%;right:10%;">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="ring-item" style="bottom:0;left:50%;transform:translateX(-50%);">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="ring-item" style="bottom:10%;left:10%;">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" stroke="#ef4444" stroke-width="1.8"/></svg>
+          </div>
+          <div class="ring-item" style="top:50%;left:-8%;transform:translateY(-50%);">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#ef4444" stroke-width="1.8"/><path d="M12 8v4l3 3" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="ring-item" style="top:15%;left:5%;">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <!-- Decorative ring -->
+          <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.12;" viewBox="0 0 320 320">
+            <circle cx="160" cy="160" r="130" fill="none" stroke="#ef4444" stroke-width="1" stroke-dasharray="6 4"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Feature rows -->
+<section class="section" style="background:#fafafa;">
+  <div class="section-inner">
+
+    <div class="feat-row">
+      <div>
+        <div class="feat-num">01</div>
+        <div class="feat-title">어디서나 내 PC에 즉시 접속</div>
+        <p class="feat-desc">사무실 밖에 있어도, 해외에 있어도 인터넷만 있으면 즉시 내 PC에 접속할 수 있습니다. 복잡한 VPN 설정 없이 접속키 하나로 연결됩니다.</p>
+        <div class="feat-tags">
+          <span class="feat-tag">즉시 연결</span>
+          <span class="feat-tag">접속키 방식</span>
+          <span class="feat-tag">글로벌 지원</span>
+        </div>
+      </div>
+      <div class="feat-visual">
+        <svg width="80" height="80" fill="none" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="#ef4444" stroke-width="1.2"/>
+          <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" stroke="#ef4444" stroke-width="1.2"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="feat-row reverse">
+      <div>
+        <div class="feat-num">02</div>
+        <div class="feat-title">최대 26대 동시 관리</div>
+        <p class="feat-desc">단 하나의 계정으로 최대 26대의 PC를 한 화면에서 통합 관리하세요. 다중 모니터처럼 각 PC의 화면을 실시간으로 확인하고 전환할 수 있습니다.</p>
+        <div class="feat-tags">
+          <span class="feat-tag">최대 26대</span>
+          <span class="feat-tag">통합 관리</span>
+          <span class="feat-tag">실시간 모니터링</span>
+        </div>
+      </div>
+      <div class="feat-visual">
+        <svg width="80" height="80" fill="none" viewBox="0 0 24 24">
+          <path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" stroke="#ef4444" stroke-width="1.2"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="feat-row">
+      <div>
+        <div class="feat-num">03</div>
+        <div class="feat-title">군사급 보안 연결</div>
+        <p class="feat-desc">AES-256 암호화와 SSL/TLS 프로토콜로 모든 원격 세션을 보호합니다. 누군가 중간에 패킷을 가로채더라도 내용을 해독할 수 없습니다.</p>
+        <div class="feat-tags">
+          <span class="feat-tag">AES-256</span>
+          <span class="feat-tag">SSL/TLS</span>
+          <span class="feat-tag">종단간 암호화</span>
+        </div>
+      </div>
+      <div class="feat-visual">
+        <svg width="80" height="80" fill="none" viewBox="0 0 24 24">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#ef4444" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 12l2 2 4-4" stroke="#ef4444" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- OS Support -->
+<section class="section os-section">
+  <div class="section-inner">
+    <div style="text-align:center;margin-bottom:1rem;">
+      <div style="font-size:0.8rem;font-weight:700;color:#ef4444;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">Platform</div>
+      <h2 style="font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;">모든 플랫폼에서 사용 가능</h2>
+    </div>
+    <div class="os-grid">
+      <div class="os-card">
+        <div class="os-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="#0078d4"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+        </div>
+        <div class="os-name">Windows</div>
+        <div class="os-desc">Windows 10/11 지원</div>
+      </div>
+      <div class="os-card">
+        <div class="os-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="#555"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        </div>
+        <div class="os-name">macOS</div>
+        <div class="os-desc">macOS 12+ 지원</div>
+      </div>
+      <div class="os-card">
+        <div class="os-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="#3ddc84"><path d="M17.523 15.341a.23.23 0 01.195.224v1.01a.23.23 0 01-.232.228h-1.07a.23.23 0 01-.232-.228v-1.01a.23.23 0 01.232-.224h1.107zm-11.046 0a.23.23 0 01.195.224v1.01a.23.23 0 01-.232.228H5.37a.23.23 0 01-.232-.228v-1.01a.23.23 0 01.232-.224H6.477zM12 .268L14.124 4H9.876L12 .268zm0 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm6.658 2.5c.196 0 .381.07.52.196l.838.755a.638.638 0 010 .945L18.658 8.5H5.342l-1.358-2.082a.638.638 0 010-.945l.838-.755A.752.752 0 015.342 4.5h13.316zM4.5 9h15v7a2 2 0 01-2 2h-11a2 2 0 01-2-2V9z"/></svg>
+        </div>
+        <div class="os-name">Android</div>
+        <div class="os-desc">Android 9.0+ 지원</div>
+      </div>
+      <div class="os-card">
+        <div class="os-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="#555"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        </div>
+        <div class="os-name">iOS</div>
+        <div class="os-desc">iOS 15.0+ 지원</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-strip">
+  <h2>지금 브이데스크를 시작하세요</h2>
+  <p>회원가입 후 즉시 사용 가능합니다.</p>
+  <a href="/signup" class="cta-btn-white">
+    무료로 시작하기
+    <svg width="16" height="16" fill="none" viewBox="0 0 20 20"><path d="M7 5l5 5-5 5" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+</div>
+
+<div th:replace="~{fragments/landing-footer :: footer}"></div>
+</body>
+</html>
