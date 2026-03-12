@@ -49,7 +49,7 @@ public class SecurityConfig {
                                 // OAuth2 진입/콜백
                                 "/oauth2/authorization/**", "/login/oauth2/code/**",
                                 // 랜딩 / 공개 페이지
-                                "/", "/intro", "/method", "/support", "/pricing",
+                                "/", "/intro", "/method", "/support", "/pricing", "/usecase",
                                 "/signup", "/login", "/logout", "/privacy", "/terms",
                                 "/checkout", "/payments/**", "/billing").permitAll()
                         .requestMatchers(

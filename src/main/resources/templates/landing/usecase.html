@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>활용사례 — Vdesk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; background: #fff; color: #111; line-height: 1.6; }
+    a { text-decoration: none; color: inherit; }
+
+    .page-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      padding: 5rem 1.5rem 4rem;
+      text-align: center;
+    }
+    .page-hero-label {
+      display: inline-block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: #ef4444; background: rgba(239,68,68,0.12);
+      padding: 0.3rem 0.85rem; border-radius: 999px; margin-bottom: 1.25rem;
+    }
+    .page-hero h1 {
+      font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; color: #fff; line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .page-hero p {
+      font-size: 1.05rem; color: rgba(255,255,255,0.65); max-width: 520px; margin: 0 auto;
+    }
+
+    .section { padding: 5rem 1.5rem; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+
+    /* Tab navigation */
+    .tab-nav {
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+      border-bottom: 2px solid #f3f4f6;
+      margin-bottom: 3.5rem; padding-bottom: 0;
+    }
+    .tab-btn {
+      padding: 0.65rem 1.4rem; border-radius: 8px 8px 0 0;
+      font-size: 0.9rem; font-weight: 600;
+      border: none; cursor: pointer;
+      background: none; color: #6b7280;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.15s;
+    }
+    .tab-btn:hover { color: #111; }
+    .tab-btn.active { color: #ef4444; border-bottom-color: #ef4444; background: none; }
+
+    /* Case panels */
+    .case-panel { display: none; }
+    .case-panel.active { display: block; }
+
+    .case-hero {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+      margin-bottom: 4rem;
+    }
+    .case-tag {
+      display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #ef4444; background: #fef2f2;
+      padding: 0.25rem 0.75rem; border-radius: 999px; margin-bottom: 1rem;
+    }
+    .case-title {
+      font-size: clamp(1.6rem, 2.5vw, 2.2rem); font-weight: 800; line-height: 1.25;
+      margin-bottom: 1rem; color: #111;
+    }
+    .case-desc {
+      font-size: 0.95rem; color: #6b7280; line-height: 1.85; margin-bottom: 2rem;
+    }
+    .case-visual {
+      background: linear-gradient(135deg, #fef2f2, #fff5f5);
+      border-radius: 20px; aspect-ratio: 4/3;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid #fecaca;
+    }
+
+    /* Benefit cards */
+    .benefits {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;
+      margin-bottom: 3rem;
+    }
+    .benefit-card {
+      background: #f9fafb; border-radius: 14px; padding: 1.5rem;
+      border: 1.5px solid #f3f4f6;
+    }
+    .benefit-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: #fef2f2; display: flex; align-items: center; justify-content: center;
+      margin-bottom: 0.9rem;
+    }
+    .benefit-title { font-size: 0.95rem; font-weight: 700; color: #111; margin-bottom: 0.35rem; }
+    .benefit-desc { font-size: 0.85rem; color: #6b7280; line-height: 1.7; }
+
+    /* CTA */
+    .case-cta {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      border-radius: 20px; padding: 3rem 2.5rem; text-align: center;
+    }
+    .case-cta h3 { font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 0.75rem; }
+    .case-cta p { font-size: 0.95rem; color: rgba(255,255,255,0.75); margin-bottom: 1.75rem; }
+    .btn-white {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 0.8rem 1.8rem; background: #fff; color: #ef4444;
+      border-radius: 10px; font-weight: 700; font-size: 0.95rem;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+    .btn-outline-white {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 0.8rem 1.8rem; background: transparent; color: #fff;
+      border: 1.5px solid rgba(255,255,255,0.5); border-radius: 10px;
+      font-weight: 600; font-size: 0.95rem; transition: border-color 0.15s;
+    }
+    .btn-outline-white:hover { border-color: #fff; }
+
+    @media (max-width: 900px) {
+      .case-hero { grid-template-columns: 1fr; gap: 2rem; }
+      .case-visual { order: -1; }
+      .benefits { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .benefits { grid-template-columns: 1fr; }
+      .tab-btn { font-size: 0.82rem; padding: 0.55rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header('usecase')}"></div>
+
+<!-- Hero -->
+<div class="page-hero">
+  <div class="page-hero-label">USE CASES</div>
+  <h1>브이데스크의 다양한 활용 사례</h1>
+  <p>업무, 투자, 게임, 마케팅까지 — 어떤 상황에서도 내 PC에 접속하세요</p>
+</div>
+
+<!-- Content -->
+<section class="section">
+  <div class="section-inner">
+
+    <!-- Tab navigation -->
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab(this, 'game')">모바일 게임</button>
+      <button class="tab-btn" onclick="switchTab(this, 'stock')">주식 / 코인</button>
+      <button class="tab-btn" onclick="switchTab(this, 'marketing')">마케팅</button>
+      <button class="tab-btn" onclick="switchTab(this, 'multi')">다수 PC 관리</button>
+    </div>
+
+    <!-- 모바일 게임 -->
+    <div id="panel-game" class="case-panel active">
+      <div class="case-hero">
+        <div>
+          <div class="case-tag">Mobile Game</div>
+          <h2 class="case-title">끊김없는<br/>모바일 게임 플레이</h2>
+          <p class="case-desc">고사양 모바일 게임을 저사양 기기에서도 쾌적하게 즐겨보세요.<br/>
+            내 PC의 성능을 그대로 활용하기 때문에 스마트폰 발열과<br/>
+            배터리 걱정 없이 장시간 플레이가 가능합니다.</p>
+          <a href="/pricing" class="btn-white" style="background:#ef4444;color:#fff;">지금 시작하기</a>
+        </div>
+        <div class="case-visual">
+          <div style="text-align:center;">
+            <svg width="80" height="80" fill="none" viewBox="0 0 24 24" style="margin:0 auto 1rem;display:block;">
+              <path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" stroke="#ef4444" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <p style="font-size:0.85rem;color:#9ca3af;">모바일 게임을 PC에서</p>
+          </div>
+        </div>
+      </div>
+      <div class="benefits">
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="benefit-title">초저지연 원격 접속</div>
+          <div class="benefit-desc">최적화된 스트리밍 기술로 게임 조작 지연을 최소화합니다.</div>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M9 19V13m0 0V5m0 8H3m6 0h12" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="benefit-title">발열 · 배터리 걱정 없음</div>
+          <div class="benefit-desc">연산은 PC에서, 화면만 스트리밍되어 스마트폰이 뜨거워지지 않습니다.</div>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M12 3c7 0 9 2.5 9 9s-2 9-9 9-9-2.5-9-9 2-9 9-9z" stroke="#ef4444" stroke-width="1.8"/><path d="M9 12l2 2 4-4" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="benefit-title">24시간 연속 플레이</div>
+          <div class="benefit-desc">PC를 켜두고 어디서든 접속해 자동 사냥, 반복 퀘스트를 이어갈 수 있습니다.</div>
+        </div>
+      </div>
+      <div class="case-cta">
+        <h3>지금 바로 게임을 시작해보세요</h3>
+        <p>회원가입 후 즉시 내 PC에 접속할 수 있습니다</p>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+          <a href="/signup" class="btn-white">무료로 시작하기</a>
+          <a href="/method" class="btn-outline-white">사용방법 보기</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 주식/코인 -->
+    <div id="panel-stock" class="case-panel">
+      <div class="case-hero">
+        <div>
+          <div class="case-tag">Trading</div>
+          <h2 class="case-title">실시간<br/>주식 · 코인 트레이딩</h2>
+          <p class="case-desc">외출 중에도 언제든지 내 트레이딩 PC에 접속하여<br/>
+            실시간으로 주식과 코인을 관리하세요.<br/>
+            이동 중, 카페, 어디서든 HTS · MTS 환경을 그대로 사용할 수 있습니다.</p>
+          <a href="/pricing" style="display:inline-flex;align-items:center;gap:8px;padding:0.8rem 1.8rem;background:#ef4444;color:#fff;border-radius:10px;font-weight:700;font-size:0.95rem;">지금 시작하기</a>
+        </div>
+        <div class="case-visual">
+          <div style="text-align:center;">
+            <svg width="80" height="80" fill="none" viewBox="0 0 24 24" style="margin:0 auto 1rem;display:block;">
+              <path d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4v16" stroke="#ef4444" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <p style="font-size:0.85rem;color:#9ca3af;">어디서든 트레이딩 PC에 접속</p>
+          </div>
+        </div>
+      </div>
+      <div class="benefits">
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="benefit-title">내 HTS 그대로 접속</div>
+          <div class="benefit-desc">기존에 설정해 둔 HTS/MTS 화면 그대로 원격으로 사용합니다.</div>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#ef4444" stroke-width="1.8"/><path d="M12 6v6l4 2" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="benefit-title">실시간 시세 확인</div>
+          <div class="benefit-desc">지연 없이 실시간 시세와 체결 내역을 확인하고 즉시 대응할 수 있습니다.</div>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="benefit-title">어디서든 접속</div>
+          <div class="benefit-desc">스마트폰, 태블릿, 다른 PC 어느 기기에서든 즉시 접속 가능합니다.</div>
+        </div>
+      </div>
+      <div class="case-cta">
+        <h3>놓치는 매매 기회를 없애세요</h3>
+        <p>언제 어디서나 내 트레이딩 환경에 바로 접속하세요</p>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+          <a href="/signup" class="btn-white">무료로 시작하기</a>
+          <a href="/pricing" class="btn-outline-white">요금제 보기</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 마케팅 -->
+    <div id="panel-marketing" class="case-panel">
+      <div class="case-hero">
+        <div>
+          <div class="case-tag">Marketing</div>
+          <h2 class="case-title">SNS 마케팅<br/>자동화 운영</h2>
+          <p class="case-desc">여러 대의 PC에서 동시에 SNS 계정을 운영하고<br/>
+            마케팅 자동화를 실행하세요.<br/>
+            각 PC마다 다른 계정과 IP를 사용해 안전하게 운영할 수 있습니다.</p>
+          <a href="/pricing" style="display:inline-flex;align-items:center;gap:8px;padding:0.8rem 1.8rem;background:#ef4444;color:#fff;border-radius:10px;font-weight:700;font-size:0.95rem;">지금 시작하기</a>
+        </div>
+        <div class="case-visual">
+          <div style="text-align:center;">
+            <svg width="80" height="80" fill="none" viewBox="0 0 24 24" style="margin:0 auto 1rem;display:block;">
+              <path d="M22 4s-3.5 4-6 4-4.5-4-8-4S3 8 3 8v14M3 8s2 2 5 2 4-2 7-2 5 2 5 2" stroke="#ef4444" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <p style="font-size:0.85rem;color:#9ca3af;">효율적인 마케팅 자동화</p>
+          </div>
+        </div>
+      </div>
+      <div class="benefits">
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke="#ef4444" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="#ef4444" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="#ef4444" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="#ef4444" stroke-width="1.8"/></svg>
+          </div>
+          <div class="benefit-title">다계정 동시 운영</div>
+          <div class="benefit-desc">최대 26대의 PC를 동시 접속하여 각 계정별로 분리 운영합니다.</div>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round"/><path d="M22 6l-10 7L2 6" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="benefit-title">자동화 스크립트 실행</div>
+          <div class="benefit-desc">PC에 설치된 자동화 툴이 24시간 동작하도록 원격으로 관리합니다.</div>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="benefit-title">계정 격리 및 보안</div>
+          <div class="benefit-desc">각 PC마다 독립된 환경으로 계정 연결 리스크를 줄입니다.</div>
+        </div>
+      </div>
+      <div class="case-cta">
+        <h3>마케팅 효율을 극대화하세요</h3>
+        <p>여러 PC를 한 번에 관리하고 자동화를 실행하세요</p>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+          <a href="/signup" class="btn-white">무료로 시작하기</a>
+          <a href="/pricing" class="btn-outline-white">요금제 보기</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 다수 PC 관리 -->
+    <div id="panel-multi" class="case-panel">
+      <div class="case-hero">
+        <div>
+          <div class="case-tag">Enterprise</div>
+          <h2 class="case-title">다수 PC<br/>동시 관리</h2>
+          <p class="case-desc">한 화면에서 여러 대의 PC를 동시에 관리하고 제어하세요.<br/>
+            기업의 IT 인프라를 효율적으로 운영하고,<br/>
+            원격 지원과 모니터링을 한 번에 해결합니다.</p>
+          <a href="/pricing" style="display:inline-flex;align-items:center;gap:8px;padding:0.8rem 1.8rem;background:#ef4444;color:#fff;border-radius:10px;font-weight:700;font-size:0.95rem;">지금 시작하기</a>
+        </div>
+        <div class="case-visual">
+          <div style="text-align:center;">
+            <svg width="80" height="80" fill="none" viewBox="0 0 24 24" style="margin:0 auto 1rem;display:block;">
+              <path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" stroke="#ef4444" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <p style="font-size:0.85rem;color:#9ca3af;">최대 26대 동시 관리</p>
+          </div>
+        </div>
+      </div>
+      <div class="benefits">
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="benefit-title">최대 26대 동시 접속</div>
+          <div class="benefit-desc">한 계정으로 최대 26대의 PC를 등록하고 동시에 제어합니다.</div>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="benefit-title">중앙 집중 관리</div>
+          <div class="benefit-desc">모든 PC의 온/오프라인 상태를 대시보드에서 한눈에 파악합니다.</div>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="benefit-title">즉시 원격 지원</div>
+          <div class="benefit-desc">장애 발생 시 현장에 가지 않고 즉시 원격으로 문제를 해결합니다.</div>
+        </div>
+      </div>
+      <div class="case-cta">
+        <h3>IT 관리 비용을 절감하세요</h3>
+        <p>여러 PC를 한 곳에서 관리하고 운영 효율을 높이세요</p>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+          <a href="/signup" class="btn-white">무료로 시작하기</a>
+          <a href="/support" class="btn-outline-white">문의하기</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div th:replace="~{fragments/landing-footer :: footer}"></div>
+
+<script>
+  function switchTab(btn, id) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.case-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + id).classList.add('active');
+  }
+
+  // URL 해시로 탭 초기화
+  const tabMap = { game: 0, stock: 1, marketing: 2, multi: 3 };
+  const hash = window.location.hash.replace('#', '');
+  if (hash && tabMap[hash] !== undefined) {
+    const btns = document.querySelectorAll('.tab-btn');
+    if (btns[tabMap[hash]]) switchTab(btns[tabMap[hash]], hash);
+  }
+</script>
+</body>
+</html>

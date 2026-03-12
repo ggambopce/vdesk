@@ -137,28 +137,8 @@
 </head>
 <body>
 
-<!-- Header -->
-<header class="header px-6 py-3.5">
-  <div class="max-w-screen-2xl mx-auto flex items-center justify-between">
-    <div class="flex items-center gap-6">
-      <a href="/" class="flex items-center gap-2">
-        <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
-          <rect width="28" height="28" rx="7" fill="#ef4444"/>
-          <path d="M7 9h14M7 14h10M7 19h6" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
-        </svg>
-        <span class="text-lg font-bold text-gray-900">Vdesk</span>
-      </a>
-      <button class="text-sm text-gray-500 hover:text-gray-700 transition-colors">사용방법</button>
-    </div>
-    <div class="flex items-center gap-3">
-      <button class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z" fill="#6b7280"/><path d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" fill="#ef4444"/></svg>
-      </button>
-      <a href="/mypage" class="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">마이페이지</a>
-      <button onclick="doLogout()" class="text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors">로그아웃</button>
-    </div>
-  </div>
-</header>
+<!-- Header (공용 fragment) -->
+<div th:replace="~{fragments/header :: header('dashboard')}"></div>
 
 <!-- Toolbar -->
 <div class="bg-white border-b border-gray-100 px-6 py-2.5">

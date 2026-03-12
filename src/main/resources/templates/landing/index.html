@@ -12,447 +12,619 @@
     body { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; background: #fff; color: #111; line-height: 1.6; }
     a { text-decoration: none; color: inherit; }
 
-    /* Hero */
+    /* ── Hero ─────────────────────────────────────── */
     .hero {
       min-height: calc(100vh - 64px);
       display: flex; align-items: center;
-      padding: 4rem 1.5rem;
-      background: linear-gradient(135deg, #fff 0%, #fef2f2 50%, #fff 100%);
+      padding: 5rem 1.5rem 4rem;
+      background: #fff;
       position: relative; overflow: hidden;
     }
     .hero::before {
-      content: ''; position: absolute; top: -40%; right: -10%;
-      width: 600px; height: 600px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(239,68,68,0.06) 0%, transparent 70%);
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 80% 40%, rgba(239,68,68,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 10% 80%, rgba(239,68,68,0.04) 0%, transparent 60%);
+      pointer-events: none;
     }
     .hero-inner {
       max-width: 1280px; margin: 0 auto; width: 100%;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
-    }
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      background: #fef2f2; border: 1px solid #fecaca;
-      color: #ef4444; font-size: 0.8rem; font-weight: 600;
-      padding: 0.35rem 0.85rem; border-radius: 999px; margin-bottom: 1.25rem;
-    }
-    .hero-sub { font-size: 1.15rem; color: #6b7280; margin-bottom: 0.5rem; font-weight: 400; }
-    .hero-title { font-size: clamp(2.4rem, 5vw, 3.8rem); font-weight: 800; line-height: 1.12; margin-bottom: 1.5rem; }
-    .hero-title span { color: #ef4444; }
-    .hero-desc { font-size: 1rem; color: #6b7280; line-height: 1.8; margin-bottom: 2rem; max-width: 440px; }
-    .hero-actions { display: flex; gap: 0.875rem; flex-wrap: wrap; }
-    .btn-primary {
-      padding: 0.85rem 1.75rem; background: #ef4444; color: #fff;
-      border-radius: 10px; font-weight: 600; font-size: 0.95rem;
-      transition: background 0.15s, transform 0.1s; display: inline-flex; align-items: center; gap: 6px;
-    }
-    .btn-primary:hover { background: #dc2626; transform: translateY(-1px); }
-    .btn-outline {
-      padding: 0.85rem 1.75rem; border: 1.5px solid #e5e7eb; color: #374151;
-      border-radius: 10px; font-weight: 600; font-size: 0.95rem;
-      transition: border-color 0.15s, transform 0.1s; display: inline-flex; align-items: center; gap: 6px;
-    }
-    .btn-outline:hover { border-color: #9ca3af; transform: translateY(-1px); }
-    .hero-stats {
-      display: flex; gap: 2rem; margin-top: 2.5rem;
-      padding-top: 2rem; border-top: 1px solid #f0f0f0;
-    }
-    .stat-item { }
-    .stat-num { font-size: 1.6rem; font-weight: 800; color: #111; }
-    .stat-label { font-size: 0.8rem; color: #9ca3af; margin-top: 0.15rem; }
-
-    /* Hero visual */
-    .hero-visual {
-      position: relative; display: flex; align-items: center; justify-content: center;
-    }
-    .monitor-wrap {
-      width: 100%; max-width: 520px;
-      background: #1a1a2e; border-radius: 16px;
-      padding: 1rem 1rem 0.5rem;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.05);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
       position: relative;
     }
-    .monitor-bar {
-      display: flex; align-items: center; gap: 6px; margin-bottom: 0.75rem;
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: #fef2f2; border: 1px solid #fecaca;
+      color: #dc2626; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em;
+      padding: 0.3rem 0.85rem; border-radius: 999px; margin-bottom: 1.5rem;
     }
-    .monitor-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .monitor-screen {
-      background: #0f0f1a; border-radius: 8px; overflow: hidden;
-      aspect-ratio: 16/9; display: grid; grid-template-columns: 200px 1fr; gap: 0;
+    .hero-eyebrow-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: #ef4444;
+      animation: blink 1.6s ease-in-out infinite;
     }
-    .screen-sidebar {
-      background: #141420; padding: 1rem 0.75rem; border-right: 1px solid #1e1e2e;
-      display: flex; flex-direction: column; gap: 0.5rem;
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+    .hero-title {
+      font-size: clamp(2.6rem, 5vw, 4rem); font-weight: 800; line-height: 1.1;
+      letter-spacing: -0.02em; margin-bottom: 1.5rem; color: #0f172a;
     }
-    .screen-card {
-      background: #1e1e30; border-radius: 6px; padding: 0.5rem 0.6rem;
-      display: flex; align-items: center; gap: 0.5rem; cursor: pointer;
-      transition: background 0.15s;
+    .hero-title .accent { color: #ef4444; }
+    .hero-desc {
+      font-size: 1.05rem; color: #64748b; line-height: 1.85;
+      margin-bottom: 2.25rem; max-width: 460px;
     }
-    .screen-card.active { background: #ef4444; }
-    .screen-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; flex-shrink: 0; }
-    .screen-dot.off { background: #4b5563; }
-    .screen-card-name { font-size: 0.65rem; color: #d1d5db; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .screen-card.active .screen-card-name { color: #fff; }
-    .screen-main {
-      background: #0a0a14; display: flex; align-items: center; justify-content: center;
+    .hero-actions { display: flex; gap: 0.875rem; flex-wrap: wrap; margin-bottom: 3rem; }
+    .btn-primary {
+      padding: 0.9rem 1.85rem; background: #ef4444; color: #fff;
+      border-radius: 10px; font-weight: 700; font-size: 0.95rem;
+      transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
+      display: inline-flex; align-items: center; gap: 7px;
+      box-shadow: 0 4px 14px rgba(239,68,68,0.3);
+    }
+    .btn-primary:hover { background: #dc2626; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(239,68,68,0.35); }
+    .btn-ghost {
+      padding: 0.9rem 1.85rem; border: 1.5px solid #e2e8f0; color: #374151;
+      border-radius: 10px; font-weight: 600; font-size: 0.95rem;
+      transition: border-color 0.15s, transform 0.12s;
+      display: inline-flex; align-items: center; gap: 7px;
+    }
+    .btn-ghost:hover { border-color: #94a3b8; transform: translateY(-2px); }
+    .hero-trust {
+      display: flex; gap: 1.75rem; align-items: center;
+    }
+    .trust-item {
+      display: flex; flex-direction: column;
+    }
+    .trust-num { font-size: 1.55rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; }
+    .trust-label { font-size: 0.75rem; color: #94a3b8; margin-top: 1px; }
+    .trust-divider { width: 1px; height: 36px; background: #e2e8f0; }
+
+    /* ── Hero Visual ─────────────────────────────── */
+    .hero-visual { position: relative; }
+    .dashboard-mock {
+      background: #0f172a; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.04);
+    }
+    .mock-topbar {
+      background: #1e293b; padding: 0.75rem 1rem;
+      display: flex; align-items: center; gap: 0.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .mock-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .mock-title-bar {
+      flex: 1; height: 1px; background: rgba(255,255,255,0.06); margin: 0 0.5rem;
+    }
+    .mock-label { font-size: 0.6rem; color: #475569; font-family: monospace; }
+    .mock-body {
+      display: grid; grid-template-columns: 180px 1fr;
+    }
+    .mock-sidebar {
+      background: #0f172a; padding: 1rem 0.75rem;
+      border-right: 1px solid rgba(255,255,255,0.05);
+      display: flex; flex-direction: column; gap: 0.4rem;
+    }
+    .mock-section-label {
+      font-size: 0.55rem; color: #475569; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 0.3rem; padding-left: 0.4rem;
+    }
+    .mock-device {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.4rem 0.5rem; border-radius: 6px; cursor: pointer;
+      transition: background 0.12s;
+    }
+    .mock-device:hover { background: rgba(255,255,255,0.04); }
+    .mock-device.active { background: rgba(239,68,68,0.15); }
+    .mock-status { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .mock-status.on { background: #22c55e; box-shadow: 0 0 0 2px rgba(34,197,94,0.2); }
+    .mock-status.off { background: #374151; }
+    .mock-device-name { font-size: 0.62rem; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mock-device.active .mock-device-name { color: #fca5a5; }
+    .mock-main {
+      background: #0a0f1e; display: flex; flex-direction: column;
+    }
+    .mock-main-toolbar {
+      padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .mock-toolbar-btn {
+      font-size: 0.58rem; color: #64748b; background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06); border-radius: 4px;
+      padding: 0.18rem 0.5rem; cursor: pointer;
+    }
+    .mock-screen {
+      flex: 1; aspect-ratio: 16/8; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
       position: relative; overflow: hidden;
     }
-    .screen-desktop {
-      width: 90%; height: 80%; background: #1a3a5c;
-      border-radius: 4px; display: flex; flex-direction: column;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    .mock-screen::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 3px,
+        rgba(255,255,255,0.006) 3px, rgba(255,255,255,0.006) 4px
+      );
     }
-    .screen-desktop-bar {
-      height: 28px; background: #1e4976; border-radius: 4px 4px 0 0;
-      display: flex; align-items: center; gap: 6px; padding: 0 0.6rem;
+    .mock-screen-inner {
+      display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 1;
     }
-    .screen-desktop-content {
-      flex: 1; background: linear-gradient(135deg, #0d2137 0%, #1a3a5c 100%);
-      display: flex; align-items: center; justify-content: center;
+    .mock-screen-logo {
+      width: 36px; height: 36px; border-radius: 9px;
+      background: rgba(239,68,68,0.8); display: flex; align-items: center; justify-content: center;
     }
-    .screen-vdesk-logo {
-      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    .mock-connected-text { font-size: 0.62rem; color: #22c55e; font-weight: 600; letter-spacing: 0.05em; }
+    .mock-ping { font-size: 0.55rem; color: #475569; }
+
+    /* Floating badges */
+    .float-badge {
+      position: absolute; background: #fff; border-radius: 10px;
+      padding: 0.55rem 0.85rem; box-shadow: 0 8px 28px rgba(0,0,0,0.13);
+      display: flex; align-items: center; gap: 0.45rem;
+      font-size: 0.76rem; font-weight: 600; color: #111;
+      animation: floatY 3.5s ease-in-out infinite;
+      z-index: 10;
     }
-    .monitor-stand {
-      width: 40%; height: 20px; background: #222; margin: 0 auto;
-      border-radius: 0 0 8px 8px;
-    }
-    .monitor-base {
-      width: 55%; height: 8px; background: #1a1a1a; margin: 0 auto; border-radius: 4px;
-    }
-    .floating-badge {
-      position: absolute; background: #fff; border-radius: 10px; padding: 0.6rem 0.9rem;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12); display: flex; align-items: center; gap: 0.5rem;
-      font-size: 0.78rem; font-weight: 600; color: #111;
-      animation: floatY 3s ease-in-out infinite;
-    }
-    .floating-badge.badge-1 { top: 10%; left: -8%; }
-    .floating-badge.badge-2 { bottom: 18%; right: -6%; animation-delay: 1.5s; }
+    .float-badge-1 { top: -18px; right: 12%; animation-delay: 0s; }
+    .float-badge-2 { bottom: -16px; left: 8%; animation-delay: 1.8s; }
     @keyframes floatY {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
     }
 
-    /* Section common */
-    .section { padding: 5rem 1.5rem; }
+    /* ── Section Common ──────────────────────────── */
+    .section { padding: 6rem 1.5rem; }
     .section-inner { max-width: 1280px; margin: 0 auto; }
-    .section-label { font-size: 0.8rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
-    .section-title { font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 800; color: #111; margin-bottom: 1rem; line-height: 1.25; }
-    .section-desc { font-size: 1rem; color: #6b7280; max-width: 540px; }
+    .section-label {
+      display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: #ef4444; background: #fef2f2;
+      padding: 0.25rem 0.75rem; border-radius: 999px; margin-bottom: 1rem;
+    }
+    .section-title {
+      font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 800; color: #0f172a;
+      line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 0.85rem;
+    }
+    .section-desc { font-size: 1rem; color: #64748b; line-height: 1.8; }
 
-    /* Features */
+    /* ── Features ────────────────────────────────── */
+    .features-bg { background: #fafafa; }
     .feature-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3.5rem;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 3.5rem;
     }
     .feature-card {
-      background: #fff; border: 1.5px solid #f0f0f0; border-radius: 16px;
-      padding: 1.75rem; transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+      background: #fff; border: 1.5px solid #f1f5f9; border-radius: 18px;
+      padding: 1.75rem; transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
     }
     .feature-card:hover {
-      border-color: #fca5a5; box-shadow: 0 8px 32px rgba(239,68,68,0.08);
-      transform: translateY(-2px);
+      border-color: #fecaca; box-shadow: 0 8px 32px rgba(239,68,68,0.07);
+      transform: translateY(-3px);
     }
     .feature-icon {
-      width: 48px; height: 48px; border-radius: 12px; background: #fef2f2;
+      width: 46px; height: 46px; border-radius: 12px; background: #fef2f2;
       display: flex; align-items: center; justify-content: center; margin-bottom: 1.1rem;
     }
-    .feature-title { font-size: 1rem; font-weight: 700; color: #111; margin-bottom: 0.5rem; }
-    .feature-desc { font-size: 0.875rem; color: #6b7280; line-height: 1.7; }
+    .feature-title { font-size: 0.98rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; }
+    .feature-desc { font-size: 0.875rem; color: #64748b; line-height: 1.75; }
 
-    /* Plans */
-    .plan-section { background: #fafafa; }
+    /* ── How it works ────────────────────────────── */
+    .steps {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;
+      margin-top: 3.5rem; position: relative;
+    }
+    .steps::before {
+      content: '';
+      position: absolute; top: 28px; left: calc(12.5% + 20px); right: calc(12.5% + 20px);
+      height: 1px; background: #f1f5f9; z-index: 0;
+    }
+    .step-card {
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      padding: 1.5rem 1rem; position: relative; z-index: 1;
+    }
+    .step-num {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: #fff; border: 2px solid #f1f5f9;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 800; color: #ef4444;
+      margin-bottom: 1.25rem; flex-shrink: 0;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .step-title { font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.45rem; }
+    .step-desc { font-size: 0.83rem; color: #64748b; line-height: 1.7; }
+
+    /* ── Use case teaser ─────────────────────────── */
+    .usecase-teaser {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      border-radius: 24px; padding: 3.5rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;
+    }
+    .usecase-teaser-title {
+      font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; color: #fff;
+      line-height: 1.25; margin-bottom: 1rem;
+    }
+    .usecase-teaser-desc { font-size: 0.9rem; color: rgba(255,255,255,0.6); line-height: 1.8; margin-bottom: 1.75rem; }
+    .btn-white {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 0.8rem 1.6rem; background: #fff; color: #ef4444;
+      border-radius: 10px; font-weight: 700; font-size: 0.9rem;
+      transition: transform 0.12s, box-shadow 0.15s;
+    }
+    .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+    .usecase-chips {
+      display: flex; flex-wrap: wrap; gap: 0.65rem;
+    }
+    .usecase-chip {
+      display: flex; align-items: center; gap: 0.5rem;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 0.75rem 1rem; transition: background 0.15s;
+      cursor: pointer; text-decoration: none;
+    }
+    .usecase-chip:hover { background: rgba(255,255,255,0.1); }
+    .usecase-chip-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: rgba(239,68,68,0.25); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .usecase-chip-text { font-size: 0.82rem; font-weight: 600; color: #e2e8f0; }
+
+    /* ── Plans ───────────────────────────────────── */
+    .plan-bg { background: #fafafa; }
     .plan-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 3rem;
     }
     .plan-card {
-      background: #fff; border: 1.5px solid #f0f0f0; border-radius: 20px;
-      padding: 2rem; transition: transform 0.2s, box-shadow 0.2s;
-      position: relative;
+      background: #fff; border: 1.5px solid #f1f5f9; border-radius: 20px;
+      padding: 2rem; position: relative; transition: transform 0.18s, box-shadow 0.18s;
     }
-    .plan-card:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,0.08); }
-    .plan-card.popular {
-      border-color: #ef4444; box-shadow: 0 8px 32px rgba(239,68,68,0.12);
-    }
-    .plan-popular-badge {
+    .plan-card:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,0.07); }
+    .plan-card.popular { border-color: #ef4444; box-shadow: 0 8px 32px rgba(239,68,68,0.12); }
+    .popular-badge {
       position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-      background: #ef4444; color: #fff; font-size: 0.72rem; font-weight: 700;
-      padding: 0.25rem 0.9rem; border-radius: 999px; white-space: nowrap;
+      background: #ef4444; color: #fff; font-size: 0.7rem; font-weight: 700;
+      padding: 0.22rem 0.85rem; border-radius: 999px; white-space: nowrap;
     }
-    .plan-name { font-size: 1.1rem; font-weight: 700; color: #111; margin-bottom: 0.3rem; }
-    .plan-sub { font-size: 0.85rem; color: #9ca3af; margin-bottom: 1.5rem; }
-    .plan-price { font-size: 2rem; font-weight: 800; color: #111; }
-    .plan-price span { font-size: 0.9rem; font-weight: 500; color: #9ca3af; }
-    .plan-divider { border: none; border-top: 1px solid #f3f4f6; margin: 1.5rem 0; }
-    .plan-features { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .plan-name { font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem; }
+    .plan-sub { font-size: 0.82rem; color: #94a3b8; margin-bottom: 1.25rem; }
+    .plan-price { font-size: 1.9rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; }
+    .plan-price-unit { font-size: 0.85rem; font-weight: 500; color: #94a3b8; }
+    .plan-divider { border: none; border-top: 1px solid #f1f5f9; margin: 1.25rem 0; }
+    .plan-features { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
     .plan-features li {
       display: flex; align-items: flex-start; gap: 0.5rem;
-      font-size: 0.875rem; color: #4b5563;
+      font-size: 0.85rem; color: #475569; line-height: 1.5;
     }
-    .plan-features li::before { content: '✓'; color: #ef4444; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .plan-features li::before { content: '✓'; color: #ef4444; font-weight: 700; flex-shrink: 0; }
     .plan-btn {
       display: block; text-align: center; margin-top: 1.5rem;
-      padding: 0.8rem; border-radius: 10px; font-weight: 600; font-size: 0.9rem;
-      transition: all 0.15s; cursor: pointer;
+      padding: 0.75rem; border-radius: 10px; font-weight: 600; font-size: 0.875rem;
+      transition: all 0.15s;
     }
-    .plan-btn-outline {
-      border: 1.5px solid #e5e7eb; color: #374151;
-    }
-    .plan-btn-outline:hover { border-color: #9ca3af; }
-    .plan-btn-filled {
-      background: #ef4444; color: #fff; border: none;
-    }
+    .plan-btn-outline { border: 1.5px solid #e2e8f0; color: #374151; }
+    .plan-btn-outline:hover { border-color: #94a3b8; }
+    .plan-btn-filled { background: #ef4444; color: #fff; border: none; }
     .plan-btn-filled:hover { background: #dc2626; }
 
-    /* Use case */
-    .usecase-tabs {
-      display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2.5rem;
-    }
-    .usecase-tab {
-      padding: 0.5rem 1.1rem; border-radius: 999px; font-size: 0.875rem; font-weight: 500;
-      border: 1.5px solid #e5e7eb; cursor: pointer; transition: all 0.15s; background: #fff; color: #6b7280;
-    }
-    .usecase-tab.active { background: #ef4444; color: #fff; border-color: #ef4444; }
-    .usecase-content { display: none; }
-    .usecase-content.active { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
-    .usecase-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.75rem; }
-    .usecase-desc { font-size: 0.95rem; color: #6b7280; line-height: 1.8; margin-bottom: 1.5rem; }
-    .usecase-visual {
-      background: linear-gradient(135deg, #fef2f2, #fff5f5);
-      border-radius: 16px; aspect-ratio: 4/3;
-      display: flex; align-items: center; justify-content: center;
-      border: 1.5px solid #fecaca;
-    }
-
-    /* CTA */
+    /* ── CTA ─────────────────────────────────────── */
     .cta-section {
       background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-      padding: 5rem 1.5rem; text-align: center;
+      padding: 6rem 1.5rem; text-align: center;
+      position: relative; overflow: hidden;
     }
-    .cta-title { font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 800; color: #fff; margin-bottom: 1rem; }
-    .cta-desc { font-size: 1rem; color: rgba(255,255,255,0.8); margin-bottom: 2rem; }
-    .cta-btn {
+    .cta-section::before {
+      content: '';
+      position: absolute; top: -50%; right: -10%;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+    }
+    .cta-section::after {
+      content: '';
+      position: absolute; bottom: -40%; left: -8%;
+      width: 400px; height: 400px; border-radius: 50%;
+      background: rgba(0,0,0,0.06);
+    }
+    .cta-inner { max-width: 640px; margin: 0 auto; position: relative; z-index: 1; }
+    .cta-title { font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 800; color: #fff; margin-bottom: 1rem; line-height: 1.2; }
+    .cta-desc { font-size: 1rem; color: rgba(255,255,255,0.78); margin-bottom: 2.25rem; line-height: 1.7; }
+    .cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn-cta-white {
       display: inline-flex; align-items: center; gap: 8px;
-      padding: 0.9rem 2rem; background: #fff; color: #ef4444;
+      padding: 0.95rem 2.1rem; background: #fff; color: #ef4444;
       border-radius: 10px; font-weight: 700; font-size: 1rem;
-      transition: transform 0.15s, box-shadow 0.15s;
+      transition: transform 0.12s, box-shadow 0.15s;
     }
-    .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .btn-cta-white:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,0.18); }
+    .btn-cta-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 0.95rem 2.1rem; border: 1.5px solid rgba(255,255,255,0.45); color: #fff;
+      border-radius: 10px; font-weight: 600; font-size: 1rem;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .btn-cta-outline:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
 
-    /* Responsive */
-    @media (max-width: 900px) {
-      .hero-inner { grid-template-columns: 1fr; }
-      .hero-visual { order: -1; }
+    /* ── Responsive ──────────────────────────────── */
+    @media (max-width: 1024px) {
       .feature-grid { grid-template-columns: repeat(2, 1fr); }
-      .plan-grid { grid-template-columns: 1fr; max-width: 420px; margin-left: auto; margin-right: auto; }
-      .usecase-content.active { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: repeat(2, 1fr); }
+      .steps::before { display: none; }
+    }
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .hero-visual { order: -1; }
+      .plan-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
+      .usecase-teaser { grid-template-columns: 1fr; padding: 2.5rem; }
     }
     @media (max-width: 640px) {
       .feature-grid { grid-template-columns: 1fr; }
-      .hero-stats { gap: 1.25rem; }
-      .floating-badge { display: none; }
+      .steps { grid-template-columns: 1fr; }
+      .hero-trust { gap: 1.25rem; }
+      .float-badge { display: none; }
     }
   </style>
 </head>
 <body>
 
-<!-- Header -->
-<div th:replace="~{fragments/landing-header :: header('home')}"></div>
+<div th:replace="~{fragments/header :: header('home')}"></div>
 
-<!-- ── Hero ───────────────────────────────────────── -->
+<!-- ── Hero ─────────────────────────────────────── -->
 <section class="hero">
   <div class="hero-inner">
     <div>
-      <div class="hero-badge">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="6" r="6"/></svg>
+      <div class="hero-eyebrow">
+        <div class="hero-eyebrow-dot"></div>
         베타 서비스 운영 중
       </div>
-      <p class="hero-sub">빠르고 안전한 원격지원 프로그램</p>
       <h1 class="hero-title">
-        Fast &amp; Safe<br/>
-        <span>브이데스크</span>
+        언제 어디서나<br/>
+        내 PC에<br/>
+        <span class="accent">바로 접속</span>
       </h1>
       <p class="hero-desc">
-        브이데스크는 Windows, Mac은 물론 Android, iOS에서도<br/>
-        리소스 걱정 없이 24시간 내내 사용할 수 있는<br/>
-        최고의 원격제어 서비스입니다.
+        브이데스크는 Windows, Mac, Android, iOS에서<br/>
+        리소스 걱정 없이 24시간 원격으로<br/>
+        내 컴퓨터를 제어할 수 있는 서비스입니다.
       </p>
       <div class="hero-actions">
         <a href="/dashboard" class="btn-primary">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653z" fill="white"/></svg>
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653z" fill="white"/></svg>
           지금 시작하기
         </a>
-        <a href="/intro" class="btn-outline">
-          서비스 소개 보기
+        <a href="/intro" class="btn-ghost">
+          서비스 소개
           <svg width="14" height="14" fill="none" viewBox="0 0 20 20"><path d="M7 5l5 5-5 5" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </div>
-      <div class="hero-stats">
-        <div class="stat-item">
-          <div class="stat-num">24/7</div>
-          <div class="stat-label">무중단 서비스</div>
+      <div class="hero-trust">
+        <div class="trust-item">
+          <div class="trust-num">24/7</div>
+          <div class="trust-label">무중단 서비스</div>
         </div>
-        <div class="stat-item">
-          <div class="stat-num">4개</div>
-          <div class="stat-label">플랫폼 지원</div>
+        <div class="trust-divider"></div>
+        <div class="trust-item">
+          <div class="trust-num">4+</div>
+          <div class="trust-label">지원 플랫폼</div>
         </div>
-        <div class="stat-item">
-          <div class="stat-num">SSL</div>
-          <div class="stat-label">보안 연결</div>
+        <div class="trust-divider"></div>
+        <div class="trust-item">
+          <div class="trust-num">SSL</div>
+          <div class="trust-label">암호화 연결</div>
         </div>
       </div>
     </div>
 
-    <!-- Visual -->
+    <!-- Dashboard mock UI -->
     <div class="hero-visual">
-      <div style="position:relative;width:100%;">
-        <div class="monitor-wrap">
-          <div class="monitor-bar">
-            <div class="monitor-dot" style="background:#ef4444;"></div>
-            <div class="monitor-dot" style="background:#f59e0b;"></div>
-            <div class="monitor-dot" style="background:#22c55e;"></div>
-            <div style="flex:1;height:1px;background:#2a2a3a;margin-left:0.5rem;border-radius:1px;"></div>
-            <div style="font-size:0.65rem;color:#4b5563;font-family:monospace;">Vdesk — 원격 관리</div>
+      <div style="position:relative;">
+        <div class="dashboard-mock">
+          <div class="mock-topbar">
+            <div class="mock-dot" style="background:#ef4444;"></div>
+            <div class="mock-dot" style="background:#f59e0b;"></div>
+            <div class="mock-dot" style="background:#22c55e;"></div>
+            <div class="mock-title-bar"></div>
+            <div class="mock-label">Vdesk — 원격 관리</div>
           </div>
-          <div class="monitor-screen">
-            <!-- Sidebar: device list -->
-            <div class="screen-sidebar">
-              <div style="font-size:0.6rem;color:#6b7280;margin-bottom:0.25rem;padding-left:0.25rem;">내 기기</div>
-              <div class="screen-card active">
-                <div class="screen-dot"></div>
-                <span class="screen-card-name">Vdesk PC-001</span>
+          <div class="mock-body">
+            <div class="mock-sidebar">
+              <div class="mock-section-label">내 기기</div>
+              <div class="mock-device active">
+                <div class="mock-status on"></div>
+                <span class="mock-device-name">Vdesk PC-001</span>
               </div>
-              <div class="screen-card">
-                <div class="screen-dot"></div>
-                <span class="screen-card-name">Vdesk PC-002</span>
+              <div class="mock-device">
+                <div class="mock-status on"></div>
+                <span class="mock-device-name">Vdesk PC-002</span>
               </div>
-              <div class="screen-card">
-                <div class="screen-dot off"></div>
-                <span class="screen-card-name">Vdesk PC-003</span>
+              <div class="mock-device">
+                <div class="mock-status on"></div>
+                <span class="mock-device-name">Vdesk PC-003</span>
               </div>
-              <div class="screen-card">
-                <div class="screen-dot"></div>
-                <span class="screen-card-name">Vdesk PC-004</span>
+              <div class="mock-device">
+                <div class="mock-status off"></div>
+                <span class="mock-device-name">Vdesk PC-004</span>
               </div>
-              <div class="screen-card">
-                <div class="screen-dot off"></div>
-                <span class="screen-card-name">Vdesk PC-005</span>
+              <div class="mock-device">
+                <div class="mock-status on"></div>
+                <span class="mock-device-name">Vdesk PC-005</span>
+              </div>
+              <div class="mock-device">
+                <div class="mock-status off"></div>
+                <span class="mock-device-name">Vdesk PC-006</span>
               </div>
             </div>
-            <!-- Main: remote screen preview -->
-            <div class="screen-main">
-              <div class="screen-desktop">
-                <div class="screen-desktop-bar">
-                  <div style="width:8px;height:8px;border-radius:50%;background:#ef4444;"></div>
-                  <div style="width:8px;height:8px;border-radius:50%;background:#f59e0b;"></div>
-                  <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;"></div>
-                  <div style="font-size:0.55rem;color:#93c5fd;margin-left:0.5rem;">Vdesk PC-001 — 원격 제어 중</div>
-                </div>
-                <div class="screen-desktop-content">
-                  <div class="screen-vdesk-logo">
-                    <svg width="32" height="32" viewBox="0 0 28 28" fill="none">
-                      <rect width="28" height="28" rx="7" fill="rgba(239,68,68,0.8)"/>
-                      <path d="M7 9h14M7 14h10M7 19h6" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+            <div class="mock-main">
+              <div class="mock-main-toolbar">
+                <span class="mock-toolbar-btn">연결</span>
+                <span class="mock-toolbar-btn">파일</span>
+                <span class="mock-toolbar-btn">설정</span>
+              </div>
+              <div class="mock-screen">
+                <div class="mock-screen-inner">
+                  <div class="mock-screen-logo">
+                    <svg width="18" height="18" viewBox="0 0 28 28" fill="none">
+                      <path d="M7 9h14M7 14h10M7 19h6" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
                     </svg>
-                    <span style="font-size:0.65rem;color:#93c5fd;font-weight:600;">연결됨</span>
                   </div>
+                  <div class="mock-connected-text">● 연결됨</div>
+                  <div class="mock-ping">Ping 12ms · SSL 암호화</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="monitor-stand"></div>
-        <div class="monitor-base"></div>
 
-        <!-- Floating badges -->
-        <div class="floating-badge badge-1">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#22c55e" stroke-width="1.5"/></svg>
-          연결 성공
+        <div class="float-badge float-badge-1">
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#22c55e" stroke-width="1.5"/></svg>
+          PC-001 연결 성공
         </div>
-        <div class="floating-badge badge-2">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke="#6366f1" stroke-width="1.5"/></svg>
-          SSL 보안 적용
+        <div class="float-badge float-badge-2">
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke="#6366f1" stroke-width="1.5"/></svg>
+          SSL 보안 적용 중
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── Features ────────────────────────────────────── -->
-<section class="section">
+<!-- ── Features ─────────────────────────────────── -->
+<section class="section features-bg">
   <div class="section-inner">
-    <div style="text-align:center;max-width:600px;margin:0 auto;">
+    <div style="text-align:center;max-width:580px;margin:0 auto;">
       <div class="section-label">Features</div>
-      <h2 class="section-title" style="margin:0 auto 1rem;">브이데스크만의 특별한 기능</h2>
-      <p class="section-desc" style="margin:0 auto;">언제 어디서나 내 PC에 접속하고, 더 많은 생산성을 경험하세요.</p>
+      <h2 class="section-title">브이데스크만의 핵심 기능</h2>
+      <p class="section-desc">언제 어디서나 내 PC에 접속하고, 더 많은 가능성을 경험하세요.</p>
     </div>
     <div class="feature-grid">
-
       <div class="feature-card">
         <div class="feature-icon">
-          <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="feature-title">다중 기기 동시 제어</div>
-        <p class="feature-desc">여러 대의 PC를 동시에 관리하고 제어하세요. 최대 26대까지 한 화면에서 통합 관리 가능합니다.</p>
+        <div class="feature-title">최대 26대 동시 관리</div>
+        <p class="feature-desc">여러 대의 PC를 한 화면에서 동시에 등록하고 원격으로 제어합니다.</p>
       </div>
-
       <div class="feature-card">
         <div class="feature-icon">
-          <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="feature-title">군사급 SSL 보안</div>
-        <p class="feature-desc">모든 원격 세션은 AES-256 암호화와 SSL 인증서로 보호됩니다. 개인정보와 데이터 모두 안전하게.</p>
+        <div class="feature-title">AES-256 암호화</div>
+        <p class="feature-desc">모든 원격 세션은 AES-256 암호화와 SSL로 보호되어 안전하게 전송됩니다.</p>
       </div>
-
       <div class="feature-card">
         <div class="feature-icon">
-          <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="feature-title">모바일 완벽 지원</div>
-        <p class="feature-desc">iOS, Android 앱으로 스마트폰에서도 PC를 완벽하게 원격 제어할 수 있습니다.</p>
+        <div class="feature-title">모든 기기에서 접속</div>
+        <p class="feature-desc">Windows, Mac, iOS, Android 어디서든 동일한 경험으로 원격 접속합니다.</p>
       </div>
-
       <div class="feature-card">
         <div class="feature-icon">
-          <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="feature-title">고속 저지연 연결</div>
-        <p class="feature-desc">최적화된 화면 전송 기술로 끊김 없는 원격 경험을 제공합니다. 빠른 응답속도로 실제 사용하는 것처럼.</p>
+        <div class="feature-title">초저지연 연결</div>
+        <p class="feature-desc">최적화된 화면 전송 기술로 마치 실제로 앉아서 사용하는 듯한 반응속도를 제공합니다.</p>
       </div>
-
       <div class="feature-card">
         <div class="feature-icon">
-          <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
         <div class="feature-title">파일 전송</div>
-        <p class="feature-desc">원격지 PC와 내 기기 사이에서 파일을 손쉽게 주고받을 수 있습니다. 드래그 앤 드롭으로 간편하게.</p>
+        <p class="feature-desc">원격 PC와 내 기기 사이에서 드래그 앤 드롭으로 파일을 간편하게 주고받습니다.</p>
       </div>
-
       <div class="feature-card">
         <div class="feature-icon">
-          <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="#ef4444" stroke-width="1.8"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="#ef4444" stroke-width="1.8"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round"/></svg>
         </div>
         <div class="feature-title">24시간 무중단</div>
-        <p class="feature-desc">서버 다운타임 없이 365일 24시간 안정적인 서비스를 제공합니다. 야간이나 주말에도 걱정 없이 접속.</p>
+        <p class="feature-desc">서버 다운타임 없이 365일 안정적인 서비스를 제공합니다. 야간·주말도 걱정 없이.</p>
       </div>
-
     </div>
   </div>
 </section>
 
-<!-- ── Plans ───────────────────────────────────────── -->
-<section class="section plan-section">
+<!-- ── How it works ──────────────────────────────── -->
+<section class="section">
   <div class="section-inner">
-    <div style="text-align:center;max-width:600px;margin:0 auto;">
-      <div class="section-label">Pricing</div>
-      <h2 class="section-title" style="margin:0 auto 1rem;">합리적인 요금제</h2>
-      <p class="section-desc" style="margin:0 auto;">필요한 만큼만 사용하세요. 언제든지 플랜을 변경할 수 있습니다.</p>
+    <div style="text-align:center;max-width:540px;margin:0 auto;">
+      <div class="section-label">How It Works</div>
+      <h2 class="section-title">3분이면 시작할 수 있어요</h2>
+      <p class="section-desc">복잡한 설정 없이 간단한 4단계로 원격 접속을 시작하세요.</p>
     </div>
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-title">회원가입</div>
+        <p class="step-desc">이메일 또는 소셜 계정으로<br/>빠르게 가입하세요.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-title">호스트 설치</div>
+        <p class="step-desc">원격 접속할 PC에<br/>호스트 프로그램을 설치합니다.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-title">기기 등록</div>
+        <p class="step-desc">호스트에 표시된 접속키로<br/>내 계정에 기기를 연결합니다.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-title">원격 접속</div>
+        <p class="step-desc">대시보드에서 등록된 PC를<br/>클릭하면 바로 연결됩니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
+<!-- ── Use case teaser ───────────────────────────── -->
+<section class="section" style="padding-top:0;">
+  <div class="section-inner">
+    <div class="usecase-teaser">
+      <div>
+        <div class="section-label" style="background:rgba(239,68,68,0.15);">Use Cases</div>
+        <h2 class="usecase-teaser-title">다양한 상황에서<br/>활용하세요</h2>
+        <p class="usecase-teaser-desc">게임, 트레이딩, 마케팅, 기업 IT 관리까지<br/>브이데스크가 필요한 모든 곳에 있습니다.</p>
+        <a href="/usecase" class="btn-white">
+          활용사례 전체 보기
+          <svg width="13" height="13" fill="none" viewBox="0 0 20 20"><path d="M7 5l5 5-5 5" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+      <div class="usecase-chips">
+        <a href="/usecase#game" class="usecase-chip">
+          <div class="usecase-chip-icon">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="usecase-chip-text">모바일 게임</span>
+        </a>
+        <a href="/usecase#stock" class="usecase-chip">
+          <div class="usecase-chip-icon">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="usecase-chip-text">주식 / 코인</span>
+        </a>
+        <a href="/usecase#marketing" class="usecase-chip">
+          <div class="usecase-chip-icon">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M22 4s-3.5 4-6 4-4.5-4-8-4S3 8 3 8v14" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="usecase-chip-text">SNS 마케팅</span>
+        </a>
+        <a href="/usecase#multi" class="usecase-chip">
+          <div class="usecase-chip-icon">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="usecase-chip-text">다수 PC 관리</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Plans ─────────────────────────────────────── -->
+<section class="section plan-bg">
+  <div class="section-inner">
+    <div style="text-align:center;max-width:580px;margin:0 auto;">
+      <div class="section-label">Pricing</div>
+      <h2 class="section-title">합리적인 요금제</h2>
+      <p class="section-desc">필요한 만큼만 선택하세요. 언제든지 플랜을 변경할 수 있습니다.</p>
+    </div>
     <div class="plan-grid">
       <div class="plan-card">
         <div class="plan-name">Basic</div>
         <div class="plan-sub">일반 사무용</div>
-        <div class="plan-price">45,000<span>원 /월</span></div>
+        <div class="plan-price">45,000<span class="plan-price-unit">원 /월</span></div>
         <hr class="plan-divider"/>
         <ul class="plan-features">
           <li>일반 사무 업무 최적화</li>
@@ -463,12 +635,11 @@
         </ul>
         <a href="/pricing" class="plan-btn plan-btn-outline">시작하기</a>
       </div>
-
       <div class="plan-card popular">
-        <div class="plan-popular-badge">인기</div>
+        <div class="popular-badge">인기</div>
         <div class="plan-name">Standard</div>
         <div class="plan-sub">중간 사양</div>
-        <div class="plan-price" style="color:#ef4444;">85,000<span>원 /월</span></div>
+        <div class="plan-price" style="color:#ef4444;">85,000<span class="plan-price-unit">원 /월</span></div>
         <hr class="plan-divider"/>
         <ul class="plan-features">
           <li>고성능 그래픽 작업 지원</li>
@@ -480,11 +651,10 @@
         </ul>
         <a href="/pricing" class="plan-btn plan-btn-filled">시작하기</a>
       </div>
-
       <div class="plan-card">
         <div class="plan-name">Business</div>
         <div class="plan-sub">최고 사양</div>
-        <div class="plan-price">140,000<span>원 /월</span></div>
+        <div class="plan-price">140,000<span class="plan-price-unit">원 /월</span></div>
         <hr class="plan-divider"/>
         <ul class="plan-features">
           <li>최고 사양 업무 환경</li>
@@ -500,122 +670,22 @@
   </div>
 </section>
 
-<!-- ── Use Cases ──────────────────────────────────── -->
-<section class="section" id="usecase">
-  <div class="section-inner">
-    <div style="max-width:600px;margin-bottom:2rem;">
-      <div class="section-label">Usage</div>
-      <h2 class="section-title">브이데스크의 다양한 활용방법<br/>미리 확인해 보세요!</h2>
-    </div>
-
-    <div class="usecase-tabs">
-      <button class="usecase-tab active" onclick="setUsecase(this, 'game')">모바일 게임</button>
-      <button class="usecase-tab" onclick="setUsecase(this, 'stock')">주식/코인</button>
-      <button class="usecase-tab" onclick="setUsecase(this, 'marketing')">마케팅</button>
-      <button class="usecase-tab" onclick="setUsecase(this, 'multi')">동시관리</button>
-    </div>
-
-    <div id="usecase-game" class="usecase-content active">
-      <div>
-        <h3 class="usecase-title">끊김없는 플레이</h3>
-        <p class="usecase-desc">고사양 모바일 게임을 쾌적하고 끊김없이 즐겨보세요!<br/>최신 유행하는 게임에 맞춰 지속적인 업데이트 진행 중입니다.</p>
-        <a href="/method" class="btn-primary" style="display:inline-flex;">자세히 보기</a>
-      </div>
-      <div class="usecase-visual">
-        <div style="text-align:center;">
-          <svg width="72" height="72" fill="none" viewBox="0 0 24 24" style="margin:0 auto 1rem;display:block;">
-            <path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" stroke="#ef4444" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <p style="font-size:0.85rem;color:#9ca3af;">모바일 게임을 PC에서 즐기세요</p>
-        </div>
-      </div>
-    </div>
-
-    <div id="usecase-stock" class="usecase-content">
-      <div>
-        <h3 class="usecase-title">실시간 주식·코인 트레이딩</h3>
-        <p class="usecase-desc">외출 중에도 언제든지 내 트레이딩 PC에 접속하여<br/>실시간으로 주식과 코인을 관리하세요.</p>
-        <a href="/method" class="btn-primary" style="display:inline-flex;">자세히 보기</a>
-      </div>
-      <div class="usecase-visual">
-        <div style="text-align:center;">
-          <svg width="72" height="72" fill="none" viewBox="0 0 24 24" style="margin:0 auto 1rem;display:block;">
-            <path d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4v16" stroke="#ef4444" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <p style="font-size:0.85rem;color:#9ca3af;">어디서든 트레이딩 PC에 접속</p>
-        </div>
-      </div>
-    </div>
-
-    <div id="usecase-marketing" class="usecase-content">
-      <div>
-        <h3 class="usecase-title">SNS 마케팅 자동화</h3>
-        <p class="usecase-desc">여러 대의 PC에서 동시에 SNS 계정을 운영하고<br/>마케팅 자동화를 실행하세요.</p>
-        <a href="/method" class="btn-primary" style="display:inline-flex;">자세히 보기</a>
-      </div>
-      <div class="usecase-visual">
-        <div style="text-align:center;">
-          <svg width="72" height="72" fill="none" viewBox="0 0 24 24" style="margin:0 auto 1rem;display:block;">
-            <path d="M22 4s-3.5 4-6 4-4.5-4-8-4S3 8 3 8v14M3 8s2 2 5 2 4-2 7-2 5 2 5 2" stroke="#ef4444" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <p style="font-size:0.85rem;color:#9ca3af;">효율적인 마케팅 자동화</p>
-        </div>
-      </div>
-    </div>
-
-    <div id="usecase-multi" class="usecase-content">
-      <div>
-        <h3 class="usecase-title">다수 PC 동시 관리</h3>
-        <p class="usecase-desc">한 화면에서 여러 대의 PC를 동시에 관리하고 제어하세요.<br/>기업의 IT 인프라를 효율적으로 운영할 수 있습니다.</p>
-        <a href="/method" class="btn-primary" style="display:inline-flex;">자세히 보기</a>
-      </div>
-      <div class="usecase-visual">
-        <div style="text-align:center;">
-          <svg width="72" height="72" fill="none" viewBox="0 0 24 24" style="margin:0 auto 1rem;display:block;">
-            <path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" stroke="#ef4444" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <p style="font-size:0.85rem;color:#9ca3af;">최대 26대 동시 관리</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── CTA ────────────────────────────────────────── -->
+<!-- ── CTA ───────────────────────────────────────── -->
 <section class="cta-section">
-  <div style="max-width:700px;margin:0 auto;">
+  <div class="cta-inner">
     <h2 class="cta-title">지금 바로 시작해보세요</h2>
-    <p class="cta-desc">회원가입 후 즉시 사용 가능합니다. 언제 어디서나 내 PC에 접속하세요.</p>
-    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-      <a href="/signup" class="cta-btn">
+    <p class="cta-desc">회원가입 후 즉시 사용 가능합니다.<br/>언제 어디서나 내 PC에 접속하세요.</p>
+    <div class="cta-actions">
+      <a href="/signup" class="btn-cta-white">
         무료로 시작하기
-        <svg width="16" height="16" fill="none" viewBox="0 0 20 20"><path d="M7 5l5 5-5 5" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg width="14" height="14" fill="none" viewBox="0 0 20 20"><path d="M7 5l5 5-5 5" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
-      <a href="/support" style="display:inline-flex;align-items:center;gap:8px;padding:0.9rem 2rem;border:1.5px solid rgba(255,255,255,0.4);color:#fff;border-radius:10px;font-weight:600;font-size:1rem;transition:all 0.15s;"
-         onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">
-        문의하기
-      </a>
+      <a href="/support" class="btn-cta-outline">문의하기</a>
     </div>
   </div>
 </section>
 
-<!-- Footer -->
 <div th:replace="~{fragments/landing-footer :: footer}"></div>
 
-<script>
-  function setUsecase(btn, id) {
-    document.querySelectorAll('.usecase-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.usecase-content').forEach(c => c.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('usecase-' + id).classList.add('active');
-  }
-
-  // 활용사례 앵커 처리
-  if (window.location.hash === '#usecase') {
-    setTimeout(() => {
-      document.getElementById('usecase')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 200);
-  }
-</script>
 </body>
 </html>

@@ -30,6 +30,16 @@ public class PageController {
         return "landing/support";
     }
 
+    @GetMapping("/pricing")
+    public String pricing() {
+        return "landing/pricing";
+    }
+
+    @GetMapping("/usecase")
+    public String usecase() {
+        return "landing/usecase";
+    }
+
     // ── 인증 페이지 ─────────────────────────────────────
     @GetMapping("/login")
     public String login() {

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>구매하기 — Vdesk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; background: #fff; color: #111; }
+    a { text-decoration: none; color: inherit; }
+
+    .hero {
+      padding: 4.5rem 1.5rem 2.5rem;
+      text-align: center;
+      background: linear-gradient(135deg, #fff 0%, #fef2f2 60%, #fff 100%);
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .hero h1 { font-size: clamp(2rem, 3.5vw, 2.8rem); font-weight: 800; }
+    .hero p { margin-top: 0.8rem; color: #6b7280; font-size: 0.95rem; line-height: 1.8; }
+
+    .section { padding: 3.5rem 1.5rem 5rem; }
+    .inner { max-width: 1200px; margin: 0 auto; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin-top: 2.25rem;
+    }
+    .card {
+      background: #fff;
+      border: 1.5px solid #f0f0f0;
+      border-radius: 18px;
+      padding: 1.75rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    }
+    .plan-name { font-weight: 800; font-size: 1.05rem; }
+    .plan-desc { color: #6b7280; font-size: 0.85rem; margin-top: 0.35rem; }
+    .price { margin-top: 1.15rem; font-size: 2.05rem; font-weight: 900; letter-spacing: -0.02em; }
+    .price small { font-size: 0.9rem; font-weight: 600; color: #9ca3af; margin-left: 2px; }
+    .cta {
+      margin-top: 1.4rem;
+      width: 100%;
+      border: none;
+      border-radius: 999px;
+      padding: 0.95rem 1rem;
+      font-weight: 800;
+      background: #111;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.1s, background 0.15s;
+    }
+    .cta:hover { background: #000; transform: translateY(-1px); }
+
+    .divider { border: none; border-top: 1px solid #f3f4f6; margin: 1.5rem 0; }
+    .feat { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .feat li { display: flex; gap: 0.5rem; font-size: 0.88rem; color: #4b5563; }
+    .feat li::before { content: '✓'; color: #ef4444; font-weight: 900; }
+
+    .spec {
+      margin-top: 1.25rem;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+    .spec li { display: flex; gap: 0.5rem; align-items: center; }
+    .spec li::before { content: '✓'; color: #ef4444; font-weight: 900; }
+
+    .bulk {
+      margin-top: 3.25rem;
+      border-radius: 20px;
+      border: 1.5px solid #f0f0f0;
+      background: #fafafa;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 1.75rem;
+      align-items: center;
+    }
+    .bulk h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 0.6rem; }
+    .bulk p { color: #6b7280; font-size: 0.92rem; line-height: 1.8; }
+    .bulk ul { margin-top: 1rem; color: #4b5563; font-size: 0.88rem; line-height: 1.9; list-style: none; }
+    .bulk ul li { display: flex; gap: 0.55rem; }
+    .bulk ul li::before { content: '✓'; color: #ef4444; font-weight: 900; }
+    .bulk a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0.95rem 1.1rem;
+      border-radius: 12px;
+      background: #ef4444;
+      color: #fff;
+      font-weight: 800;
+      width: 100%;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .bulk a:hover { background: #dc2626; transform: translateY(-1px); }
+    .bulk .mock {
+      width: 100%;
+      aspect-ratio: 16/10;
+      border-radius: 16px;
+      border: 1.5px solid #e5e7eb;
+      background: linear-gradient(135deg, #fff 0%, #fef2f2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #9ca3af;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 1000px) {
+      .grid { grid-template-columns: 1fr; }
+      .bulk { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header('pricing')}"></div>
+
+<section class="hero">
+  <h1>구매하기</h1>
+  <p>
+    필요한 만큼만 선택해서 사용하세요.<br/>
+    일반 결제(기간 선택) 또는 정기 결제(매월 자동 청구)를 지원합니다.
+  </p>
+</section>
+
+<section class="section">
+  <div class="inner">
+
+    <div class="grid">
+      <div class="card">
+        <div class="plan-name">Basic</div>
+        <div class="plan-desc">일반 사무용 컴퓨팅</div>
+        <div class="price">45,000<small>원 /월</small></div>
+        <button class="cta" onclick="goPurchase()">구매하기</button>
+        <hr class="divider"/>
+        <ul class="feat">
+          <li>일반적인 사무용에 추천</li>
+          <li>마케팅</li>
+          <li>인터넷방송</li>
+          <li>SNS용</li>
+          <li>주식 거래</li>
+        </ul>
+        <ul class="spec">
+          <li>CPU Intel Xeon</li>
+          <li>RAM 3GB DDR4</li>
+          <li>SSD 256GB</li>
+          <li>GPU Share</li>
+          <li>OS Windows 10 Pro</li>
+          <li>IP 한국 공인 IP(독립)</li>
+        </ul>
+      </div>
+
+      <div class="card" style="border-color:#fecaca;box-shadow:0 16px 40px rgba(239,68,68,0.08);">
+        <div class="plan-name">Standard</div>
+        <div class="plan-desc">중간 사양의 컴퓨팅</div>
+        <div class="price">85,000<small>원 /월</small></div>
+        <button class="cta" onclick="goPurchase()">구매하기</button>
+        <hr class="divider"/>
+        <ul class="feat">
+          <li>앱(LD)플레이어 사용 가능</li>
+          <li>마케팅</li>
+          <li>작업장</li>
+          <li>앱플레이어</li>
+          <li>리니지M</li>
+          <li>스팀 고사양 게임</li>
+        </ul>
+        <ul class="spec">
+          <li>CPU Intel Core i5-8500</li>
+          <li>RAM 8GB DDR4</li>
+          <li>SSD 256GB</li>
+          <li>GPU Intel UHD 630</li>
+          <li>OS Windows 10 Pro</li>
+          <li>IP 한국 공인 IP(독립)</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="plan-name">Business</div>
+        <div class="plan-desc">전문가급의 컴퓨팅</div>
+        <div class="price">140,000<small>원 /월</small></div>
+        <button class="cta" onclick="goPurchase()">구매하기</button>
+        <hr class="divider"/>
+        <ul class="feat">
+          <li>다양한 고사양 작업 가능</li>
+          <li>영상 편집</li>
+          <li>마케팅</li>
+          <li>작업장</li>
+          <li>앱플레이어 다중 실행</li>
+          <li>리니지M/오딘/V4/히트2</li>
+        </ul>
+        <ul class="spec">
+          <li>CPU Intel Xeon 12 Core</li>
+          <li>RAM 64GB DDR4</li>
+          <li>SSD 256GB</li>
+          <li>GPU GeForce 1050Ti</li>
+          <li>OS Windows 10 Pro</li>
+          <li>IP 한국 공인 IP(독립)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bulk">
+      <div>
+        <div style="font-size:0.78rem;font-weight:800;color:#6b7280;margin-bottom:0.25rem;">원격 컴퓨팅 임대 서비스</div>
+        <h2>대량 견적 문의하기</h2>
+        <p>10대 이상 이용하거나 커스텀 사양이 필요하면 상담으로 빠르게 안내해드릴게요.</p>
+        <ul>
+          <li>10대 이상 활용하시는 경우</li>
+          <li>단일 결제보다 저렴한 가격</li>
+          <li>원하는 사양/대수 커스터마이징 가능</li>
+          <li>대량 주문 시 우선적으로 세팅 작업 진행</li>
+          <li>1:1 전담 관리 서비스</li>
+        </ul>
+      </div>
+      <div>
+        <div class="mock">이미지/배너 영역</div>
+        <div style="margin-top:0.9rem;">
+          <a href="https://open.kakao.com/o/sGm2lByh" target="_blank">대량 견적 문의하기</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div th:replace="~{fragments/landing-footer :: footer}"></div>
+
+<script>
+  function goPurchase() {
+    // 구매는 로그인/대시보드에서 모달로 진행하는 흐름을 우선 사용
+    window.location.href = '/dashboard';
+  }
+</script>
+
+</body>
+</html>
+
