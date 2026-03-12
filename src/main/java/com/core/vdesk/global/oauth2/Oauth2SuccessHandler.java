@@ -40,7 +40,7 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
         AuthCookieUtil.writeAuthCookies(res, pair.at(), pair.rt(), isHttps(req));
 
         // 로그인 성공 후 대시보드로 이동
-        String redirectUri = "/";
+        String redirectUri = "/dashboard";
         log.info("OAuth2 로그인 성공 → redirect: {}", redirectUri);
         res.sendRedirect(redirectUri);
 

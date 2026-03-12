@@ -90,6 +90,8 @@ public class SecurityConfig {
                                 "/api/test/sms/direct"
                                 ).permitAll() // 허용
                         .requestMatchers("/", "/index.html",
+                                // 앱 페이지 (Thymeleaf shell — 실제 auth는 JS에서 처리)
+                                "/dashboard", "/mypage",
                                 "/check.html", "/success.html", "/fail.html", "/billing.html",
                                 "/paypal-check.html", "/paypal-billing.html","/welcome-check.html","/welcome-billing.html",
                                 "/paddle-check.html", "/paddle-billing.html","/smartro-test.html", "/paddle-check-test.html", "/paddle-billing-test.html",

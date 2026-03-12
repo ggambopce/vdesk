@@ -120,8 +120,8 @@
       const data = await res.json();
       const u = data.result || {};
       document.getElementById('userEmail').textContent    = u.email || '—';
-      document.getElementById('userName').textContent     = u.name || '—';
-      document.getElementById('userProvider').textContent = u.provider || '이메일';
+      document.getElementById('userName').textContent     = u.userName || '—';
+      document.getElementById('userProvider').textContent = u.loginType || '이메일';
       document.getElementById('accountSkeleton').style.display = 'none';
       document.getElementById('accountInfo').style.display     = 'block';
     } catch {

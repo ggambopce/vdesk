@@ -112,6 +112,14 @@
   </div>
 
   <script>
+    // 이미 로그인된 경우 대시보드로
+    (async () => {
+      try {
+        const r = await fetch('/api/auth/me', { credentials: 'include' });
+        if (r.ok) window.location.replace('/dashboard');
+      } catch {}
+    })();
+
     const form = document.getElementById('loginForm');
     const emailEl = document.getElementById('email');
     const pwEl = document.getElementById('password');
@@ -145,7 +153,7 @@
         });
         const data = await res.json();
         if (res.ok) {
-          window.location.href = '/';
+          window.location.href = '/dashboard';
         } else {
           loginErr.textContent = data.message || '로그인에 실패했습니다.';
           loginErr.style.display = 'block';
