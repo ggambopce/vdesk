@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FAQ — Vdesk 관리자</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; box-sizing: border-box; }
+    body { background: #f8f9fa; margin: 0; }
+    .page-card { background: #fff; border-radius: 12px; border: 1px solid #f0f0f0; padding: 24px; }
+    .admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .admin-table th { text-align: left; padding: 11px 14px; color: #6b7280; font-weight: 600; font-size: 12px; border-bottom: 2px solid #f0f0f0; }
+    .admin-table td { padding: 12px 14px; color: #374151; border-bottom: 1px solid #f9fafb; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: #fafafa; }
+    .search-input { padding: 7px 12px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; outline: none; }
+    .search-input:focus { border-color: #ef4444; }
+    .search-select { padding: 7px 10px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; background: #fff; cursor: pointer; }
+    .btn-search { padding: 7px 16px; background: #ef4444; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .btn-search:hover { background: #dc2626; }
+    .btn-write { padding: 7px 16px; background: #22c55e; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .btn-write:hover { background: #16a34a; }
+    .btn-page { padding: 5px 10px; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; font-size: 12px; cursor: pointer; color: #374151; }
+    .btn-page.active { background: #ef4444; color: #fff; border-color: #ef4444; }
+    .btn-delete { padding: 4px 12px; background: #ef4444; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .btn-delete:hover { background: #dc2626; }
+    .title-link { color: #374151; text-decoration: none; font-weight: 500; cursor: pointer; }
+    .title-link:hover { color: #ef4444; }
+    /* Modal */
+    .modal-bg { position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;transition:opacity 0.2s;pointer-events:none; }
+    .modal-bg.open { opacity:1;pointer-events:all; }
+    .modal-box { background:#fff;border-radius:14px;padding:28px;width:100%;max-width:540px;margin:1rem;transform:scale(0.96);transition:transform 0.2s;max-height:90vh;overflow-y:auto; }
+    .modal-bg.open .modal-box { transform:scale(1); }
+    .modal-input { width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;outline:none;margin-bottom:12px; }
+    .modal-input:focus { border-color:#ef4444; }
+    .modal-textarea { width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;outline:none;resize:vertical;min-height:120px; }
+    .modal-textarea:focus { border-color:#ef4444; }
+  </style>
+</head>
+<body>
+<div style="display:flex;height:100vh;overflow:hidden;">
+  <div th:replace="~{fragments/admin-sidebar :: sidebar('faq')}"></div>
+
+  <main style="flex:1;overflow-y:auto;padding:28px 32px;">
+    <div style="margin-bottom:20px;">
+      <h1 style="font-size:20px;font-weight:700;color:#111;margin:0 0 4px;">FAQ</h1>
+      <p style="font-size:13px;color:#6b7280;margin:0;">자주 묻는 질문을 작성하고 관리합니다.</p>
+    </div>
+
+    <div class="page-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+        <span style="font-size:15px;font-weight:700;color:#111;">FAQ <span id="totalCount" style="color:#ef4444;">-</span>건</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <select id="searchField" class="search-select">
+            <option value="TITLE">제목</option>
+            <option value="CONTENT">내용</option>
+            <option value="ALL">전체</option>
+          </select>
+          <input id="searchInput" class="search-input" type="text" placeholder="검색어를 입력해주세요." style="width:200px;"
+                 onkeydown="if(event.key==='Enter')doSearch()"/>
+          <button class="btn-search" onclick="doSearch()">검색</button>
+          <button class="btn-write" onclick="openWriteModal()">등록</button>
+        </div>
+      </div>
+
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th style="width:60px;">번호</th>
+            <th>제목</th>
+            <th>작성인</th>
+            <th>조회수</th>
+            <th>작성일</th>
+            <th style="width:80px;">삭제</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="6" style="text-align:center;padding:32px;color:#9ca3af;">불러오는 중...</td></tr>
+        </tbody>
+      </table>
+
+      <div id="pagination" style="display:flex;align-items:center;justify-content:center;gap:4px;margin-top:18px;padding-top:14px;border-top:1px solid #f5f5f5;"></div>
+    </div>
+  </main>
+</div>
+
+<!-- Write Modal -->
+<div id="writeModal" class="modal-bg" onclick="if(event.target===this)closeWriteModal()">
+  <div class="modal-box">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <h3 style="font-size:16px;font-weight:700;margin:0;" id="modalTitle">FAQ 등록</h3>
+      <button onclick="closeWriteModal()" style="background:none;border:none;cursor:pointer;color:#9ca3af;font-size:18px;">✕</button>
+    </div>
+    <input id="postTitle" class="modal-input" placeholder="질문을 입력하세요."/>
+    <textarea id="postContent" class="modal-textarea" placeholder="답변을 입력하세요."></textarea>
+    <p id="writeErr" style="color:#ef4444;font-size:12px;margin-top:8px;display:none;"></p>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button onclick="closeWriteModal()" style="flex:1;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;background:#fff;font-size:13px;cursor:pointer;">취소</button>
+      <button onclick="doWrite()" style="flex:1;padding:10px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">등록</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentPage = 1, totalPages = 1, totalItems = 0;
+  let editPostId = null;
+
+  async function loadPosts(page) {
+    page = page || 1;
+    const field = document.getElementById('searchField').value;
+    const q = document.getElementById('searchInput').value.trim();
+    let url = `/api/support/posts/list?type=FAQ&page=${page}&size=20`;
+    if (q) url += `&q=${encodeURIComponent(q)}&field=${field}`;
+    try {
+      const res = await fetch(url, { credentials:'include' });
+      if (res.status === 401 || res.status === 403) { window.location.href = '/login'; return; }
+      const data = await res.json();
+      const items = data.result?.items || [];
+      totalItems = data.result?.totalItems || 0;
+      totalPages = data.result?.totalPages || 1;
+      currentPage = page;
+      document.getElementById('totalCount').textContent = totalItems.toLocaleString();
+      renderTable(items);
+      renderPagination();
+    } catch {
+      document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:#9ca3af;">데이터를 불러올 수 없습니다.</td></tr>';
+    }
+  }
+
+  function fmtDate(d) { return d ? d.replace('T',' ').slice(0,10) : '-'; }
+
+  function renderTable(items) {
+    if (!items.length) {
+      document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:#9ca3af;">데이터 없음</td></tr>';
+      return;
+    }
+    const offset = (currentPage-1)*20;
+    document.getElementById('tableBody').innerHTML = items.map((p,i) => `
+      <tr>
+        <td style="color:#9ca3af;">${totalItems - offset - i}</td>
+        <td><span class="title-link" onclick="viewPost(${p.postId})">${p.title||'-'}</span></td>
+        <td>${p.authorName||'관리자'}</td>
+        <td style="color:#9ca3af;">${p.viewCount||0}</td>
+        <td style="color:#9ca3af;">${fmtDate(p.createdAt)}</td>
+        <td><button class="btn-delete" onclick="deletePost(${p.postId})">삭제</button></td>
+      </tr>`).join('');
+  }
+
+  function renderPagination() {
+    const el = document.getElementById('pagination');
+    if (totalPages <= 1) { el.innerHTML = ''; return; }
+    let html = `<button class="btn-page" onclick="loadPosts(1)">«</button>`;
+    html += `<button class="btn-page" onclick="loadPosts(${Math.max(1,currentPage-1)})">‹</button>`;
+    const start = Math.max(1,currentPage-2), end = Math.min(totalPages,currentPage+2);
+    for (let p = start; p <= end; p++) {
+      html += `<button class="btn-page${p===currentPage?' active':''}" onclick="loadPosts(${p})">${p}</button>`;
+    }
+    html += `<button class="btn-page" onclick="loadPosts(${Math.min(totalPages,currentPage+1)})">›</button>`;
+    html += `<button class="btn-page" onclick="loadPosts(${totalPages})">»</button>`;
+    el.innerHTML = html;
+  }
+
+  function doSearch() { loadPosts(1); }
+
+  function openWriteModal(id) {
+    editPostId = id || null;
+    document.getElementById('modalTitle').textContent = id ? 'FAQ 수정' : 'FAQ 등록';
+    document.getElementById('postTitle').value = '';
+    document.getElementById('postContent').value = '';
+    document.getElementById('writeErr').style.display = 'none';
+    document.getElementById('writeModal').classList.add('open');
+  }
+  function closeWriteModal() { document.getElementById('writeModal').classList.remove('open'); }
+
+  async function doWrite() {
+    const title = document.getElementById('postTitle').value.trim();
+    const content = document.getElementById('postContent').value.trim();
+    const err = document.getElementById('writeErr');
+    if (!title) { err.textContent = '제목을 입력하세요.'; err.style.display = 'block'; return; }
+    if (!content) { err.textContent = '내용을 입력하세요.'; err.style.display = 'block'; return; }
+    try {
+      const url = editPostId ? `/api/support/posts/update/${editPostId}` : '/api/support/posts/register';
+      const method = editPostId ? 'PATCH' : 'POST';
+      const body = editPostId
+        ? { title, content, visibility: 'PUBLIC', pinned: false }
+        : { type: 'FAQ', title, content, visibility: 'PUBLIC', pinned: false };
+      const res = await fetch(url, {
+        method, credentials:'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (res.ok) { closeWriteModal(); loadPosts(1); }
+      else { err.textContent = data.message || '처리 실패'; err.style.display = 'block'; }
+    } catch { err.textContent = '서버와 연결할 수 없습니다.'; err.style.display = 'block'; }
+  }
+
+  async function viewPost(id) {
+    openWriteModal(id);
+    const res = await fetch(`/api/support/posts/detail/${id}`, { credentials:'include' });
+    const data = await res.json();
+    const p = data.result?.post || {};
+    document.getElementById('postTitle').value = p.title || '';
+    document.getElementById('postContent').value = p.content || '';
+  }
+
+  async function deletePost(id) {
+    if (!confirm('삭제 하시겠습니까?')) return;
+    const res = await fetch(`/api/support/posts/delete/${id}`, { method:'DELETE', credentials:'include' });
+    if (res.ok) loadPosts(currentPage);
+    else alert('삭제 실패');
+  }
+
+  loadPosts(1);
+</script>
+</body>
+</html>

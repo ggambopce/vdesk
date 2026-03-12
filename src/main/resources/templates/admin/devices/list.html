@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PC관리 — Vdesk 관리자</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; box-sizing: border-box; }
+    body { background: #f8f9fa; margin: 0; }
+    .page-card { background: #fff; border-radius: 12px; border: 1px solid #f0f0f0; padding: 24px; }
+    .admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .admin-table th { text-align: left; padding: 11px 14px; color: #6b7280; font-weight: 600; font-size: 12px; border-bottom: 2px solid #f0f0f0; white-space: nowrap; }
+    .admin-table td { padding: 12px 14px; color: #374151; border-bottom: 1px solid #f9fafb; vertical-align: middle; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: #fafafa; }
+    .search-input { padding: 7px 12px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; outline: none; }
+    .search-input:focus { border-color: #ef4444; }
+    .search-select { padding: 7px 10px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; background: #fff; cursor: pointer; }
+    .btn-search { padding: 7px 16px; background: #ef4444; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .btn-search:hover { background: #dc2626; }
+    .btn-add { padding: 7px 16px; background: #22c55e; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .btn-add:hover { background: #16a34a; }
+    .btn-page { padding: 5px 10px; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; font-size: 12px; cursor: pointer; color: #374151; }
+    .btn-page:hover { background: #f9fafb; }
+    .btn-page.active { background: #ef4444; color: #fff; border-color: #ef4444; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-basic { background: #eff6ff; color: #3b82f6; }
+    .badge-standard { background: #faf5ff; color: #7c3aed; }
+    .badge-business { background: #fff7ed; color: #ea580c; }
+    .action-btn { background: none; border: none; cursor: pointer; padding: 4px 5px; color: #9ca3af; border-radius: 4px; }
+    .action-btn:hover { background: #f3f4f6; color: #374151; }
+    .action-btn.danger:hover { background: #fef2f2; color: #ef4444; }
+    .ip-link { color: #3b82f6; text-decoration: none; }
+    .ip-link:hover { text-decoration: underline; }
+    /* Modal */
+    .modal-bg { position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;transition:opacity 0.2s;pointer-events:none; }
+    .modal-bg.open { opacity:1;pointer-events:all; }
+    .modal-box { background:#fff;border-radius:14px;padding:28px;width:100%;max-width:400px;margin:1rem;transform:scale(0.96) translateY(8px);transition:transform 0.2s; }
+    .modal-bg.open .modal-box { transform:scale(1) translateY(0); }
+    .modal-input { width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;outline:none; }
+    .modal-input:focus { border-color:#ef4444; }
+  </style>
+</head>
+<body>
+<div style="display:flex;height:100vh;overflow:hidden;">
+  <div th:replace="~{fragments/admin-sidebar :: sidebar('devices')}"></div>
+
+  <main style="flex:1;overflow-y:auto;padding:28px 32px;">
+    <div style="margin-bottom:20px;">
+      <h1 style="font-size:20px;font-weight:700;color:#111;margin:0 0 4px;">PC관리</h1>
+      <p style="font-size:13px;color:#6b7280;margin:0;">등록된 VM/PC 목록을 조회하고 관리합니다.</p>
+    </div>
+
+    <div class="page-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+        <span style="font-size:15px;font-weight:700;color:#111;">사용 중 PC <span id="totalCount" style="color:#ef4444;">-</span>건</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <select id="searchField" class="search-select">
+            <option value="userId">사용자ID</option>
+            <option value="ip">IP</option>
+          </select>
+          <input id="searchInput" class="search-input" type="text" placeholder="검색어를 입력해주세요." style="width:200px;"
+                 onkeydown="if(event.key==='Enter')doSearch()"/>
+          <button class="btn-search" onclick="doSearch()">검색</button>
+          <button class="btn-add" onclick="openAddModal()">PC추가</button>
+        </div>
+      </div>
+
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th style="width:60px;">번호</th>
+            <th>아이피</th>
+            <th>등급</th>
+            <th>사용자만료일</th>
+            <th>사용자</th>
+            <th style="width:180px;">관리</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="6" style="text-align:center;padding:32px;color:#9ca3af;">불러오는 중...</td></tr>
+        </tbody>
+      </table>
+
+      <div id="pagination" style="display:flex;align-items:center;justify-content:center;gap:4px;margin-top:18px;padding-top:14px;border-top:1px solid #f5f5f5;"></div>
+    </div>
+  </main>
+</div>
+
+<!-- PC 추가 Modal -->
+<div id="addModal" class="modal-bg" onclick="if(event.target===this)closeAddModal()">
+  <div class="modal-box">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <h3 style="font-size:16px;font-weight:700;margin:0;">PC 추가</h3>
+      <button onclick="closeAddModal()" style="background:none;border:none;cursor:pointer;color:#9ca3af;">✕</button>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:13px;font-weight:500;color:#374151;display:block;margin-bottom:6px;">IP 주소</label>
+      <input id="addIp" class="modal-input" placeholder="예: 121.88.129.100"/>
+    </div>
+    <div style="margin-bottom:20px;">
+      <label style="font-size:13px;font-weight:500;color:#374151;display:block;margin-bottom:6px;">플랜</label>
+      <select id="addPlan" class="modal-input">
+        <option value="BASIC">BASIC</option>
+        <option value="STANDARD">STANDARD</option>
+        <option value="BUSINESS">BUSINESS</option>
+      </select>
+    </div>
+    <p id="addErr" style="color:#ef4444;font-size:12px;margin-bottom:10px;display:none;"></p>
+    <div style="display:flex;gap:8px;">
+      <button onclick="closeAddModal()" style="flex:1;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;background:#fff;font-size:13px;font-weight:500;cursor:pointer;">취소</button>
+      <button onclick="doAddDevice()" style="flex:1;padding:10px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">등록</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentPage = 1, totalPages = 1, totalItems = 0;
+  const PLAN_BADGE = { BASIC:'badge-basic', STANDARD:'badge-standard', BUSINESS:'badge-business' };
+  const PLAN_NAMES = { BASIC:'베이직', STANDARD:'스탠다드', BUSINESS:'비즈니스' };
+
+  async function loadDevices(page) {
+    page = page || 1;
+    const field = document.getElementById('searchField').value;
+    const query = document.getElementById('searchInput').value.trim();
+    let url = `/api/admin/device/list?page=${page}&size=20`;
+    if (query) url += `&${field}=${encodeURIComponent(query)}`;
+    try {
+      const res = await fetch(url, { credentials:'include' });
+      if (res.status === 401 || res.status === 403) { window.location.href = '/login'; return; }
+      const data = await res.json();
+      const items = data.result?.items || [];
+      totalItems = data.result?.page?.totalItems || 0;
+      totalPages = data.result?.page?.totalPages || 1;
+      currentPage = page;
+      document.getElementById('totalCount').textContent = totalItems.toLocaleString();
+      renderTable(items);
+      renderPagination();
+    } catch {
+      document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:#9ca3af;">데이터를 불러올 수 없습니다.</td></tr>';
+    }
+  }
+
+  function planBadge(p) {
+    return `<span class="badge ${PLAN_BADGE[p]||'badge-basic'}">${PLAN_NAMES[p]||p||'-'}</span>`;
+  }
+  function fmtDate(d) { return d ? d.replace('T',' ').slice(0,16) : '-'; }
+
+  function renderTable(items) {
+    if (!items.length) {
+      document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:#9ca3af;">데이터 없음</td></tr>';
+      return;
+    }
+    const offset = (currentPage-1)*20;
+    document.getElementById('tableBody').innerHTML = items.map((d,i) => `
+      <tr>
+        <td style="color:#9ca3af;">${totalItems - offset - i}</td>
+        <td><span class="ip-link">${d.ip||'-'}</span></td>
+        <td>${planBadge(d.planType)}</td>
+        <td style="color:#9ca3af;">${d.expireAt ? fmtDate(d.expireAt) : '-'}</td>
+        <td style="color:${d.ownerEmail?'#374151':'#9ca3af'}">${d.ownerEmail||'-'}</td>
+        <td>
+          <button class="action-btn" title="수정" onclick="editDevice(${d.deviceId})">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="action-btn" title="만료일 설정" onclick="setExpire(${d.deviceId})">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+          <button class="action-btn" title="비활성화" onclick="blockDevice(${d.deviceId})">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+          <button class="action-btn" title="재시작" onclick="restartDevice(${d.deviceId})">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M1 4v6h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="action-btn" title="사용자 변경" onclick="changeUser(${d.deviceId})">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M17 1l4 4-4 4M7 23l-4-4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 19h13a4 4 0 000-8h-1M21 5H8a4 4 0 000 8h1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="action-btn danger" title="삭제" onclick="deleteDevice(${d.deviceId})">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </td>
+      </tr>`).join('');
+  }
+
+  function renderPagination() {
+    const el = document.getElementById('pagination');
+    if (totalPages <= 1) { el.innerHTML = ''; return; }
+    let html = `<button class="btn-page" onclick="loadDevices(1)">«</button>`;
+    html += `<button class="btn-page" onclick="loadDevices(${Math.max(1,currentPage-1)})">‹</button>`;
+    const start = Math.max(1,currentPage-2), end = Math.min(totalPages,currentPage+2);
+    for (let p = start; p <= end; p++) {
+      html += `<button class="btn-page${p===currentPage?' active':''}" onclick="loadDevices(${p})">${p}</button>`;
+    }
+    html += `<button class="btn-page" onclick="loadDevices(${Math.min(totalPages,currentPage+1)})">›</button>`;
+    html += `<button class="btn-page" onclick="loadDevices(${totalPages})">»</button>`;
+    el.innerHTML = html;
+  }
+
+  function doSearch() { loadDevices(1); }
+
+  function openAddModal() { document.getElementById('addModal').classList.add('open'); document.getElementById('addIp').value = ''; document.getElementById('addErr').style.display = 'none'; }
+  function closeAddModal() { document.getElementById('addModal').classList.remove('open'); }
+
+  async function doAddDevice() {
+    const ip = document.getElementById('addIp').value.trim();
+    const planType = document.getElementById('addPlan').value;
+    const err = document.getElementById('addErr');
+    if (!ip) { err.textContent = 'IP 주소를 입력해주세요.'; err.style.display = 'block'; return; }
+    try {
+      const res = await fetch('/api/admin/device/register', {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ip, planType })
+      });
+      const data = await res.json();
+      if (res.ok) { closeAddModal(); loadDevices(1); }
+      else { err.textContent = data.message || '등록 실패'; err.style.display = 'block'; }
+    } catch { err.textContent = '서버와 연결할 수 없습니다.'; err.style.display = 'block'; }
+  }
+
+  function editDevice(id) { alert('수정 기능은 준비 중입니다. (ID: ' + id + ')'); }
+  function setExpire(id) { alert('만료일 설정 기능은 준비 중입니다. (ID: ' + id + ')'); }
+  function blockDevice(id) { if(confirm('비활성화 하시겠습니까?')) alert('비활성화 기능은 준비 중입니다.'); }
+  function restartDevice(id) { if(confirm('재시작 하시겠습니까?')) alert('재시작 기능은 준비 중입니다.'); }
+  function changeUser(id) { alert('사용자 변경 기능은 준비 중입니다.'); }
+  function deleteDevice(id) { if(confirm('삭제 하시겠습니까?')) alert('삭제 기능은 준비 중입니다.'); }
+
+  loadDevices(1);
+</script>
+</body>
+</html>

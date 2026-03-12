@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>결제관리 — Vdesk 관리자</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; box-sizing: border-box; }
+    body { background: #f8f9fa; margin: 0; }
+    .page-card { background: #fff; border-radius: 12px; border: 1px solid #f0f0f0; padding: 24px; }
+    .admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .admin-table th { text-align: left; padding: 11px 14px; color: #6b7280; font-weight: 600; font-size: 12px; border-bottom: 2px solid #f0f0f0; white-space: nowrap; }
+    .admin-table td { padding: 12px 14px; color: #374151; border-bottom: 1px solid #f9fafb; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: #fafafa; }
+    .search-input { padding: 7px 12px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; outline: none; transition: border-color 0.15s; }
+    .search-input:focus { border-color: #ef4444; }
+    .search-select { padding: 7px 10px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; background: #fff; cursor: pointer; }
+    .btn-search { padding: 7px 16px; background: #ef4444; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .btn-search:hover { background: #dc2626; }
+    .btn-page { padding: 5px 10px; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; font-size: 12px; cursor: pointer; color: #374151; }
+    .btn-page:hover { background: #f9fafb; }
+    .btn-page.active { background: #ef4444; color: #fff; border-color: #ef4444; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-basic { background: #eff6ff; color: #3b82f6; }
+    .badge-standard { background: #faf5ff; color: #7c3aed; }
+    .badge-business { background: #fff7ed; color: #ea580c; }
+    .badge-active { background: #dcfce7; color: #166534; }
+    .badge-failed { background: #fef2f2; color: #ef4444; }
+    .badge-canceled { background: #f3f4f6; color: #6b7280; }
+    .badge-paused { background: #fef9c3; color: #92400e; }
+    .ip-link { color: #3b82f6; text-decoration: none; }
+    .ip-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div style="display:flex;height:100vh;overflow:hidden;">
+  <div th:replace="~{fragments/admin-sidebar :: sidebar('payments')}"></div>
+
+  <main style="flex:1;overflow-y:auto;padding:28px 32px;">
+    <div style="margin-bottom:20px;">
+      <h1 style="font-size:20px;font-weight:700;color:#111;margin:0 0 4px;">결제관리</h1>
+      <p style="font-size:13px;color:#6b7280;margin:0;">전체 결제 내역을 조회하고 관리합니다.</p>
+    </div>
+
+    <div class="page-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+        <span style="font-size:15px;font-weight:700;color:#111;">결제 <span id="totalCount" style="color:#ef4444;">-</span>건</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <select id="searchField" class="search-select">
+            <option value="email">사용자ID</option>
+            <option value="productCode">상품코드</option>
+            <option value="provider">결제수단</option>
+          </select>
+          <input id="searchInput" class="search-input" type="text" placeholder="검색어를 입력해주세요." style="width:220px;"
+                 onkeydown="if(event.key==='Enter')doSearch()"/>
+          <button class="btn-search" onclick="doSearch()">검색</button>
+        </div>
+      </div>
+
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th style="width:60px;">번호</th>
+            <th>결제수단</th>
+            <th>이메일</th>
+            <th>이름</th>
+            <th>주문번호</th>
+            <th>결제일</th>
+            <th>결제상품</th>
+            <th>결제 금액</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="8" style="text-align:center;padding:32px;color:#9ca3af;">불러오는 중...</td></tr>
+        </tbody>
+      </table>
+
+      <div id="pagination" style="display:flex;align-items:center;justify-content:center;gap:4px;margin-top:18px;padding-top:14px;border-top:1px solid #f5f5f5;"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+  let currentPage = 1, totalPages = 1, totalItems = 0;
+
+  const PRODUCT_NAMES = { BASIC_PLAN: '베이직', STANDARD_PLAN: '스탠다드', BUSINESS_PLAN: '비즈니스', TEST_PLAN: '테스트' };
+  const PRODUCT_BADGE = { BASIC_PLAN: 'badge-basic', STANDARD_PLAN: 'badge-standard', BUSINESS_PLAN: 'badge-business', TEST_PLAN: 'badge-basic' };
+  const STATUS_BADGE = { ACTIVE:'badge-active', FAILED:'badge-failed', CANCELED:'badge-canceled', CANCELLED:'badge-canceled', PAUSED:'badge-paused' };
+  const STATUS_NAMES = { ACTIVE:'활성', FAILED:'실패', CANCELED:'취소', CANCELLED:'취소', PAUSED:'일시중지' };
+
+  function planBadge(code) {
+    return `<span class="badge ${PRODUCT_BADGE[code]||'badge-basic'}">${PRODUCT_NAMES[code]||code||'-'}</span>`;
+  }
+  function fmtDate(d) { return d ? d.replace('T',' ').slice(0,16) : '-'; }
+  function fmtAmount(p) {
+    if (p.krwAmount != null && p.krwAmount > 0) return p.krwAmount.toLocaleString()+'원';
+    if (p.amount != null && p.amount > 0) return p.amount.toLocaleString()+'원';
+    if (p.usdAmount != null && p.usdAmount > 0) return '$'+p.usdAmount.toFixed(2);
+    return '-';
+  }
+
+  async function loadPayments(page) {
+    page = page || 1;
+    const field = document.getElementById('searchField').value;
+    const query = document.getElementById('searchInput').value.trim();
+    let url = `/api/admin/payments?page=${page}&size=20`;
+    if (query) url += `&${field}=${encodeURIComponent(query)}`;
+    try {
+      const res = await fetch(url, { credentials:'include' });
+      if (res.status === 401 || res.status === 403) { window.location.href = '/login'; return; }
+      const data = await res.json();
+      const items = data.result?.items || [];
+      totalItems = data.result?.page?.totalItems || 0;
+      totalPages = data.result?.page?.totalPages || 1;
+      currentPage = page;
+      document.getElementById('totalCount').textContent = totalItems.toLocaleString();
+      renderTable(items);
+      renderPagination();
+    } catch {
+      document.getElementById('tableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:32px;color:#9ca3af;">데이터를 불러올 수 없습니다.</td></tr>';
+    }
+  }
+
+  function renderTable(items) {
+    if (!items.length) {
+      document.getElementById('tableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:32px;color:#9ca3af;">데이터 없음</td></tr>';
+      return;
+    }
+    const offset = (currentPage-1)*20;
+    document.getElementById('tableBody').innerHTML = items.map((p,i) => `
+      <tr>
+        <td style="color:#9ca3af;">${totalItems - offset - i}</td>
+        <td>${p.provider || '-'}</td>
+        <td><a class="ip-link" href="mailto:${p.email}">${p.email||'-'}</a></td>
+        <td style="color:${p.userName?'#374151':'#9ca3af'}">${p.userName||'-'}</td>
+        <td style="font-family:monospace;font-size:11px;color:#6b7280;max-width:180px;overflow:hidden;text-overflow:ellipsis;">${p.orderId||'-'}</td>
+        <td style="color:#9ca3af;">${fmtDate(p.paidAt)}</td>
+        <td>${planBadge(p.productCode)}</td>
+        <td style="font-weight:600;color:#111;">${fmtAmount(p)}</td>
+      </tr>`).join('');
+  }
+
+  function renderPagination() {
+    const el = document.getElementById('pagination');
+    if (totalPages <= 1) { el.innerHTML = ''; return; }
+    let html = `<button class="btn-page" onclick="loadPayments(1)">«</button>`;
+    html += `<button class="btn-page" onclick="loadPayments(${Math.max(1,currentPage-1)})">‹</button>`;
+    const start = Math.max(1,currentPage-2), end = Math.min(totalPages,currentPage+2);
+    for (let p = start; p <= end; p++) {
+      html += `<button class="btn-page${p===currentPage?' active':''}" onclick="loadPayments(${p})">${p}</button>`;
+    }
+    html += `<button class="btn-page" onclick="loadPayments(${Math.min(totalPages,currentPage+1)})">›</button>`;
+    html += `<button class="btn-page" onclick="loadPayments(${totalPages})">»</button>`;
+    el.innerHTML = html;
+  }
+
+  function doSearch() { loadPayments(1); }
+  loadPayments(1);
+</script>
+</body>
+</html>

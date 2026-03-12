@@ -1,20 +1,20 @@
 <header xmlns:th="http://www.thymeleaf.org"
         xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
         th:fragment="header(activePage)"
-        style="position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid #f0f0f0;">
-  <div style="max-width:1280px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:64px;">
+        class="sticky top-0 z-[100] bg-white border-b border-gray-100">
+  <div class="max-w-[1280px] mx-auto px-6 flex items-center justify-between h-16">
 
     <!-- Logo + Nav -->
-    <div style="display:flex;align-items:center;gap:2.5rem;">
-      <a href="/" style="display:flex;align-items:center;gap:8px;text-decoration:none;">
+    <div class="flex items-center gap-10">
+      <a href="/" class="flex items-center gap-2 no-underline">
         <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
           <rect width="28" height="28" rx="7" fill="#ef4444"/>
           <path d="M7 9h14M7 14h10M7 19h6" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
         </svg>
-        <span style="font-size:1.15rem;font-weight:700;color:#111;">Vdesk</span>
+        <span class="text-[18px] font-bold text-[#111]">Vdesk</span>
       </a>
 
-      <nav style="display:flex;align-items:center;gap:0.35rem;" class="landing-nav">
+      <nav class="flex items-center gap-1.5 landing-nav">
         <a href="/intro"
            th:classappend="${activePage == 'intro'} ? ' nav-active' : ''"
            class="nav-link">소개</a>
@@ -34,57 +34,71 @@
     </div>
 
     <!-- Right buttons -->
-    <div style="display:flex;align-items:center;gap:0.6rem;">
+    <div class="flex items-center gap-2.5">
 
-      <!-- 비로그인 -->
-      <div sec:authorize="isAnonymous()" style="display:flex;align-items:center;gap:0.5rem;">
-        <a href="/login" class="nav-btn-outline">로그인</a>
-        <a href="/signup" class="nav-btn-red">회원가입</a>
+      <!-- 비로그인 (JS-controlled) -->
+      <div id="nav-guest" class="flex items-center gap-2">
+        <a href="/login"
+           class="px-4 py-[7px] border border-[#e5e7eb] border-[1.5px] rounded-[7px] text-[14px] font-medium text-[#374151] no-underline bg-white hover:border-[#d1d5db] transition-colors">
+          로그인
+        </a>
+        <a href="/signup"
+           class="px-4 py-[7px] bg-[#ef4444] rounded-[7px] text-[14px] font-semibold text-white no-underline hover:bg-[#dc2626] transition-colors border-0">
+          회원가입
+        </a>
       </div>
 
-      <!-- 로그인 -->
-      <div sec:authorize="isAuthenticated()" style="display:flex;align-items:center;gap:0.5rem;">
-        <form th:action="@{/logout}" method="post" style="margin:0;">
-          <button type="submit" class="nav-btn-ghost">로그아웃</button>
-        </form>
-        <a href="/mypage" class="nav-btn-outline">마이페이지</a>
-        <a href="/dashboard" class="nav-btn-red">접속기</a>
+      <!-- 로그인 (JS-controlled) -->
+      <div id="nav-auth" style="display:none" class="flex items-center gap-2">
+        <button onclick="doLogout()"
+                class="px-3 py-[7px] border-0 bg-transparent cursor-pointer text-[14px] font-medium text-[#6b7280] hover:text-[#374151] transition-colors">
+          로그아웃
+        </button>
+        <a href="/mypage"
+           class="px-4 py-[7px] border border-[#e5e7eb] border-[1.5px] rounded-[7px] text-[14px] font-medium text-[#374151] no-underline bg-white hover:border-[#d1d5db] transition-colors">
+          마이페이지
+        </a>
+        <a href="/dashboard"
+           class="px-4 py-[7px] bg-[#ef4444] rounded-[7px] text-[14px] font-semibold text-white no-underline hover:bg-[#dc2626] transition-colors border-0">
+          접속기
+        </a>
       </div>
 
       <!-- 모바일 햄버거 -->
-      <button id="mobMenuBtn" onclick="toggleMobMenu()" class="mob-hamburger" aria-label="메뉴">
-        <span></span><span></span><span></span>
+      <button id="mobMenuBtn" onclick="toggleMobMenu()"
+              class="hidden flex-col gap-[5px] p-1 bg-transparent border-0 cursor-pointer mob-hamburger-btn"
+              aria-label="메뉴">
+        <span class="block w-[22px] h-[2px] bg-[#374151] rounded-[2px]"></span>
+        <span class="block w-[22px] h-[2px] bg-[#374151] rounded-[2px]"></span>
+        <span class="block w-[22px] h-[2px] bg-[#374151] rounded-[2px]"></span>
       </button>
     </div>
   </div>
 
   <!-- 모바일 드롭다운 -->
-  <div id="mobMenu" style="display:none;border-top:1px solid #f0f0f0;background:#fff;">
-    <nav style="padding:1rem 1.5rem;display:flex;flex-direction:column;gap:0.25rem;">
-      <a href="/intro" class="mob-nav-link">소개</a>
-      <a href="/pricing" class="mob-nav-link">구매하기</a>
-      <a href="/method" class="mob-nav-link">사용방법</a>
-      <a href="/usecase" class="mob-nav-link">활용사례</a>
-      <a href="/support" class="mob-nav-link">고객센터</a>
-      <hr style="border:none;border-top:1px solid #f3f4f6;margin:0.5rem 0;"/>
+  <div id="mobMenu" style="display:none" class="border-t border-gray-100 bg-white">
+    <nav class="px-6 py-4 flex flex-col gap-1">
+      <a href="/intro"   class="block px-2 py-2 text-[15px] font-medium text-[#374151] no-underline rounded-md hover:bg-gray-50 transition-colors">소개</a>
+      <a href="/pricing" class="block px-2 py-2 text-[15px] font-medium text-[#374151] no-underline rounded-md hover:bg-gray-50 transition-colors">구매하기</a>
+      <a href="/method"  class="block px-2 py-2 text-[15px] font-medium text-[#374151] no-underline rounded-md hover:bg-gray-50 transition-colors">사용방법</a>
+      <a href="/usecase" class="block px-2 py-2 text-[15px] font-medium text-[#374151] no-underline rounded-md hover:bg-gray-50 transition-colors">활용사례</a>
+      <a href="/support" class="block px-2 py-2 text-[15px] font-medium text-[#374151] no-underline rounded-md hover:bg-gray-50 transition-colors">고객센터</a>
+      <hr class="border-none border-t border-gray-100 my-2"/>
 
-      <!-- 모바일 비로그인 -->
-      <div sec:authorize="isAnonymous()">
-        <a href="/login" class="mob-nav-link">로그인</a>
-        <a href="/signup" class="mob-nav-link">회원가입</a>
+      <!-- 모바일 비로그인 (JS-controlled) -->
+      <div id="mob-guest">
+        <a href="/login"  class="block px-2 py-2 text-[15px] font-medium text-[#374151] no-underline rounded-md hover:bg-gray-50 transition-colors">로그인</a>
+        <a href="/signup" class="block px-2 py-2 text-[15px] font-medium text-[#374151] no-underline rounded-md hover:bg-gray-50 transition-colors">회원가입</a>
       </div>
 
-      <!-- 모바일 로그인 -->
-      <div sec:authorize="isAuthenticated()">
-        <a href="/dashboard" class="mob-nav-link" style="color:#ef4444;font-weight:600;">접속기</a>
-        <a href="/mypage" class="mob-nav-link">마이페이지</a>
-        <form th:action="@{/logout}" method="post" style="margin:0;">
-          <button type="submit"
-                  class="mob-nav-link"
-                  style="text-align:left;background:none;border:none;cursor:pointer;width:100%;color:#6b7280;">
-            로그아웃
-          </button>
-        </form>
+      <!-- 모바일 로그인 (JS-controlled) -->
+      <div id="mob-auth" style="display:none">
+        <a href="/dashboard" class="block px-2 py-2 text-[15px] font-semibold text-[#ef4444] no-underline rounded-md hover:bg-gray-50 transition-colors">접속기</a>
+        <a href="/mypage"    class="block px-2 py-2 text-[15px] font-medium text-[#374151] no-underline rounded-md hover:bg-gray-50 transition-colors">마이페이지</a>
+        <button onclick="doLogout()"
+                class="block w-full text-left px-2 py-2 text-[15px] font-medium text-[#6b7280] bg-transparent border-0 cursor-pointer rounded-md hover:bg-gray-50 transition-colors">
+          로그아웃
+        </button>
       </div>
     </nav>
   </div>
@@ -93,14 +107,19 @@
     * { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; box-sizing: border-box; }
 
     .nav-link {
-      padding: 0.5rem 0.95rem;
-      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 40px;
+      padding: 0 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #4b5563;
       text-decoration: none;
       border-radius: 8px;
       transition: color 0.15s, background 0.15s;
       position: relative;
+      line-height: 1;
     }
 
     .nav-link:hover { color: #111; background: #fff; }
@@ -109,7 +128,7 @@
       content: '';
       position: absolute;
       left: 50%;
-    bottom: 6px;
+      bottom: 6px;
       transform: translateX(-50%) scaleX(0);
       transform-origin: center;
       width: 22px;
@@ -132,90 +151,57 @@
       transform: translateX(-50%) scaleX(1);
     }
 
-    .nav-btn-outline {
-      padding: 0.45rem 1rem;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 7px;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: #374151;
-      text-decoration: none;
-      transition: border-color 0.15s;
-      background: #fff;
-    }
-
-    .nav-btn-outline:hover { border-color: #d1d5db; }
-
-    .nav-btn-red {
-      padding: 0.45rem 1rem;
-      background: #ef4444;
-      border-radius: 7px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: #fff;
-      text-decoration: none;
-      transition: background 0.15s;
-      border: none;
-    }
-
-    .nav-btn-red:hover { background: #dc2626; }
-
-    .nav-btn-ghost {
-      padding: 0.45rem 0.75rem;
-      border: none;
-      background: none;
-      cursor: pointer;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: #6b7280;
-      transition: color 0.15s;
-    }
-
-    .nav-btn-ghost:hover { color: #374151; }
-
-    .mob-hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      padding: 4px;
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-
-    .mob-hamburger span {
-      display: block;
-      width: 22px;
-      height: 2px;
-      background: #374151;
-      border-radius: 2px;
-    }
-
-    .mob-nav-link {
-      display: block;
-      padding: 0.6rem 0.5rem;
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: #374151;
-      text-decoration: none;
-      border-radius: 6px;
-      transition: background 0.12s;
-    }
-
-    .mob-nav-link:hover { background: #f9fafb; }
-
     @media (max-width: 768px) {
       .landing-nav { display: none !important; }
       #nav-guest, #nav-auth { display: none !important; }
-      .mob-hamburger { display: flex !important; }
+      .mob-hamburger-btn { display: flex !important; }
     }
   </style>
 
   <script>
+    function applyAuthUI(loggedIn) {
+      var guest = document.getElementById('nav-guest');
+      var auth  = document.getElementById('nav-auth');
+      var mGuest = document.getElementById('mob-guest');
+      var mAuth  = document.getElementById('mob-auth');
+      if (guest) guest.style.display = loggedIn ? 'none' : 'flex';
+      if (auth)  auth.style.display  = loggedIn ? 'flex' : 'none';
+      if (mGuest) mGuest.style.display = loggedIn ? 'none' : 'block';
+      if (mAuth)  mAuth.style.display  = loggedIn ? 'block' : 'none';
+    }
+
+    function checkAuth() {
+      var cached = localStorage.getItem('vdesk_auth');
+      if (cached === '1') applyAuthUI(true);
+      fetch('/api/auth/me', { credentials: 'include' })
+        .then(function(res) {
+          applyAuthUI(res.ok);
+          localStorage.setItem('vdesk_auth', res.ok ? '1' : '0');
+        })
+        .catch(function() {
+          applyAuthUI(false);
+          localStorage.setItem('vdesk_auth', '0');
+        });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', checkAuth);
+    } else {
+      checkAuth();
+    }
+
     function toggleMobMenu() {
       var m = document.getElementById('mobMenu');
       if (!m) return;
       m.style.display = m.style.display === 'none' ? 'block' : 'none';
     }
+
+    async function doLogout() {
+      try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch {}
+      localStorage.setItem('vdesk_auth', '0');
+      window.location.href = '/';
+    }
   </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
 </header>

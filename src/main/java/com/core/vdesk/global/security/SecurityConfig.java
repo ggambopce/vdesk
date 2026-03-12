@@ -150,6 +150,8 @@ public class SecurityConfig {
                                 "/api/stats/ads/impression",
                                 "/api/stats/ads/click"
                                 ).authenticated() // 사용자 인증 필수
+                        // 관리자 페이지 및 API
+                        .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 )
                 /**

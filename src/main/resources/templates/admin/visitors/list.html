@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>방문자 — Vdesk 관리자</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; box-sizing: border-box; }
+    body { background: #f8f9fa; margin: 0; }
+    .page-card { background: #fff; border-radius: 12px; border: 1px solid #f0f0f0; padding: 24px; }
+    .admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .admin-table th { text-align: left; padding: 11px 14px; color: #6b7280; font-weight: 600; font-size: 12px; border-bottom: 2px solid #f0f0f0; white-space: nowrap; }
+    .admin-table td { padding: 12px 14px; color: #374151; border-bottom: 1px solid #f9fafb; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: #fafafa; }
+    .search-input { padding: 7px 12px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; outline: none; }
+    .search-input:focus { border-color: #ef4444; }
+    .search-select { padding: 7px 10px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; background: #fff; cursor: pointer; }
+    .btn-search { padding: 7px 16px; background: #ef4444; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .btn-search:hover { background: #dc2626; }
+    .btn-page { padding: 5px 10px; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; font-size: 12px; cursor: pointer; color: #374151; }
+    .btn-page:hover { background: #f9fafb; }
+    .btn-page.active { background: #ef4444; color: #fff; border-color: #ef4444; }
+    .badge-method { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-web { background: #eff6ff; color: #3b82f6; }
+    .badge-mobile { background: #f0fdf4; color: #16a34a; }
+    .ip-link { color: #3b82f6; text-decoration: none; }
+    .ip-link:hover { text-decoration: underline; }
+    .referrer-text { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; color: #6b7280; }
+    .tab-btn { padding: 8px 18px; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.12s; }
+    .tab-btn.active { background: #ef4444; color: #fff; }
+    .tab-btn:not(.active) { background: #f3f4f6; color: #6b7280; }
+    .tab-btn:not(.active):hover { background: #e5e7eb; }
+  </style>
+</head>
+<body>
+<div style="display:flex;height:100vh;overflow:hidden;">
+  <div th:replace="~{fragments/admin-sidebar :: sidebar('visitors')}"></div>
+
+  <main style="flex:1;overflow-y:auto;padding:28px 32px;">
+    <div style="margin-bottom:20px;">
+      <h1 style="font-size:20px;font-weight:700;color:#111;margin:0 0 4px;">방문자</h1>
+      <p style="font-size:13px;color:#6b7280;margin:0;">랜딩페이지 방문자와 회원 로그인 기록을 조회합니다.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <button class="tab-btn active" id="tab-landing" onclick="switchTab('landing')">랜딩 방문자</button>
+      <button class="tab-btn" id="tab-login" onclick="switchTab('login')">로그인 기록</button>
+    </div>
+
+    <!-- Landing Visitors -->
+    <div id="panel-landing">
+      <div class="page-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+          <span style="font-size:15px;font-weight:700;color:#111;">총 <span id="landingTotal" style="color:#ef4444;">-</span>건</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input id="landingIpInput" class="search-input" type="text" placeholder="IP 검색" style="width:160px;"
+                   onkeydown="if(event.key==='Enter')loadLanding(1)"/>
+            <button class="btn-search" onclick="loadLanding(1)">검색</button>
+          </div>
+        </div>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th style="width:60px;">번호</th>
+              <th>접속일</th>
+              <th>도메인</th>
+              <th>이전페이지</th>
+              <th>접속방법</th>
+              <th>접속아이피</th>
+              <th>방문횟수</th>
+            </tr>
+          </thead>
+          <tbody id="landingBody">
+            <tr><td colspan="7" style="text-align:center;padding:32px;color:#9ca3af;">불러오는 중...</td></tr>
+          </tbody>
+        </table>
+        <div id="landingPagination" style="display:flex;align-items:center;justify-content:center;gap:4px;margin-top:18px;padding-top:14px;border-top:1px solid #f5f5f5;"></div>
+      </div>
+    </div>
+
+    <!-- Login Records -->
+    <div id="panel-login" style="display:none;">
+      <div class="page-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+          <span style="font-size:15px;font-weight:700;color:#111;">총 <span id="loginTotal" style="color:#ef4444;">-</span>건</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input id="loginSearchInput" class="search-input" type="text" placeholder="이메일 검색" style="width:200px;"
+                   onkeydown="if(event.key==='Enter')loadLogins(1)"/>
+            <button class="btn-search" onclick="loadLogins(1)">검색</button>
+          </div>
+        </div>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th style="width:60px;">번호</th>
+              <th>접속일</th>
+              <th>이메일</th>
+              <th>로그인 타입</th>
+              <th>접속 IP</th>
+              <th>User Agent</th>
+            </tr>
+          </thead>
+          <tbody id="loginBody">
+            <tr><td colspan="6" style="text-align:center;padding:32px;color:#9ca3af;">불러오는 중...</td></tr>
+          </tbody>
+        </table>
+        <div id="loginPagination" style="display:flex;align-items:center;justify-content:center;gap:4px;margin-top:18px;padding-top:14px;border-top:1px solid #f5f5f5;"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  let landingPage = 1, landingTotal = 0, landingPages = 1;
+  let loginPage = 1, loginTotalItems = 0, loginTotalPages = 1;
+  let activeTab = 'landing';
+
+  function switchTab(tab) {
+    activeTab = tab;
+    document.getElementById('panel-landing').style.display = tab === 'landing' ? 'block' : 'none';
+    document.getElementById('panel-login').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('tab-landing').classList.toggle('active', tab === 'landing');
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    if (tab === 'login' && loginTotalItems === 0) loadLogins(1);
+  }
+
+  function fmtDate(d) {
+    if (!d) return '-';
+    return d.replace('T',' ').slice(0,16).replace(' ','\n').replace('-','.');
+  }
+
+  // Landing visitors
+  async function loadLanding(page) {
+    page = page || 1;
+    const ip = document.getElementById('landingIpInput').value.trim();
+    let url = `/api/admin/landing/visit?page=${page}&size=20`;
+    if (ip) url += `&ip=${encodeURIComponent(ip)}`;
+    try {
+      const res = await fetch(url, { credentials:'include' });
+      if (res.status === 401 || res.status === 403) { window.location.href = '/login'; return; }
+      const data = await res.json();
+      const items = data.result?.items || [];
+      landingTotal = data.result?.page?.totalItems || 0;
+      landingPages = data.result?.page?.totalPages || 1;
+      landingPage = page;
+      document.getElementById('landingTotal').textContent = landingTotal.toLocaleString();
+      renderLandingTable(items);
+      renderPagination('landingPagination', landingPages, landingPage, 'loadLanding');
+    } catch {
+      document.getElementById('landingBody').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:#9ca3af;">데이터를 불러올 수 없습니다.</td></tr>';
+    }
+  }
+
+  function renderLandingTable(items) {
+    if (!items.length) {
+      document.getElementById('landingBody').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:#9ca3af;">데이터 없음</td></tr>';
+      return;
+    }
+    const offset = (landingPage-1)*20;
+    document.getElementById('landingBody').innerHTML = items.map((v,i) => {
+      const method = v.userAgent && v.userAgent.toLowerCase().includes('mobile') ? 'MOBILE' : 'WEB';
+      return `<tr>
+        <td style="color:#9ca3af;">${landingTotal - offset - i}</td>
+        <td style="color:#9ca3af;font-size:12px;">${fmtDate(v.visitedAt)}</td>
+        <td style="font-size:12px;">v-desk.co.kr</td>
+        <td><div class="referrer-text" title="${v.referrerUrl||''}">${v.referrerUrl ? `<a class="ip-link" href="${v.referrerUrl}" target="_blank">${v.referrerUrl}</a>` : '<span style="color:#9ca3af;">이전 페이지 정보 없음</span>'}</div></td>
+        <td><span class="badge-method ${method==='MOBILE'?'badge-mobile':'badge-web'}">${method}</span></td>
+        <td><span class="ip-link">${v.ip||'-'}</span></td>
+        <td style="color:#ef4444;font-weight:600;">${(v.visitCount||1)}회</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Login records
+  async function loadLogins(page) {
+    page = page || 1;
+    const q = document.getElementById('loginSearchInput').value.trim();
+    let url = `/api/admin/user/visit?page=${page}&size=20`;
+    if (q) url += `&q=${encodeURIComponent(q)}`;
+    try {
+      const res = await fetch(url, { credentials:'include' });
+      if (res.status === 401 || res.status === 403) { window.location.href = '/login'; return; }
+      const data = await res.json();
+      const items = data.result?.items || [];
+      loginTotalItems = data.result?.page?.totalItems || 0;
+      loginTotalPages = data.result?.page?.totalPages || 1;
+      loginPage = page;
+      document.getElementById('loginTotal').textContent = loginTotalItems.toLocaleString();
+      renderLoginTable(items);
+      renderPagination('loginPagination', loginTotalPages, loginPage, 'loadLogins');
+    } catch {
+      document.getElementById('loginBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:#9ca3af;">데이터를 불러올 수 없습니다.</td></tr>';
+    }
+  }
+
+  const LOGIN_TYPE_MAP = { normal:'보이데스크', google:'구글', kakao:'카카오', naver:'네이버', apple:'애플' };
+  function renderLoginTable(items) {
+    if (!items.length) {
+      document.getElementById('loginBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:#9ca3af;">데이터 없음</td></tr>';
+      return;
+    }
+    const offset = (loginPage-1)*20;
+    document.getElementById('loginBody').innerHTML = items.map((v,i) => `
+      <tr>
+        <td style="color:#9ca3af;">${loginTotalItems - offset - i}</td>
+        <td style="color:#9ca3af;font-size:12px;">${fmtDate(v.visitedAt)}</td>
+        <td><a class="ip-link" href="mailto:${v.email}">${v.email||'-'}</a></td>
+        <td style="font-size:12px;">${LOGIN_TYPE_MAP[v.loginType]||v.loginType||'-'}</td>
+        <td><span class="ip-link">${v.ip||'-'}</span></td>
+        <td style="font-size:11px;color:#9ca3af;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${v.userAgent||'-'}</td>
+      </tr>`).join('');
+  }
+
+  function renderPagination(elId, total, current, fn) {
+    const el = document.getElementById(elId);
+    if (total <= 1) { el.innerHTML = ''; return; }
+    let html = `<button class="btn-page" onclick="${fn}(1)">«</button>`;
+    html += `<button class="btn-page" onclick="${fn}(${Math.max(1,current-1)})">‹</button>`;
+    const start = Math.max(1,current-2), end = Math.min(total,current+2);
+    for (let p = start; p <= end; p++) {
+      html += `<button class="btn-page${p===current?' active':''}" onclick="${fn}(${p})">${p}</button>`;
+    }
+    html += `<button class="btn-page" onclick="${fn}(${Math.min(total,current+1)})">›</button>`;
+    html += `<button class="btn-page" onclick="${fn}(${total})">»</button>`;
+    el.innerHTML = html;
+  }
+
+  loadLanding(1);
+</script>
+</body>
+</html>

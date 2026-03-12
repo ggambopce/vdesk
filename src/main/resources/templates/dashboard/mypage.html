@@ -8,61 +8,167 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
-    * { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; }
-    body { background: #f8f9fa; min-height: 100vh; }
-    .header { background: #fff; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 100; }
-    .btn-red { padding: 0.5rem 1.1rem; background: #ef4444; color: #fff; border-radius: 7px; font-weight: 600; font-size: 0.875rem; border: none; cursor: pointer; transition: background 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+    * { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; box-sizing: border-box; }
+    body { background: #f8f9fa; min-height: 100vh; color: #111; overflow-y: scroll; scrollbar-gutter: stable;}
+
+    .btn-red {
+      padding: 0.5rem 1.1rem;
+      background: #ef4444;
+      color: #fff;
+      border-radius: 7px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
     .btn-red:hover { background: #dc2626; }
-    .card { background: #fff; border-radius: 14px; border: 1.5px solid #f0f0f0; padding: 1.5rem; }
-    .section-title { font-size: 1rem; font-weight: 700; color: #111; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #f3f4f6; }
-    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 0.7rem 0; border-bottom: 1px solid #f9fafb; font-size: 0.875rem; }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      border: 1.5px solid #f0f0f0;
+      padding: 1.5rem;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid #f9fafb;
+      font-size: 0.875rem;
+      gap: 1rem;
+    }
     .info-row:last-child { border-bottom: none; }
+
     .info-label { color: #6b7280; }
-    .info-value { font-weight: 500; color: #111; }
-    .badge { display: inline-flex; align-items: center; padding: 0.25rem 0.65rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+    .info-value {
+      font-weight: 500;
+      color: #111;
+      text-align: right;
+      word-break: break-word;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
     .badge-active { background: #dcfce7; color: #16a34a; }
     .badge-none { background: #f3f4f6; color: #6b7280; }
-    .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(8px); background: #1f2937; color: #fff; padding: 0.65rem 1.4rem; border-radius: 8px; font-size: 0.875rem; font-weight: 500; opacity: 0; transition: opacity 0.2s, transform 0.2s; z-index: 300; white-space: nowrap; }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      background: #1f2937;
+      color: #fff;
+      padding: 0.65rem 1.4rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 300;
+      white-space: nowrap;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .page-head {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 0;
+    }
+
+    .page-sub-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+      text-decoration: none;
+      margin-bottom: 0.75rem;
+    }
+    .page-sub-link:hover { color: #374151; }
+
+    @media (max-width: 640px) {
+      .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .info-value {
+        text-align: left;
+      }
+    }
+
+    @keyframes shimmer {
+      from { background-position: 200% 0; }
+      to { background-position: -200% 0; }
+    }
   </style>
 </head>
 <body>
 
-<!-- Header -->
-<header class="header px-6 py-3.5">
-  <div class="max-w-screen-xl mx-auto flex items-center justify-between">
-    <div class="flex items-center gap-4">
-      <a href="/dashboard" class="flex items-center gap-2">
-        <svg width="22" height="22" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="#ef4444"/><path d="M7 9h14M7 14h10M7 19h6" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
-        <span class="text-base font-bold text-gray-900">Vdesk</span>
-      </a>
-      <a href="/dashboard" class="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
-        <svg width="14" height="14" fill="none" viewBox="0 0 20 20"><path d="M13 15l-5-5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        대시보드
-      </a>
-    </div>
-    <div class="flex items-center gap-3">
-      <button onclick="doLogout()" class="text-sm text-gray-500 hover:text-gray-700">로그아웃</button>
-    </div>
-  </div>
-</header>
+<!-- 공통 헤더 -->
+<div th:replace="~{fragments/header :: header('mypage')}"></div>
+
+<!-- 페이지 상단 -->
+<div class="page-head">
+  <a href="/dashboard" class="page-sub-link">
+    <svg width="14" height="14" fill="none" viewBox="0 0 20 20">
+      <path d="M13 15l-5-5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    대시보드로 돌아가기
+  </a>
+  <h1 class="text-2xl font-bold text-gray-900">마이페이지</h1>
+</div>
 
 <main class="max-w-screen-xl mx-auto px-6 py-8">
-  <h1 class="text-xl font-bold text-gray-900 mb-6">마이페이지</h1>
-
   <div class="grid grid-cols-1 gap-5" style="max-width:720px;">
 
     <!-- 계정 정보 -->
     <div class="card">
       <div class="section-title">계정 정보</div>
+
       <div id="accountSkeleton" style="display:flex;flex-direction:column;gap:0.75rem;">
         <div style="height:20px;background:#f0f0f0;border-radius:4px;animation:shimmer 1.4s infinite;background-size:200% 100%;background-image:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);"></div>
-        <div style="height:20px;background:#f0f0f0;border-radius:4px;animation:shimmer 1.4s infinite;"></div>
+        <div style="height:20px;background:#f0f0f0;border-radius:4px;animation:shimmer 1.4s infinite;background-size:200% 100%;background-image:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);"></div>
       </div>
+
       <div id="accountInfo" style="display:none;">
-        <div class="info-row"><span class="info-label">이메일</span><span id="userEmail" class="info-value">—</span></div>
-        <div class="info-row"><span class="info-label">이름</span><span id="userName" class="info-value">—</span></div>
-        <div class="info-row"><span class="info-label">가입방식</span><span id="userProvider" class="info-value">—</span></div>
+        <div class="info-row">
+          <span class="info-label">이메일</span>
+          <span id="userEmail" class="info-value">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">이름</span>
+          <span id="userName" class="info-value">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">가입방식</span>
+          <span id="userProvider" class="info-value">—</span>
+        </div>
       </div>
     </div>
 
@@ -83,9 +189,14 @@
           <span id="planStatusBadge" class="badge badge-active">활성</span>
         </div>
       </div>
+
       <div class="mt-4">
         <a href="/dashboard" class="btn-red">
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M6 6h15l-1.5 9h-12z" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="19" r="1" fill="white"/><circle cx="17" cy="19" r="1" fill="white"/></svg>
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+            <path d="M6 6h15l-1.5 9h-12z" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="10" cy="19" r="1" fill="white"/>
+            <circle cx="17" cy="19" r="1" fill="white"/>
+          </svg>
           플랜 구매/변경
         </a>
       </div>
@@ -96,11 +207,16 @@
       <div class="section-title">계정 관리</div>
       <div class="flex flex-col gap-3">
         <button onclick="doLogout()" class="text-left text-sm text-gray-600 hover:text-gray-900 py-2 flex items-center gap-2">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke="#6b7280" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke="#6b7280" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
           로그아웃
         </button>
+
         <button onclick="confirmWithdraw()" class="text-left text-sm text-red-500 hover:text-red-600 py-2 flex items-center gap-2">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
           회원 탈퇴
         </button>
       </div>
@@ -110,20 +226,24 @@
 
 <div id="toast" class="toast"></div>
 
-<style>@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }</style>
-
 <script>
   async function loadProfile() {
     try {
       const res = await fetch('/api/auth/me', { credentials: 'include' });
-      if (res.status === 401) { window.location.href = '/login'; return; }
+      if (res.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
+
       const data = await res.json();
       const u = data.result || {};
-      document.getElementById('userEmail').textContent    = u.email || '—';
-      document.getElementById('userName').textContent     = u.userName || '—';
+
+      document.getElementById('userEmail').textContent = u.email || '—';
+      document.getElementById('userName').textContent = u.userName || '—';
       document.getElementById('userProvider').textContent = u.loginType || '이메일';
+
       document.getElementById('accountSkeleton').style.display = 'none';
-      document.getElementById('accountInfo').style.display     = 'block';
+      document.getElementById('accountInfo').style.display = 'block';
     } catch {
       document.getElementById('accountSkeleton').style.display = 'none';
     }
@@ -131,29 +251,42 @@
 
   async function loadPlan() {
     try {
-      // plan API가 없는 경우 gracefully handle
       document.getElementById('planName').textContent = '플랜 정보 없음';
     } catch {}
   }
 
   async function doLogout() {
-    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-    window.location.href = '/login';
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    } finally {
+      window.location.href = '/login';
+    }
   }
 
   async function confirmWithdraw() {
     if (!confirm('정말 탈퇴하시겠습니까? 모든 데이터가 삭제됩니다.')) return;
+
     try {
-      const res = await fetch('/api/auth/withdraw', { method: 'DELETE', credentials: 'include' });
-      if (res.ok) { window.location.href = '/'; }
-      else { showToast('탈퇴에 실패했습니다.'); }
-    } catch { showToast('서버와 연결할 수 없습니다.'); }
+      const res = await fetch('/api/auth/withdraw', {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (res.ok) {
+        window.location.href = '/';
+      } else {
+        showToast('탈퇴에 실패했습니다.');
+      }
+    } catch {
+      showToast('서버와 연결할 수 없습니다.');
+    }
   }
 
   let toastTimer;
   function showToast(msg) {
     const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
+    t.textContent = msg;
+    t.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
   }
