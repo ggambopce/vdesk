@@ -1,291 +1,349 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>소개 — Vdesk</title>
+  <title>소개 — 브이데스크</title>
+  <meta name="description" content="브이데스크는 Windows, Mac, Android에서 리소스 걱정 없이 24시간 원격으로 내 컴퓨터를 제어할 수 있는 서비스입니다."/>
+
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+  <!-- 공통 CSS -->
+  <link rel="stylesheet" th:href="@{/assets/css/common.css}" href="/assets/css/common.css"/>
+
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; background: #fff; color: #111;  }
-    a { text-decoration: none; color: inherit; }
+/* =====================================================
+   히어로 배너 (intro-animate)
+===================================================== */
+.intro-animate {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+}
+.intro-animate.animate-in { opacity: 1; transform: translateY(0); }
+.intro-animate.delay-1 { transition-delay: 0.15s; }
+.intro-animate.delay-2 { transition-delay: 0.3s; }
+.intro-animate.delay-3 { transition-delay: 0.45s; }
 
-    /* Page banner */
-    .page-banner {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      color: #fff; text-align: center; padding: 5rem 1.5rem;
-      position: relative; overflow: hidden;
-    }
-    .page-banner::before {
-      content: ''; position: absolute; inset: 0;
-      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ef4444' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    }
-    .page-banner h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 1rem; position: relative; }
-    .page-banner p { font-size: 1.05rem; color: rgba(255,255,255,0.7); position: relative; }
+/* =====================================================
+   페이지 타이틀 배너
+===================================================== */
+.intro_container {
+  width: 100%;
+}
 
-    .section { padding: 5rem 1.5rem; }
-    .section-inner { max-width: 1200px; margin: 0 auto; }
+.intro_title {
+  background: #212121;
+  padding: 80px 0;
+  text-align: center;
+}
 
-    /* What is section */
-    .what-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
-    .what-label { font-size: 0.8rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; }
-    .what-title { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; line-height: 1.3; margin-bottom: 1rem; }
-    .what-title span { color: #ef4444; }
-    .what-desc { font-size: 0.95rem; color: #6b7280; line-height: 1.9; }
+.intro_title h1 {
+  font-size: 48px;
+  line-height: 64px;
+  font-weight: 700;
+  color: #fff;
+}
 
-    /* Icon ring diagram */
-    .icon-ring {
-      position: relative; width: 320px; height: 320px; margin: 0 auto;
-    }
-    .ring-center {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 90px; height: 90px; background: #fff; border-radius: 20px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
-    }
-    .ring-item {
-      position: absolute; width: 52px; height: 52px;
-      background: #fff; border-radius: 14px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-      display: flex; align-items: center; justify-content: center;
-      border: 1.5px solid #fef2f2;
-    }
+/* =====================================================
+   소개 섹션 레이아웃
+===================================================== */
+.section__intro {
+  padding: 120px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
 
-    /* Features rows */
-    .feat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; padding: 4rem 0; border-top: 1px solid #f3f4f6; }
-    .feat-row.reverse { direction: rtl; }
-    .feat-row.reverse > * { direction: ltr; }
-    .feat-num { font-size: 4rem; font-weight: 800; color: #fef2f2; line-height: 1; margin-bottom: 0.5rem; }
-    .feat-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.75rem; }
-    .feat-desc { font-size: 0.95rem; color: #6b7280; line-height: 1.8; }
-    .feat-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.25rem; }
-    .feat-tag {
-      padding: 0.3rem 0.75rem; background: #fef2f2; color: #ef4444;
-      border-radius: 999px; font-size: 0.8rem; font-weight: 600;
-    }
-    .feat-visual {
-      background: linear-gradient(135deg, #f8f9fa, #fef2f2);
-      border-radius: 20px; aspect-ratio: 4/3;
-      display: flex; align-items: center; justify-content: center;
-      border: 1.5px solid #f0f0f0;
-    }
+/* 상단 텍스트 타이틀 */
+.section__intro_title {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
 
-    /* OS support */
-    .os-section { background: #fafafa; }
-    .os-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 3rem; }
-    .os-card {
-      background: #fff; border: 1.5px solid #f0f0f0; border-radius: 16px;
-      padding: 2rem 1.5rem; text-align: center;
-      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
-    }
-    .os-card:hover { border-color: #fca5a5; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(239,68,68,0.08); }
-    .os-icon { width: 56px; height: 56px; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; background: #f9fafb; border-radius: 14px; }
-    .os-name { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
-    .os-desc { font-size: 0.82rem; color: #9ca3af; }
+.section__intro_top {
+  display: flex;
+  align-items: center;
+  gap: 80px;
+}
 
-    /* CTA */
-    .cta-strip { background: #ef4444; padding: 4rem 1.5rem; text-align: center; }
-    .cta-strip h2 { font-size: 1.8rem; font-weight: 800; color: #fff; margin-bottom: 0.75rem; }
-    .cta-strip p { color: rgba(255,255,255,0.8); margin-bottom: 1.75rem; }
-    .cta-btn-white {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 0.85rem 2rem; background: #fff; color: #ef4444;
-      border-radius: 10px; font-weight: 700; font-size: 0.95rem;
-      transition: transform 0.15s;
-    }
-    .cta-btn-white:hover { transform: translateY(-2px); }
+.section__title__main {
+  flex: 1;
+}
 
-    @media (max-width: 900px) {
-      .what-grid { grid-template-columns: 1fr; }
-      .feat-row { grid-template-columns: 1fr; }
-      .feat-row.reverse { direction: ltr; }
-      .os-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 640px) { .os-grid { grid-template-columns: repeat(2, 1fr); } }
+.section__title__main_content {
+  font-size: 48px;
+  line-height: 64px;
+  font-weight: 700;
+  color: #111;
+  word-break: keep-all;
+}
+
+.section__title__main_content .main-color {
+  color: var(--red);
+}
+
+.section__title__desc {
+  font-size: 18px;
+  line-height: 32px;
+  color: #666;
+  word-break: keep-all;
+}
+
+/* 그래픽 이미지 */
+.intro__graphic {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.intro__graphic img {
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  border-radius: 20px;
+}
+
+/* =====================================================
+   피처 리스트
+===================================================== */
+.intro__list {
+  width: 100%;
+}
+
+.intro__feature_list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px 60px;
+}
+
+.intro__feature_item {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.feature_icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.feature_content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.feature_content h3 {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 600;
+  color: #111;
+}
+
+.feature_content p {
+  font-size: 15px;
+  line-height: 24px;
+  color: #666;
+  word-break: keep-all;
+}
+
+/* =====================================================
+   반응형
+===================================================== */
+@media (max-width: 1024px) {
+  .intro_title h1 { font-size: 36px; line-height: 48px; }
+  .section__intro { padding: 80px 0; gap: 60px; }
+  .section__intro_top { flex-direction: column; gap: 40px; }
+  .intro__graphic { justify-content: center; }
+  .section__title__main_content { font-size: 36px; line-height: 48px; }
+  .intro__feature_list { grid-template-columns: repeat(2, 1fr); gap: 40px; }
+}
+
+@media (max-width: 768px) {
+  .intro_title { padding: 60px 0; }
+  .intro_title h1 { font-size: 28px; line-height: 40px; }
+  .section__intro { padding: 60px 0; gap: 48px; }
+  .section__title__main_content { font-size: 28px; line-height: 40px; }
+  .section__title__desc { font-size: 15px; line-height: 26px; }
+  .intro__feature_list { grid-template-columns: 1fr; gap: 32px; }
+  .intro__feature_item { flex-direction: row; align-items: flex-start; }
+  .feature_icon { flex-shrink: 0; }
+}
   </style>
 </head>
 <body>
 
-<div th:replace="~{fragments/header :: header('intro')}"></div>
+<th:block th:replace="~{fragments/header :: header('intro')}"/>
 
-<!-- Banner -->
-<div class="page-banner">
-  <h1>브이데스크 소개</h1>
-  <p>브이데스크는 어떤 서비스인가요?</p>
-</div>
+<div class="intro_container">
 
-<!-- What is Vdesk -->
-<section class="section">
-  <div class="section-inner">
-    <div class="what-grid">
-      <div>
-        <div class="what-label">About Vdesk</div>
-        <h2 class="what-title">브이데스크는<br/><span>어떤 서비스</span>일까요?</h2>
-        <p class="what-desc">
-          브이데스크는 Windows, Mac은 물론 Android, iOS에서도 리소스 걱정 없이 24시간 내내 사용할 수 있는 최고의 원격제어 서비스입니다.<br/><br/>
-          복잡한 설정 없이 접속키 하나로 즉시 연결되며, 군사급 보안 기술로 모든 통신이 암호화됩니다. 언제 어디서나 내 PC를 내 손안에.
-        </p>
+  <!-- ── 페이지 타이틀 배너 ── -->
+  <div class="intro_title">
+    <h1 class="intro-animate">브이데스크 소개</h1>
+  </div>
+
+  <!-- ── 메인 소개 섹션 ── -->
+  <section class="section__intro container1">
+
+    <!-- 상단: 텍스트 + 그래픽 -->
+    <div class="section__intro_title intro-animate">
+      <div class="section__intro_top">
+        <div class="section__title__main">
+          <h2 class="section__title__main_content">
+            브이데스크는<br>
+            <span class="main-color">어떤 서비스</span>일까요?
+          </h2>
+        </div>
+        <div class="intro__graphic">
+          <img th:src="@{/assets/images/graphic.png}" src="/assets/images/graphic.png"
+               alt="브이데스크 그래픽" loading="lazy"/>
+        </div>
       </div>
-      <!-- Icon ring diagram -->
-      <div>
-        <div class="icon-ring">
-          <!-- Center logo -->
-          <div class="ring-center">
-            <svg width="32" height="32" viewBox="0 0 28 28" fill="none">
-              <rect width="28" height="28" rx="7" fill="#ef4444"/>
-              <path d="M7 9h14M7 14h10M7 19h6" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+      <p class="section__title__desc">
+        브이데스크는 Windows, Mac은 물론 Android, IOS에서도<br>
+        리소스 걱정 없이 24시간 내내 사용할 수 있는 최고의 원격 제어 서비스입니다.
+      </p>
+    </div>
+
+    <!-- 피처 리스트 -->
+    <div class="intro__list intro-animate delay-1">
+      <ul class="intro__feature_list">
+
+        <li class="intro__feature_item">
+          <div class="feature_icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34" fill="none">
+              <path d="M16.9987 33.6667C14.6931 33.6667 12.5265 33.2292 10.4987 32.3542C8.47092 31.4792 6.70703 30.2917 5.20703 28.7917C3.70703 27.2917 2.51953 25.5278 1.64453 23.5C0.769531 21.4722 0.332031 19.3056 0.332031 17C0.332031 14.6944 0.769531 12.5278 1.64453 10.5C2.51953 8.47222 3.70703 6.70833 5.20703 5.20833C6.70703 3.70833 8.47092 2.52083 10.4987 1.64583C12.5265 0.770834 14.6931 0.333334 16.9987 0.333334C17.5543 0.333334 18.1098 0.368056 18.6654 0.437501C19.2209 0.506945 19.7765 0.569445 20.332 0.625001V4.04167C19.7765 3.98611 19.2209 3.92361 18.6654 3.85417C18.1098 3.78472 17.5543 3.75 16.9987 3.75C16.2765 4.75 15.6515 5.79861 15.1237 6.89583C14.5959 7.99306 14.1654 9.13889 13.832 10.3333H18.6654V13.6667H13.082C12.9987 14.2222 12.9362 14.7778 12.8945 15.3333C12.8529 15.8889 12.832 16.4444 12.832 17C12.832 17.5556 12.8529 18.1111 12.8945 18.6667C12.9362 19.2222 12.9987 19.7778 13.082 20.3333H20.9154C20.9987 19.7778 21.0612 19.2222 21.1029 18.6667C21.1445 18.1111 21.1654 17.5556 21.1654 17C21.1654 16.4444 21.1445 15.8889 21.1029 15.3333C21.0612 14.7778 20.9987 14.2222 20.9154 13.6667H24.2487C24.332 14.2222 24.3945 14.7778 24.4362 15.3333C24.4779 15.8889 24.4987 16.4444 24.4987 17C24.4987 17.5556 24.4779 18.1111 24.4362 18.6667C24.3945 19.2222 24.332 19.7778 24.2487 20.3333H29.9154C30.0543 19.7778 30.1584 19.2222 30.2279 18.6667C30.2973 18.1111 30.332 17.5556 30.332 17C30.332 16.4444 30.2973 15.8889 30.2279 15.3333C30.1584 14.7778 30.0543 14.2222 29.9154 13.6667H33.332C33.4431 14.2222 33.5265 14.7778 33.582 15.3333C33.6376 15.8889 33.6654 16.4444 33.6654 17C33.6654 19.3056 33.2279 21.4722 32.3529 23.5C31.4779 25.5278 30.2904 27.2917 28.7904 28.7917C27.2904 30.2917 25.5265 31.4792 23.4987 32.3542C21.4709 33.2292 19.3043 33.6667 16.9987 33.6667ZM4.08203 20.3333H9.7487C9.66536 19.7778 9.60286 19.2222 9.5612 18.6667C9.51953 18.1111 9.4987 17.5556 9.4987 17C9.4987 16.4444 9.51953 15.8889 9.5612 15.3333C9.60286 14.7778 9.66536 14.2222 9.7487 13.6667H4.08203C3.94314 14.2222 3.83898 14.7778 3.76953 15.3333C3.70009 15.8889 3.66536 16.4444 3.66536 17C3.66536 17.5556 3.70009 18.1111 3.76953 18.6667C3.83898 19.2222 3.94314 19.7778 4.08203 20.3333ZM12.6654 29.5833C12.1654 28.6389 11.7279 27.6736 11.3529 26.6875C10.9779 25.7014 10.6654 24.6944 10.4154 23.6667H5.4987C6.30425 25.0833 7.31814 26.2986 8.54036 27.3125C9.76259 28.3264 11.1376 29.0833 12.6654 29.5833ZM5.4987 10.3333H10.4154C10.6654 9.30556 10.9779 8.29861 11.3529 7.3125C11.7279 6.32639 12.1654 5.36111 12.6654 4.41667C11.1376 4.91667 9.76259 5.67361 8.54036 6.6875C7.31814 7.70139 6.30425 8.91667 5.4987 10.3333ZM16.9987 30.25C17.7209 29.25 18.3459 28.2014 18.8737 27.1042C19.4015 26.0069 19.832 24.8611 20.1654 23.6667H13.832C14.1654 24.8611 14.5959 26.0069 15.1237 27.1042C15.6515 28.2014 16.2765 29.25 16.9987 30.25ZM21.332 29.5833C22.8598 29.0833 24.2348 28.3264 25.457 27.3125C26.6793 26.2986 27.6931 25.0833 28.4987 23.6667H23.582C23.332 24.6944 23.0195 25.7014 22.6445 26.6875C22.2695 27.6736 21.832 28.6389 21.332 29.5833ZM23.6654 10.3333V0.333334H33.6654V10.3333H23.6654ZM28.6654 5.33333H31.9987V2H28.6654V5.33333Z" fill="#F44336"/>
             </svg>
-            <span style="font-size:0.7rem;font-weight:700;color:#111;">Vdesk</span>
           </div>
-          <!-- Ring items positioned around center -->
-          <div class="ring-item" style="top:0;left:50%;transform:translateX(-50%);">
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke="#ef4444" stroke-width="1.8"/></svg>
+          <div class="feature_content">
+            <h3>무료 공인IP 부여</h3>
+            <p>개별적인 공인 IP를 무료로 부여하여<br>독립적인 인터넷 컴퓨팅 환경을 제공해 드립니다.</p>
           </div>
-          <div class="ring-item" style="top:15%;right:5%;">
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" stroke="#ef4444" stroke-width="1.8"/><path d="M8 21h8M12 17v4" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round"/></svg>
-          </div>
-          <div class="ring-item" style="top:50%;right:-8%;transform:translateY(-50%);">
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" stroke="#ef4444" stroke-width="1.8"/></svg>
-          </div>
-          <div class="ring-item" style="bottom:10%;right:10%;">
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div class="ring-item" style="bottom:0;left:50%;transform:translateX(-50%);">
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div class="ring-item" style="bottom:10%;left:10%;">
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" stroke="#ef4444" stroke-width="1.8"/></svg>
-          </div>
-          <div class="ring-item" style="top:50%;left:-8%;transform:translateY(-50%);">
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#ef4444" stroke-width="1.8"/><path d="M12 8v4l3 3" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round"/></svg>
-          </div>
-          <div class="ring-item" style="top:15%;left:5%;">
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <!-- Decorative ring -->
-          <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.12;" viewBox="0 0 320 320">
-            <circle cx="160" cy="160" r="130" fill="none" stroke="#ef4444" stroke-width="1" stroke-dasharray="6 4"/>
-          </svg>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+        </li>
 
-<!-- Feature rows -->
-<section class="section" style="background:#fafafa;">
-  <div class="section-inner">
+        <li class="intro__feature_item">
+          <div class="feature_icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="31" height="34" viewBox="0 0 31 34" fill="none">
+              <path d="M22.3346 25.3328C23.0291 25.3328 23.6194 25.0898 24.1055 24.6036C24.5916 24.1175 24.8346 23.5273 24.8346 22.8328C24.8346 22.1384 24.5916 21.5481 24.1055 21.062C23.6194 20.5759 23.0291 20.3328 22.3346 20.3328C21.6402 20.3328 21.0499 20.5759 20.5638 21.062C20.0777 21.5481 19.8346 22.1384 19.8346 22.8328C19.8346 23.5273 20.0777 24.1175 20.5638 24.6036C21.0499 25.0898 21.6402 25.3328 22.3346 25.3328ZM22.3346 30.3328C23.1957 30.3328 23.9874 30.1314 24.7096 29.7286C25.4319 29.3259 26.0152 28.7911 26.4596 28.1245C25.8485 27.7634 25.1957 27.4856 24.5013 27.2911C23.8069 27.0967 23.0846 26.9995 22.3346 26.9995C21.5846 26.9995 20.8624 27.0967 20.168 27.2911C19.4735 27.4856 18.8207 27.7634 18.2096 28.1245C18.6541 28.7911 19.2374 29.3259 19.9596 29.7286C20.6819 30.1314 21.4735 30.3328 22.3346 30.3328ZM14.0013 33.6661C10.1402 32.6939 6.95269 30.4786 4.4388 27.0203C1.92491 23.562 0.667969 19.7217 0.667969 15.4995V5.33281L14.0013 0.332813L27.3346 5.33281V14.7911C26.8069 14.5689 26.2652 14.3675 25.7096 14.187C25.1541 14.0064 24.5846 13.8745 24.0013 13.7911V7.66615L14.0013 3.91615L4.0013 7.66615V15.4995C4.0013 16.805 4.17491 18.1106 4.52214 19.4161C4.86936 20.7217 5.35547 21.9648 5.98047 23.1453C6.60547 24.3259 7.36241 25.4161 8.2513 26.4161C9.14019 27.4161 10.1263 28.2495 11.2096 28.9161C11.5152 29.805 11.918 30.6523 12.418 31.4578C12.918 32.2634 13.4874 32.9856 14.1263 33.6245C14.0985 33.6245 14.0777 33.6314 14.0638 33.6453C14.0499 33.6592 14.0291 33.6661 14.0013 33.6661ZM22.3346 33.6661C20.0291 33.6661 18.0638 32.8536 16.4388 31.2286C14.8138 29.6036 14.0013 27.6384 14.0013 25.3328C14.0013 23.0273 14.8138 21.062 16.4388 19.437C18.0638 17.812 20.0291 16.9995 22.3346 16.9995C24.6402 16.9995 26.6055 17.812 28.2305 19.437C29.8555 21.062 30.668 23.0273 30.668 25.3328C30.668 27.6384 29.8555 29.6036 28.2305 31.2286C26.6055 32.8536 24.6402 33.6661 22.3346 33.6661Z" fill="#F44336"/>
+            </svg>
+          </div>
+          <div class="feature_content">
+            <h3>독립적인 인터넷 환경 제공</h3>
+            <p>완전히 독립적인 제공 방식으로 개인의 프라이버시 및<br>해킹이나 기타 사생활을 완벽히 보장해 드립니다.</p>
+          </div>
+        </li>
 
-    <div class="feat-row">
-      <div>
-        <div class="feat-num">01</div>
-        <div class="feat-title">어디서나 내 PC에 즉시 접속</div>
-        <p class="feat-desc">사무실 밖에 있어도, 해외에 있어도 인터넷만 있으면 즉시 내 PC에 접속할 수 있습니다. 복잡한 VPN 설정 없이 접속키 하나로 연결됩니다.</p>
-        <div class="feat-tags">
-          <span class="feat-tag">즉시 연결</span>
-          <span class="feat-tag">접속키 방식</span>
-          <span class="feat-tag">글로벌 지원</span>
-        </div>
-      </div>
-      <div class="feat-visual">
-        <svg width="80" height="80" fill="none" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="10" stroke="#ef4444" stroke-width="1.2"/>
-          <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" stroke="#ef4444" stroke-width="1.2"/>
-        </svg>
-      </div>
-    </div>
+        <li class="intro__feature_item">
+          <div class="feature_icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="34" height="30" viewBox="0 0 34 30" fill="none">
+              <path d="M6.9987 30V26.6667L8.66536 25H3.66536C2.7487 25 1.96398 24.6736 1.3112 24.0208C0.65842 23.3681 0.332031 22.5833 0.332031 21.6667V3.33333C0.332031 2.41667 0.65842 1.63194 1.3112 0.979167C1.96398 0.326389 2.7487 0 3.66536 0H16.9987V3.33333H3.66536V21.6667H30.332V16.6667H33.6654V21.6667C33.6654 22.5833 33.339 23.3681 32.6862 24.0208C32.0334 24.6736 31.2487 25 30.332 25H25.332L26.9987 26.6667V30H6.9987ZM21.9987 20L13.6654 11.6667L15.9987 9.33333L20.332 13.625V0H23.6654V13.625L27.9987 9.33333L30.332 11.6667L21.9987 20Z" fill="#F44336"/>
+            </svg>
+          </div>
+          <div class="feature_content">
+            <h3>어떤 프로그램이든 설치 가능</h3>
+            <p>접속자의 환경에 지장없이<br>어떤 소프트웨어도 설치 가능합니다.</p>
+          </div>
+        </li>
 
-    <div class="feat-row reverse">
-      <div>
-        <div class="feat-num">02</div>
-        <div class="feat-title">최대 26대 동시 관리</div>
-        <p class="feat-desc">단 하나의 계정으로 최대 26대의 PC를 한 화면에서 통합 관리하세요. 다중 모니터처럼 각 PC의 화면을 실시간으로 확인하고 전환할 수 있습니다.</p>
-        <div class="feat-tags">
-          <span class="feat-tag">최대 26대</span>
-          <span class="feat-tag">통합 관리</span>
-          <span class="feat-tag">실시간 모니터링</span>
-        </div>
-      </div>
-      <div class="feat-visual">
-        <svg width="80" height="80" fill="none" viewBox="0 0 24 24">
-          <path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" stroke="#ef4444" stroke-width="1.2"/>
-        </svg>
-      </div>
-    </div>
+        <li class="intro__feature_item">
+          <div class="feature_icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="38" height="34" viewBox="0 0 38 34" fill="none">
+              <path d="M20.8346 33.6667C20.6402 33.6667 20.4457 33.6458 20.2513 33.6042C20.0569 33.5625 19.8624 33.5139 19.668 33.4583L9.54297 29.7083C8.8763 29.4583 8.34852 29.0486 7.95964 28.4792C7.57075 27.9097 7.3763 27.2917 7.3763 26.625C7.3763 26.4861 7.44575 26.0972 7.58464 25.4583L11.793 13.6667H9.33464L13.7513 7.04166C13.8902 6.875 13.9388 6.69444 13.8971 6.49999C13.8555 6.30555 13.7652 6.13888 13.6263 5.99999L13.043 5.41666L4.58464 12.75C4.11241 13.1389 3.75825 13.6042 3.52214 14.1458C3.28602 14.6875 3.16797 15.2639 3.16797 15.875V26.1667H0.667969V15.875C0.667969 14.9028 0.869358 13.9792 1.27214 13.1042C1.67491 12.2292 2.23741 11.4722 2.95964 10.8333L13.168 1.99999L15.2096 4.04166L15.7513 2.54166C16.0013 1.87499 16.411 1.34027 16.9805 0.937495C17.5499 0.534717 18.1819 0.333328 18.8763 0.333328C19.0985 0.333328 19.2999 0.347217 19.4805 0.374995C19.661 0.402773 19.8624 0.458328 20.0846 0.541662L30.2096 4.29166C30.8763 4.54166 31.4041 4.95833 31.793 5.54166C32.1819 6.12499 32.3763 6.74999 32.3763 7.41666C32.3763 7.58333 32.3069 7.95833 32.168 8.54166L31.2096 11.2083C32.0152 11.3472 32.6819 11.7222 33.2096 12.3333C33.7374 12.9444 34.0013 13.6667 34.0013 14.5C34.0013 14.6389 33.9944 14.7778 33.9805 14.9167C33.9666 15.0556 33.9319 15.1944 33.8763 15.3333H34.0013C34.918 15.3333 35.7027 15.6597 36.3555 16.3125C37.0083 16.9653 37.3346 17.75 37.3346 18.6667C37.3346 19.3333 37.161 19.9306 36.8138 20.4583C36.4666 20.9861 36.0152 21.3889 35.4596 21.6667C35.5152 21.8611 35.5638 22.0486 35.6055 22.2292C35.6471 22.4097 35.668 22.6111 35.668 22.8333C35.668 23.75 35.3416 24.5347 34.6888 25.1875C34.036 25.8403 33.2513 26.1667 32.3346 26.1667H32.2096C32.2652 26.3055 32.2999 26.4444 32.3138 26.5833C32.3277 26.7222 32.3346 26.8611 32.3346 27C32.3346 27.9167 32.0082 28.7014 31.3555 29.3542C30.7027 30.0069 29.918 30.3333 29.0013 30.3333H24.3763L24.0013 31.4583C23.7791 32.1528 23.3694 32.6944 22.7721 33.0833C22.1749 33.4722 21.5291 33.6667 20.8346 33.6667ZM21.918 27.2917L27.918 10.5L17.793 6.75L11.793 23.5417L21.918 27.2917ZM25.2513 27.8333H29.0013C29.2235 27.8333 29.418 27.75 29.5846 27.5833C29.7513 27.4167 29.8346 27.2222 29.8346 27C29.8346 26.7778 29.7513 26.5833 29.5846 26.4167C29.418 26.25 29.2235 26.1667 29.0013 26.1667H25.8763L25.2513 27.8333ZM26.7513 23.6667H32.3346C32.5569 23.6667 32.7513 23.5833 32.918 23.4167C33.0846 23.25 33.168 23.0556 33.168 22.8333C33.168 22.6111 33.0846 22.4167 32.918 22.25C32.7513 22.0833 32.5569 22 32.3346 22H27.3763L26.7513 23.6667ZM28.2513 19.5H34.0013C34.2235 19.5 34.418 19.4167 34.5846 19.25C34.7513 19.0833 34.8346 18.8889 34.8346 18.6667C34.8346 18.4444 34.7513 18.25 34.5846 18.0833C34.418 17.9167 34.2235 17.8333 34.0013 17.8333H28.8346L28.2513 19.5ZM29.7513 15.3333H30.668C30.8902 15.3333 31.0846 15.25 31.2513 15.0833C31.418 14.9167 31.5013 14.7222 31.5013 14.5C31.5013 14.2778 31.418 14.0833 31.2513 13.9167C31.0846 13.75 30.8902 13.6667 30.668 13.6667H30.3346L29.7513 15.3333Z" fill="#F44336"/>
+            </svg>
+          </div>
+          <div class="feature_content">
+            <h3>모바일, PC 어디서나 제어 가능</h3>
+            <p>어떤 환경에서 접속하더라도<br>제한 없는 매끄러운 접속 및 사용이 가능합니다.</p>
+          </div>
+        </li>
 
-    <div class="feat-row">
-      <div>
-        <div class="feat-num">03</div>
-        <div class="feat-title">군사급 보안 연결</div>
-        <p class="feat-desc">AES-256 암호화와 SSL/TLS 프로토콜로 모든 원격 세션을 보호합니다. 누군가 중간에 패킷을 가로채더라도 내용을 해독할 수 없습니다.</p>
-        <div class="feat-tags">
-          <span class="feat-tag">AES-256</span>
-          <span class="feat-tag">SSL/TLS</span>
-          <span class="feat-tag">종단간 암호화</span>
-        </div>
-      </div>
-      <div class="feat-visual">
-        <svg width="80" height="80" fill="none" viewBox="0 0 24 24">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#ef4444" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M9 12l2 2 4-4" stroke="#ef4444" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
+        <li class="intro__feature_item">
+          <div class="feature_icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="34" viewBox="0 0 36 34" fill="none">
+              <path d="M0.332031 23.6667V3.66668C0.332031 2.75001 0.65842 1.96529 1.3112 1.31251C1.96398 0.659732 2.7487 0.333344 3.66536 0.333344H26.9987V3.66668H3.66536V23.6667H0.332031ZM15.332 33.6667V30.3333H10.332C9.41536 30.3333 8.63064 30.007 7.97786 29.3542C7.32509 28.7014 6.9987 27.9167 6.9987 27V10.3333C6.9987 9.41668 7.32509 8.63195 7.97786 7.97918C8.63064 7.3264 9.41536 7.00001 10.332 7.00001H31.9987C32.9154 7.00001 33.7001 7.3264 34.3529 7.97918C35.0056 8.63195 35.332 9.41668 35.332 10.3333V27C35.332 27.9167 35.0056 28.7014 34.3529 29.3542C33.7001 30.007 32.9154 30.3333 31.9987 30.3333H26.9987V33.6667H15.332ZM10.332 27H31.9987V10.3333H10.332V27Z" fill="#F44336"/>
+            </svg>
+          </div>
+          <div class="feature_content">
+            <h3>수십대의 PC 컨트롤</h3>
+            <p>원격으로 수십 대의 컴퓨터를 관리해야 하는<br>분들에게 최적의 업무환경을 제공합니다.</p>
+          </div>
+        </li>
+
+        <li class="intro__feature_item">
+          <div class="feature_icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="38" height="28" viewBox="0 0 38 28" fill="none">
+              <path d="M22.3346 15.6667C20.9457 15.6667 19.7652 15.1805 18.793 14.2083C17.8207 13.2361 17.3346 12.0555 17.3346 10.6667C17.3346 9.27777 17.8207 8.09721 18.793 7.12499C19.7652 6.15277 20.9457 5.66666 22.3346 5.66666C23.7235 5.66666 24.9041 6.15277 25.8763 7.12499C26.8485 8.09721 27.3346 9.27777 27.3346 10.6667C27.3346 12.0555 26.8485 13.2361 25.8763 14.2083C24.9041 15.1805 23.7235 15.6667 22.3346 15.6667ZM10.668 20.6667C9.7513 20.6667 8.96658 20.3403 8.3138 19.6875C7.66102 19.0347 7.33464 18.25 7.33464 17.3333V3.99999C7.33464 3.08332 7.66102 2.2986 8.3138 1.64582C8.96658 0.993045 9.7513 0.666656 10.668 0.666656H34.0013C34.918 0.666656 35.7027 0.993045 36.3555 1.64582C37.0083 2.2986 37.3346 3.08332 37.3346 3.99999V17.3333C37.3346 18.25 37.0083 19.0347 36.3555 19.6875C35.7027 20.3403 34.918 20.6667 34.0013 20.6667H10.668ZM14.0013 17.3333H30.668C30.668 16.4167 30.9944 15.6319 31.6471 14.9792C32.2999 14.3264 33.0846 14 34.0013 14V7.33332C33.0846 7.33332 32.2999 7.00693 31.6471 6.35416C30.9944 5.70138 30.668 4.91666 30.668 3.99999H14.0013C14.0013 4.91666 13.6749 5.70138 13.0221 6.35416C12.3694 7.00693 11.5846 7.33332 10.668 7.33332V14C11.5846 14 12.3694 14.3264 13.0221 14.9792C13.6749 15.6319 14.0013 16.4167 14.0013 17.3333ZM32.3346 27.3333H4.0013C3.08464 27.3333 2.29991 27.0069 1.64714 26.3542C0.994358 25.7014 0.667969 24.9167 0.667969 24V5.66666H4.0013V24H32.3346V27.3333Z" fill="#F44336"/>
+            </svg>
+          </div>
+          <div class="feature_content">
+            <h3>비용 걱정 없는 컴퓨팅</h3>
+            <p>전기세, 회선비 등 비용 걱정 없이<br>24시간 원격 컴퓨팅 환경을 제공합니다.</p>
+          </div>
+        </li>
+
+        <li class="intro__feature_item">
+          <div class="feature_icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" viewBox="0 0 37 37" fill="none">
+              <path d="M13.082 32.2083C10.1931 30.875 7.84592 28.8611 6.04036 26.1667C4.23481 23.4722 3.33203 20.4306 3.33203 17.0417C3.33203 16.3195 3.36675 15.6111 3.4362 14.9167C3.50564 14.2222 3.6237 13.5417 3.79036 12.875L1.8737 14L0.207031 11.125L8.16536 6.54168L12.7487 14.4583L9.83203 16.125L7.58203 12.2083C7.27648 12.9583 7.04731 13.7361 6.89453 14.5417C6.74175 15.3472 6.66536 16.1806 6.66536 17.0417C6.66536 19.7361 7.40148 22.1875 8.8737 24.3958C10.3459 26.6042 12.3043 28.2361 14.7487 29.2917L13.082 32.2083ZM25.832 12V8.66668H30.3737C29.0959 7.08334 27.5543 5.85418 25.7487 4.97918C23.9431 4.10418 22.0265 3.66668 19.9987 3.66668C18.4709 3.66668 17.0265 3.90279 15.6654 4.37501C14.3043 4.84723 13.0543 5.5139 11.9154 6.37501L10.2487 3.45834C11.6376 2.48612 13.1515 1.72223 14.7904 1.16668C16.4293 0.611121 18.1654 0.333344 19.9987 0.333344C22.1931 0.333344 24.2904 0.743066 26.2904 1.56251C28.2904 2.38195 30.082 3.56945 31.6654 5.12501V2.83334H34.9987V12H25.832ZM24.7487 37L16.7904 32.4167L21.3737 24.5L24.2487 26.1667L21.8737 30.25C25.1515 29.7778 27.8806 28.2917 30.0612 25.7917C32.2418 23.2917 33.332 20.3611 33.332 17C33.332 16.6945 33.3251 16.4097 33.3112 16.1458C33.2973 15.882 33.2626 15.6111 33.207 15.3333H36.582C36.6098 15.6111 36.6306 15.882 36.6445 16.1458C36.6584 16.4097 36.6654 16.6945 36.6654 17C36.6654 20.75 35.5473 24.1042 33.3112 27.0625C31.0751 30.0208 28.1654 32.0139 24.582 33.0417L26.4154 34.125L24.7487 37Z" fill="#F44336"/>
+            </svg>
+          </div>
+          <div class="feature_content">
+            <h3>항상 켜져있는 PC</h3>
+            <p>사용자가 접속하지 않아도 원격 PC 환경이<br>서버 상에서 계속 실행 상태를 유지합니다.</p>
+          </div>
+        </li>
+
+        <li class="intro__feature_item">
+          <div class="feature_icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="34" height="28" viewBox="0 0 34 28" fill="none">
+              <path d="M0.332031 27.3333V24H16.9987V27.3333H0.332031ZM5.33203 22.3333C4.41536 22.3333 3.63064 22.0069 2.97786 21.3542C2.32509 20.7014 1.9987 19.9167 1.9987 19V3.99999C1.9987 3.08332 2.32509 2.2986 2.97786 1.64582C3.63064 0.993045 4.41536 0.666656 5.33203 0.666656H28.6654C29.582 0.666656 30.3668 0.993045 31.0195 1.64582C31.6723 2.2986 31.9987 3.08332 31.9987 3.99999H5.33203V19H16.9987V22.3333H5.33203ZM30.332 24V10.6667H23.6654V24H30.332ZM22.832 27.3333C22.1376 27.3333 21.5473 27.0903 21.0612 26.6042C20.5751 26.118 20.332 25.5278 20.332 24.8333V9.83332C20.332 9.13888 20.5751 8.5486 21.0612 8.06249C21.5473 7.57638 22.1376 7.33332 22.832 7.33332H31.1654C31.8598 7.33332 32.4501 7.57638 32.9362 8.06249C33.4223 8.5486 33.6654 9.13888 33.6654 9.83332V24.8333C33.6654 25.5278 33.4223 26.118 32.9362 26.6042C32.4501 27.0903 31.8598 27.3333 31.1654 27.3333H22.832ZM26.9987 14.8333C27.3598 14.8333 27.6584 14.7083 27.8945 14.4583C28.1306 14.2083 28.2487 13.9167 28.2487 13.5833C28.2487 13.2222 28.1306 12.9236 27.8945 12.6875C27.6584 12.4514 27.3598 12.3333 26.9987 12.3333C26.6654 12.3333 26.3737 12.4514 26.1237 12.6875C25.8737 12.9236 25.7487 13.2222 25.7487 13.5833C25.7487 13.9167 25.8737 14.2083 26.1237 14.4583C26.3737 14.7083 26.6654 14.8333 26.9987 14.8333Z" fill="#F44336"/>
+            </svg>
+          </div>
+          <div class="feature_content">
+            <h3>OS 환경을 가리지 않는</h3>
+            <p>Window, Mac, Android 환경에서도<br>클릭 한 번으로 열리는 원격 제어 시스템입니다.</p>
+          </div>
+        </li>
+
+      </ul>
     </div>
 
-  </div>
-</section>
-
-<!-- OS Support -->
-<section class="section os-section">
-  <div class="section-inner">
-    <div style="text-align:center;margin-bottom:1rem;">
-      <div style="font-size:0.8rem;font-weight:700;color:#ef4444;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">Platform</div>
-      <h2 style="font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;">모든 플랫폼에서 사용 가능</h2>
-    </div>
-    <div class="os-grid">
-      <div class="os-card">
-        <div class="os-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="#0078d4"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
-        </div>
-        <div class="os-name">Windows</div>
-        <div class="os-desc">Windows 10/11 지원</div>
-      </div>
-      <div class="os-card">
-        <div class="os-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="#555"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-        </div>
-        <div class="os-name">macOS</div>
-        <div class="os-desc">macOS 12+ 지원</div>
-      </div>
-      <div class="os-card">
-        <div class="os-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="#3ddc84"><path d="M17.523 15.341a.23.23 0 01.195.224v1.01a.23.23 0 01-.232.228h-1.07a.23.23 0 01-.232-.228v-1.01a.23.23 0 01.232-.224h1.107zm-11.046 0a.23.23 0 01.195.224v1.01a.23.23 0 01-.232.228H5.37a.23.23 0 01-.232-.228v-1.01a.23.23 0 01.232-.224H6.477zM12 .268L14.124 4H9.876L12 .268zm0 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm6.658 2.5c.196 0 .381.07.52.196l.838.755a.638.638 0 010 .945L18.658 8.5H5.342l-1.358-2.082a.638.638 0 010-.945l.838-.755A.752.752 0 015.342 4.5h13.316zM4.5 9h15v7a2 2 0 01-2 2h-11a2 2 0 01-2-2V9z"/></svg>
-        </div>
-        <div class="os-name">Android</div>
-        <div class="os-desc">Android 9.0+ 지원</div>
-      </div>
-      <div class="os-card">
-        <div class="os-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="#555"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-        </div>
-        <div class="os-name">iOS</div>
-        <div class="os-desc">iOS 15.0+ 지원</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<div class="cta-strip">
-  <h2>지금 브이데스크를 시작하세요</h2>
-  <p>회원가입 후 즉시 사용 가능합니다.</p>
-  <a href="/signup" class="cta-btn-white">
-    무료로 시작하기
-    <svg width="16" height="16" fill="none" viewBox="0 0 20 20"><path d="M7 5l5 5-5 5" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  </a>
+  </section>
 </div>
 
-<div th:replace="~{fragments/landing-footer :: footer}"></div>
+<th:block th:replace="~{fragments/landing-footer :: footer}"/>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  /* 페이지 로드 시 배너 타이틀 즉시 등장 */
+  setTimeout(function() {
+    document.querySelector('.intro_title h1').classList.add('animate-in');
+  }, 100);
+
+  /* 스크롤 기반 .intro-animate 등장 */
+  function checkScrollAnimation() {
+    var wh = window.innerHeight;
+    var st = window.pageYOffset;
+    document.querySelectorAll('.intro-animate:not(.animate-in)').forEach(function(el) {
+      if (st + wh - 150 > el.getBoundingClientRect().top + st) {
+        el.classList.add('animate-in');
+      }
+    });
+  }
+  window.addEventListener('scroll', checkScrollAnimation, { passive: true });
+  checkScrollAnimation();
+});
+</script>
+
 </body>
 </html>

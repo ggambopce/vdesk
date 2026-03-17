@@ -5,343 +5,931 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>사용방법 — Vdesk</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/assets/css/common.css}" href="/assets/css/common.css"/>
+
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; background: #fff; color: #111;  }
-    a { text-decoration: none; color: inherit; }
+/* =====================================================
+   Reset & Base
+===================================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Noto Sans KR', sans-serif; background: #fff; color: #111; -webkit-font-smoothing: antialiased; }
+a { text-decoration: none; color: inherit; }
+img, video { display: block; max-width: 100%; }
+ul { list-style: none; }
 
-    .page-banner {
-      text-align: center; padding: 5rem 1.5rem; background: #fafafa;
-      border-bottom: 1px solid #f0f0f0;
-    }
-    .page-banner p { font-size: 0.95rem; color: #9ca3af; margin-bottom: 0.5rem; }
-    .page-banner h1 { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; }
+/* =====================================================
+   상단 배너
+===================================================== */
+.method-wrap { width: 100%; }
 
-    .section { padding: 5rem 1.5rem; }
-    .section-inner { max-width: 1200px; margin: 0 auto; }
+.image-title {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 64px 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.image-title.bg2 { background: #F9F9F9; }
 
-    /* Method tabs */
-    .method-layout { display: grid; grid-template-columns: 220px 1fr; gap: 3rem; margin-top: 3rem; }
-    .method-sidebar { display: flex; flex-direction: column; gap: 0.35rem; }
-    .method-tab {
-      padding: 0.75rem 1.1rem; border-radius: 10px; cursor: pointer;
-      font-size: 0.9rem; font-weight: 500; color: #6b7280;
-      transition: all 0.15s; text-align: left; border: none; background: none;
-      display: flex; align-items: center; gap: 0.6rem;
-    }
-    .method-tab:hover { background: #f9fafb; color: #374151; }
-    .method-tab.active { background: #ef4444; color: #fff; font-weight: 600; }
-    .method-tab .tab-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; opacity: 0.6; flex-shrink: 0; }
-    .method-content { display: none; }
-    .method-content.active { display: block; }
+.image-title h2 {
+  position: relative;
+  color: #111111;
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 56px;
+  text-align: center;
+  word-break: keep-all;
+  letter-spacing: -3px;
+  order: -1;
+}
 
-    /* Steps */
-    .step-list { display: flex; flex-direction: column; gap: 2rem; }
-    .step-item { display: flex; gap: 1.5rem; }
-    .step-num {
-      width: 40px; height: 40px; border-radius: 12px; background: #ef4444;
-      color: #fff; font-weight: 800; font-size: 1rem;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .step-body { flex: 1; }
-    .step-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.4rem; }
-    .step-desc { font-size: 0.9rem; color: #6b7280; line-height: 1.7; }
-    .step-tip {
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      margin-top: 0.75rem; padding: 0.4rem 0.75rem;
-      background: #fef2f2; border-radius: 8px;
-      font-size: 0.8rem; color: #ef4444; font-weight: 500;
-    }
+.image-title p {
+  color: #555555;
+  font-size: 20px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 40px;
+  word-break: keep-all;
+  margin-top: 10px;
+}
 
-    /* Screen mockup */
-    .screen-mock {
-      background: #1a1a2e; border-radius: 12px;
-      margin-top: 2rem; padding: 1.25rem 1.25rem 0.75rem;
-      box-shadow: 0 16px 48px rgba(0,0,0,0.2);
-    }
-    .mock-bar { display: flex; align-items: center; gap: 6px; margin-bottom: 0.75rem; }
-    .mock-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .mock-screen { background: #0f0f1a; border-radius: 8px; padding: 1.5rem; min-height: 200px; }
-    .mock-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.75rem; }
-    .mock-card {
-      background: #1e1e30; border-radius: 8px; padding: 0.75rem 0.5rem;
-      text-align: center;
-    }
-    .mock-card.sel { background: #ef4444; }
-    .mock-dot2 { width: 8px; height: 8px; border-radius: 50%; margin: 0 auto 0.4rem; background: #22c55e; }
-    .mock-dot2.off { background: #4b5563; }
-    .mock-name { font-size: 0.55rem; color: #9ca3af; white-space: nowrap; overflow: hidden; }
-    .mock-card.sel .mock-name { color: #fff; }
+/* =====================================================
+   탭 전체 레이아웃 (사이드바 + 컨텐츠)
+===================================================== */
+.sc_method_tab {
+  display: flex;
+  width: 100%;
+  padding: 60px 0 120px;
+  gap: 30px;
+}
 
-    /* FAQ / Tips */
-    .tip-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 3rem; }
-    .tip-card {
-      background: #fafafa; border: 1.5px solid #f0f0f0; border-radius: 14px;
-      padding: 1.5rem; transition: border-color 0.2s;
-    }
-    .tip-card:hover { border-color: #fca5a5; }
-    .tip-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
-    .tip-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; }
-    .tip-desc { font-size: 0.85rem; color: #6b7280; line-height: 1.7; }
+.sc_method_tab button {
+  border: none;
+  background-color: transparent;
+  font-size: 16px;
+  font-weight: 500;
+  color: #111;
+  font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer;
+}
 
-    @media (max-width: 768px) {
-      .method-layout { grid-template-columns: 1fr; }
-      .method-sidebar { flex-direction: row; flex-wrap: wrap; }
-      .tip-grid { grid-template-columns: 1fr; }
-    }
+/* =====================================================
+   사이드바 탭 메뉴
+===================================================== */
+.sc_method_tab .method_tab_menu {
+  width: 15%;
+  max-width: 180px;
+  position: relative;
+}
+
+.sc_method_tab .method_tab_menu .method_tab_menu_list {
+  position: sticky;
+  top: 150px;
+  border-radius: 10px;
+  padding: 10px;
+  background-color: #f6f7f9;
+}
+
+.method_tab_menu_list .method_tab_menu_item {
+  margin-bottom: 5px;
+}
+.method_tab_menu_list .method_tab_menu_item:last-child { margin-bottom: 0; }
+
+.method_tab_menu_list .method_tab_menu_item button {
+  width: 100%;
+  height: 100%;
+  padding: 8px 10px;
+  text-align: left;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+}
+
+.method_tab_menu_list .method_tab_menu_item.active button {
+  background-color: #ff4f2d;
+  color: #fff;
+}
+.method_tab_menu_list .method_tab_menu_item button:hover { color: #ff4f2d; }
+.method_tab_menu_list .method_tab_menu_item.active button:hover { color: #fff; }
+
+.method_tab_menu_item:nth-child(2) {
+  border-bottom: 1px solid #d9d9d9;
+  padding-bottom: 20px;
+}
+.method_tab_menu_item:nth-child(3) { margin-top: 20px; }
+
+/* =====================================================
+   탭 컨텐츠 영역
+===================================================== */
+.method_tab_content_wrap {
+  width: calc(85% - 30px);
+  position: relative;
+}
+
+.method_tab_content_wrap .method_tab_content { display: none; }
+.method_tab_content_wrap .method_tab_content.active { display: block; }
+
+/* =====================================================
+   이미지 박스
+===================================================== */
+.method_tab_content_wrap .method_tab_img_box {
+  border-radius: 10px;
+  width: 100%;
+  background-color: #f6f7f8;
+  overflow: hidden;
+  margin-bottom: 50px;
+}
+
+.method_tab_content_wrap .method_tab_img_box img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* =====================================================
+   가이드 텍스트 영역
+===================================================== */
+.method_tab_content_wrap .method_tab_content_txt {
+  padding: 0;
+  margin-bottom: 60px;
+}
+
+.method_tab_content_txt .guide_box {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.method_tab_content_txt .guide_box .guide_num {
+  width: 30px;
+  height: 30px;
+  background-color: #f44336;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.method_tab_content_txt .guide_box .guide_desc {
+  width: calc(100% - 50px);
+}
+
+.method_tab_content_txt .guide_box .guide_desc h4 {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  margin-bottom: 10px;
+}
+
+.method_tab_content_txt .guide_box .guide_desc_txt {
+  font-size: 16px;
+  color: #555;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.method_tab_content_txt .guide_box .guide_desc i {
+  position: relative;
+  top: 4px;
+  color: #555;
+}
+
+.method_tab_content_txt .guide_box .guide_desc p {
+  font-size: 16px;
+  line-height: 26px;
+  color: #555;
+  font-weight: 400;
+}
+
+.method_tab_content_txt .guide_box .guide_desc p strong { color: #f44336; }
+
+/* =====================================================
+   타이틀 박스
+===================================================== */
+.method_tab_content_txt .title_box { margin-bottom: 30px; }
+
+.method_tab_content_txt .title_box h3 {
+  font-size: 26px;
+  font-weight: 600;
+  margin: 50px 0 50px;
+}
+
+.method_tab_content_txt .title_box h4 {
+  font-size: 18px;
+  color: #111;
+  margin-bottom: 10px;
+}
+
+.method_tab_content_txt .title_box p {
+  font-size: 16px;
+  color: #555;
+}
+
+.method_tab_content_txt .title_box p i { margin-right: 5px; }
+.method_tab_content_txt .title_box p b { color: #f44336; }
+.method_tab_content_txt .title_box p strong { color: #f44336; font-weight: 600; }
+
+/* =====================================================
+   결제 방법 박스
+===================================================== */
+.method_tab_content .payment_method_box h3 {
+  font-size: 26px;
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+
+.pay_txt {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #555;
+  padding: 14px 18px;
+  background: #fff5f5;
+  border-radius: 8px;
+  border-left: 3px solid #f44336;
+  margin-top: 10px;
+}
+.pay_txt strong { color: #f44336; }
+.pay_txt b { font-weight: 700; }
+
+/* =====================================================
+   반응형 — 태블릿/모바일 (≤880px) : 상단 pill 탭
+===================================================== */
+@media screen and (max-width: 880px) {
+  .sc_method_tab {
+    display: block;
+    width: 100%;
+    padding: 30px 0 60px;
+  }
+
+  .sc_method_tab .method_tab_menu {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: sticky;
+    top: 65px;
+    z-index: 9;
+    background-color: #fff;
+    padding: 5px 0;
+  }
+
+  .sc_method_tab .method_tab_menu .method_tab_menu_list {
+    width: 100%;
+    max-width: 600px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    margin-bottom: 30px;
+    gap: 20px;
+    padding: 10px;
+    position: static;
+    box-shadow: 0 0 10px 0 rgba(0,0,0,0.1);
+  }
+
+  .method_tab_menu_list .method_tab_menu_item {
+    margin-bottom: 0 !important;
+    width: 25%;
+  }
+
+  .method_tab_menu_item:nth-child(2) {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .method_tab_menu_item:nth-child(3) { margin-top: 0; }
+
+  .method_tab_menu_list .method_tab_menu_item button {
+    border-radius: 999px;
+    text-align: center;
+  }
+
+  .method_tab_content_wrap { width: 100%; }
+}
+
+/* =====================================================
+   반응형 — 모바일 (≤767px)
+===================================================== */
+@media screen and (max-width: 767px) {
+  .image-title { padding: 30px 24px; }
+  .image-title h2 { font-size: 28px; letter-spacing: -1px; line-height: 38px; }
+  .image-title p { font-size: 15px; line-height: 24px; }
+
+  .sc_method_tab { padding: 20px 0 30px; }
+
+  .sc_method_tab .method_tab_menu .method_tab_menu_list { margin-bottom: 20px; }
+
+  .method_tab_content_wrap .method_tab_img_box { margin-bottom: 30px; }
+  .method_tab_content_wrap .method_tab_content_txt { margin-bottom: 30px; }
+
+  .method_tab_content_txt .guide_box { margin-bottom: 20px; }
+  .method_tab_content_txt .guide_box .guide_num { width: 25px; height: 25px; font-size: 16px; }
+  .method_tab_content_txt .guide_box .guide_desc { width: calc(100% - 35px); }
+  .method_tab_content_txt .guide_box .guide_desc h4 { font-size: 18px; line-height: 26px; }
+  .method_tab_content_txt .guide_box .guide_desc p { font-size: 15px; line-height: 25px; }
+  .method_tab_content_txt .title_box h3 { font-size: 22px; margin: 50px 0 30px; }
+  .method_tab_content_txt .title_box h4 { font-size: 16px; }
+  .method_tab_content_txt .title_box p { font-size: 15px; }
+  .method_tab_content .payment_method_box h3 { font-size: 22px; }
+}
+
+/* =====================================================
+   반응형 — 소형 모바일 (≤550px)
+===================================================== */
+@media screen and (max-width: 550px) {
+  .method_tab_content_txt .guide_box { gap: 10px; }
+  .method_tab_content_txt .guide_box .guide_num { width: 20px; height: 20px; font-size: 13px; margin-top: 2px; }
+  .method_tab_content_txt .guide_box .guide_desc { width: calc(100% - 30px); }
+  .sc_method_tab .method_tab_menu .method_tab_menu_list { padding: 5px; gap: 0; }
+  .method_tab_menu_list .method_tab_menu_item button { font-size: 14px; padding: 4px 5px; }
+  .method_tab_content_txt .guide_box .guide_desc h4 { font-size: 17px; line-height: 25px; }
+  .method_tab_content_txt .guide_box .guide_desc p { font-size: 15px; line-height: 25px; word-break: keep-all; }
+}
+
+@media screen and (max-width: 390px) {
+  .sc_method_tab .method_tab_menu .method_tab_menu_list { padding: 5px; }
+  .method_tab_menu_list .method_tab_menu_item button { font-size: 14px; padding: 2px 4px; }
+}
+
+@media screen and (max-width: 340px) {
+  .sc_method_tab .method_tab_menu .method_tab_menu_list { padding: 3px; }
+  .method_tab_menu_list .method_tab_menu_item button { font-size: 12px; padding: 2px 0; }
+}
   </style>
 </head>
 <body>
 
-<div th:replace="~{fragments/header :: header('method')}"></div>
+<th:block th:replace="~{fragments/header :: header('method')}"/>
 
-<div class="page-banner">
-  <p>사용환경에 따른 방법을 확인해보세요.</p>
-  <h1>사용방법</h1>
-</div>
+<div class="method-wrap">
 
-<section class="section">
-  <div class="section-inner">
-    <div class="method-layout">
-
-      <!-- Sidebar tabs -->
-      <div class="method-sidebar">
-        <button class="method-tab active" onclick="switchTab(this, 'pc')">
-          <span class="tab-dot"></span> PC 사용환경
-        </button>
-        <button class="method-tab" onclick="switchTab(this, 'mobile')">
-          <span class="tab-dot"></span> 앱 사용환경
-        </button>
-        <button class="method-tab" onclick="switchTab(this, 'file')">
-          <span class="tab-dot"></span> 파일전송 방법
-        </button>
-        <button class="method-tab" onclick="switchTab(this, 'payment')">
-          <span class="tab-dot"></span> 결제 방법
-        </button>
-      </div>
-
-      <!-- Contents -->
-      <div style="min-height:500px;">
-
-        <!-- PC -->
-        <div id="tab-pc" class="method-content active">
-          <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:0.5rem;">PC 사용환경</h2>
-          <p style="color:#6b7280;font-size:0.9rem;margin-bottom:2rem;">Windows 또는 Mac PC에서 브이데스크를 사용하는 방법입니다.</p>
-          <div class="step-list">
-            <div class="step-item">
-              <div class="step-num">1</div>
-              <div class="step-body">
-                <div class="step-title">회원가입 및 로그인</div>
-                <p class="step-desc">브이데스크 홈페이지에서 회원가입 후 로그인하세요. 구글 계정으로도 간편 로그인이 가능합니다.</p>
-              </div>
-            </div>
-            <div class="step-item">
-              <div class="step-num">2</div>
-              <div class="step-body">
-                <div class="step-title">플랜 구매</div>
-                <p class="step-desc">대시보드 상단 "구매하기" 버튼을 클릭하여 원하는 플랜을 선택하세요. 일반결제 또는 정기결제로 구독 가능합니다.</p>
-              </div>
-            </div>
-            <div class="step-item">
-              <div class="step-num">3</div>
-              <div class="step-body">
-                <div class="step-title">호스트 프로그램 설치</div>
-                <p class="step-desc">원격 제어를 당할 PC에 브이데스크 호스트 프로그램을 설치하세요. 설치 후 프로그램을 실행하면 접속키가 표시됩니다.</p>
-                <div class="step-tip">
-                  <svg width="13" height="13" fill="none" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" stroke="#ef4444" stroke-width="1.5"/><path d="M10 9v5M10 7v.5" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg>
-                  Windows: VdeskHost_Setup.exe 실행
-                </div>
-              </div>
-            </div>
-            <div class="step-item">
-              <div class="step-num">4</div>
-              <div class="step-body">
-                <div class="step-title">기기 추가 — 접속키 입력</div>
-                <p class="step-desc">대시보드의 "기기 추가" 버튼을 클릭하고 호스트 프로그램에 표시된 접속키(BX_XXXXXXXXXX)를 입력하세요.</p>
-              </div>
-            </div>
-            <div class="step-item">
-              <div class="step-num">5</div>
-              <div class="step-body">
-                <div class="step-title">원격 연결</div>
-                <p class="step-desc">등록된 기기 카드에서 더블 클릭하거나 "원격 연결" 버튼을 눌러 즉시 연결하세요. 마이페이지에서 "접속기" 버튼으로도 바로 진입할 수 있습니다.</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Screen mockup -->
-          <div class="screen-mock">
-            <div class="mock-bar">
-              <div class="mock-dot" style="background:#ef4444;"></div>
-              <div class="mock-dot" style="background:#f59e0b;"></div>
-              <div class="mock-dot" style="background:#22c55e;"></div>
-              <div style="flex:1;font-size:0.6rem;color:#4b5563;text-align:center;">Vdesk — 대시보드</div>
-            </div>
-            <div class="mock-screen">
-              <div style="display:flex;gap:0.5rem;margin-bottom:1rem;">
-                <div style="background:#ef4444;border-radius:6px;padding:0.3rem 0.7rem;font-size:0.6rem;color:#fff;font-weight:600;">구매하기</div>
-                <div style="background:#ef4444;border-radius:6px;padding:0.3rem 0.7rem;font-size:0.6rem;color:#fff;font-weight:600;">기기 추가</div>
-              </div>
-              <div class="mock-grid">
-                <div class="mock-card sel"><div class="mock-dot2"></div><div class="mock-name">Vdesk PC-001</div></div>
-                <div class="mock-card"><div class="mock-dot2"></div><div class="mock-name">Vdesk PC-002</div></div>
-                <div class="mock-card"><div class="mock-dot2 off"></div><div class="mock-name">Vdesk PC-003</div></div>
-                <div class="mock-card"><div class="mock-dot2"></div><div class="mock-name">Vdesk PC-004</div></div>
-                <div class="mock-card"><div class="mock-dot2"></div><div class="mock-name">Vdesk PC-005</div></div>
-              </div>
-              <div style="margin-top:0.75rem;padding:0.6rem;background:#ef4444;border-radius:8px;text-align:center;">
-                <span style="font-size:0.65rem;color:#fff;font-weight:600;">① 사용방법 버튼</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Mobile -->
-        <div id="tab-mobile" class="method-content">
-          <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:0.5rem;">앱 사용환경</h2>
-          <p style="color:#6b7280;font-size:0.9rem;margin-bottom:2rem;">스마트폰(Android/iOS)에서 브이데스크 앱으로 PC를 원격 제어하세요.</p>
-          <div class="step-list">
-            <div class="step-item">
-              <div class="step-num">1</div>
-              <div class="step-body">
-                <div class="step-title">앱 다운로드</div>
-                <p class="step-desc">Google Play Store 또는 Apple App Store에서 "Vdesk" 앱을 다운로드하세요.</p>
-              </div>
-            </div>
-            <div class="step-item">
-              <div class="step-num">2</div>
-              <div class="step-body">
-                <div class="step-title">로그인</div>
-                <p class="step-desc">기존 계정으로 로그인하세요. 구글 계정 로그인도 지원합니다.</p>
-              </div>
-            </div>
-            <div class="step-item">
-              <div class="step-num">3</div>
-              <div class="step-body">
-                <div class="step-title">기기 선택 후 연결</div>
-                <p class="step-desc">등록된 기기 목록에서 연결할 PC를 탭하세요. 자동으로 원격 세션이 시작됩니다.</p>
-                <div class="step-tip">
-                  <svg width="13" height="13" fill="none" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" stroke="#ef4444" stroke-width="1.5"/><path d="M10 9v5M10 7v.5" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg>
-                  ONLINE 상태인 기기만 연결 가능합니다
-                </div>
-              </div>
-            </div>
-            <div class="step-item">
-              <div class="step-num">4</div>
-              <div class="step-body">
-                <div class="step-title">터치로 제어</div>
-                <p class="step-desc">스마트폰 화면을 터치하여 마우스처럼 PC를 제어하세요. 핀치 투 줌으로 화면을 확대/축소할 수 있습니다.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- File transfer -->
-        <div id="tab-file" class="method-content">
-          <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:0.5rem;">파일전송 방법</h2>
-          <p style="color:#6b7280;font-size:0.9rem;margin-bottom:2rem;">원격 PC와 내 기기 사이에서 파일을 쉽게 주고받을 수 있습니다.</p>
-          <div class="step-list">
-            <div class="step-item">
-              <div class="step-num">1</div>
-              <div class="step-body">
-                <div class="step-title">원격 세션 연결</div>
-                <p class="step-desc">파일을 전송할 PC와 원격 세션을 먼저 연결하세요.</p>
-              </div>
-            </div>
-            <div class="step-item">
-              <div class="step-num">2</div>
-              <div class="step-body">
-                <div class="step-title">파일 전송 패널 열기</div>
-                <p class="step-desc">원격 뷰어 상단 도구 모음에서 파일 전송 아이콘을 클릭하세요. 왼쪽 패널(내 PC)과 오른쪽 패널(원격 PC)이 나타납니다.</p>
-              </div>
-            </div>
-            <div class="step-item">
-              <div class="step-num">3</div>
-              <div class="step-body">
-                <div class="step-title">파일 선택 및 전송</div>
-                <p class="step-desc">전송할 파일을 선택하고 화살표 버튼을 클릭하거나 드래그 앤 드롭으로 파일을 이동하세요.</p>
-                <div class="step-tip">
-                  <svg width="13" height="13" fill="none" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" stroke="#ef4444" stroke-width="1.5"/><path d="M10 9v5M10 7v.5" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg>
-                  한 번에 최대 2GB까지 전송 가능
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Payment -->
-        <div id="tab-payment" class="method-content">
-          <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:0.5rem;">결제 방법</h2>
-          <p style="color:#6b7280;font-size:0.9rem;margin-bottom:2rem;">일반결제와 정기결제 중 원하는 방식을 선택하세요.</p>
-          <div class="step-list">
-            <div class="step-item">
-              <div class="step-num" style="background:#6366f1;">A</div>
-              <div class="step-body">
-                <div class="step-title">일반결제 (건별 결제)</div>
-                <p class="step-desc">원하는 기간(1, 3, 6, 9, 12개월)과 PC 대수를 선택하여 한 번에 결제합니다. 카드 결제를 지원합니다.</p>
-                <div style="margin-top:0.75rem;padding:1rem;background:#f9fafb;border-radius:10px;font-size:0.85rem;color:#6b7280;line-height:1.8;">
-                  <strong style="color:#111;display:block;margin-bottom:0.4rem;">일반결제 흐름</strong>
-                  구매하기 클릭 → 일반결제 탭 → 플랜·수량·기간 선택 → 결제 진행
-                </div>
-              </div>
-            </div>
-            <div class="step-item">
-              <div class="step-num" style="background:#ef4444;">B</div>
-              <div class="step-body">
-                <div class="step-title">정기결제 (자동 구독)</div>
-                <p class="step-desc">매월 자동으로 청구되는 구독형 결제입니다. 첫 결제 시 카드 정보를 등록하면 이후 자동으로 청구됩니다.</p>
-                <div style="margin-top:0.75rem;padding:1rem;background:#fef2f2;border-radius:10px;font-size:0.85rem;color:#6b7280;line-height:1.8;">
-                  <strong style="color:#111;display:block;margin-bottom:0.4rem;">정기결제 흐름</strong>
-                  구매하기 클릭 → 정기결제 탭 → 플랜·수량 선택 → 카드 등록 → 매월 자동 청구
-                </div>
-                <div class="step-tip">
-                  <svg width="13" height="13" fill="none" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" stroke="#ef4444" stroke-width="1.5"/><path d="M10 9v5M10 7v.5" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg>
-                  마이페이지에서 언제든지 구독 취소 가능
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- end content area -->
-    </div><!-- end method-layout -->
-
-    <!-- Tips -->
-    <div style="margin-top:5rem;">
-      <h3 style="font-size:1.3rem;font-weight:800;margin-bottom:0.5rem;">알아두면 유용한 팁</h3>
-      <p style="color:#6b7280;font-size:0.9rem;margin-bottom:2rem;">브이데스크를 더 편리하게 사용하세요.</p>
-      <div class="tip-grid">
-        <div class="tip-card">
-          <div class="tip-icon">⌨️</div>
-          <div class="tip-title">단축키 지원</div>
-          <p class="tip-desc">원격 세션 중 Ctrl+Alt+Del, Win 키 등 모든 단축키가 원격 PC에 전달됩니다.</p>
-        </div>
-        <div class="tip-card">
-          <div class="tip-icon">🖥️</div>
-          <div class="tip-title">멀티 모니터</div>
-          <p class="tip-desc">원격 PC가 여러 모니터를 사용 중이라면 각 모니터를 개별로 선택하여 볼 수 있습니다.</p>
-        </div>
-        <div class="tip-card">
-          <div class="tip-icon">🔒</div>
-          <div class="tip-title">세션 잠금</div>
-          <p class="tip-desc">원격 세션 중 실수로 창을 닫아도 세션은 계속 유지됩니다. 대시보드에서 다시 진입하세요.</p>
-        </div>
-      </div>
-    </div>
-
+  <!-- 상단 배너 -->
+  <div class="image-title bg2 method-title">
+    <h2>사용방법</h2>
+    <p>사용환경에 따른 방법을 확인해보세요.</p>
   </div>
-</section>
 
-<div th:replace="~{fragments/landing-footer :: footer}"></div>
+  <!-- 메인 섹션 -->
+  <section class="section_method">
+    <div class="container1">
+      <div class="sc_method_tab">
+
+        <!-- 탭 메뉴 -->
+        <div class="method_tab_menu">
+          <ul class="method_tab_menu_list">
+            <li class="method_tab_menu_item active">
+              <button class="method_tab_btn">PC 사용환경</button>
+            </li>
+            <li class="method_tab_menu_item">
+              <button class="method_tab_btn">앱 사용환경</button>
+            </li>
+            <li class="method_tab_menu_item">
+              <button class="method_tab_btn">파일전송 방법</button>
+            </li>
+            <li class="method_tab_menu_item">
+              <button class="method_tab_btn">결제 방법</button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 탭 컨텐츠 전체 -->
+        <div class="method_tab_content_wrap">
+
+          <!-- ① PC 사용환경 -->
+          <div class="method_tab_content active">
+            <div class="method_tab_img_box">
+              <img th:src="@{/assets/images/useage_pc_01.jpg}" src="/assets/images/useage_pc_01.jpg" loading="eager" alt="PC사용방법1"/>
+            </div>
+            <div class="method_tab_content_txt">
+              <div class="guide_box">
+                <span class="guide_num">1</span>
+                <div class="guide_desc">
+                  <h4>라이트모드 / 다크 모드 설정</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>밝은 화면(라이트모드)과 어두운 화면(다크모드) 중에서 <strong>원하는 테마로 전환</strong>할 수 있습니다.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="guide_box">
+                <span class="guide_num">2</span>
+                <div class="guide_desc">
+                  <h4>PC 전체선택 / 선택 취소</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>전체 선택 버튼을 클릭하면 화면에 보이는 <strong>모든 원격 PC가 한번에 선택</strong> 됩니다.<br>다시 클릭하면 전체 선택이 해제되어 선택을 초기화할 수 있습니다.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="guide_box">
+                <span class="guide_num">3</span>
+                <div class="guide_desc">
+                  <h4>선택한 PC 결제하기</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>선택한 PC가 있다면, '결제하기' 버튼을 눌러 <strong>선택한 PC들을 한 번에 결제</strong> 할 수 있습니다.<br>여러 대를 동시에 관리하고 싶을 때 유용하게 활용됩니다.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="guide_box">
+                <span class="guide_num">4</span>
+                <div class="guide_desc">
+                  <h4>마이페이지로 이동</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>오른쪽 상단 '마이페이지'를 클릭하면, <strong>내 계정 정보, 이용 내역</strong>을 확인하거나 설정할 수 있습니다.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="guide_box">
+                <span class="guide_num">5</span>
+                <div class="guide_desc">
+                  <h4>구매한 PC 목록</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>사용하고 싶은 원격 PC를 더블 클릭하면, <strong>해당 PC에 바로 접속</strong>할 수 있습니다.<br>별도 설정 없이 클릭 한 번으로 빠르게 원격 접속이 시작됩니다.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="title_box">
+                <h3>기본 사용방법</h3>
+                <h4>1. 구매한 원격 PC를 선택하는 단계입니다.</h4>
+                <p><i class="fa-solid fa-arrow-right"></i> 구매한 원격 PC를 <strong>더블클릭</strong>하면, 해당 PC가 새 창으로 실행됩니다.</p>
+              </div>
+            </div>
+
+            <div class="method_tab_img_box">
+              <img th:src="@{/assets/images/useage_pc_02.jpg}" src="/assets/images/useage_pc_02.jpg" loading="lazy" alt="PC사용방법2"/>
+            </div>
+
+            <div class="method_tab_content_txt">
+              <div class="title_box">
+                <h4>2. 원격 PC는 새 창으로 열립니다.</h4>
+                <p><i class="fa-solid fa-arrow-right"></i> 선택한 원격 PC의 화면은 새 창으로 실행됩니다.</p>
+              </div>
+            </div>
+
+            <div class="method_tab_img_box">
+              <img th:src="@{/assets/images/useage_pc_03.jpg}" src="/assets/images/useage_pc_03.jpg" loading="lazy" alt="PC사용방법3"/>
+            </div>
+
+            <div class="method_tab_content_txt">
+              <div class="title_box">
+                <p><i class="fa-solid fa-arrow-right"></i> 제한 없이 <strong>여러 대의 PC 화면을 동시에 실행</strong>할 수 있어, 효율적인 멀티태스킹이 가능합니다.</p>
+              </div>
+            </div>
+
+            <div class="method_tab_img_box">
+              <img th:src="@{/assets/images/useage_pc_04.jpg}" src="/assets/images/useage_pc_04.jpg" loading="lazy" alt="PC사용방법4"/>
+            </div>
+          </div>
+
+          <!-- ② 앱 사용환경 -->
+          <div class="method_tab_content">
+            <div class="method_tab_img_box">
+              <img th:src="@{/assets/images/useage_app_new_01.jpg}" src="/assets/images/useage_app_new_01.jpg" loading="eager" alt="앱사용방법1"/>
+            </div>
+            <div class="method_tab_content_txt">
+              <div class="guide_box">
+                <span class="guide_num">1</span>
+                <div class="guide_desc">
+                  <h4>메인페이지 메뉴 버튼 클릭하기</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>Vdesk 앱을 실행한 후, 메뉴 버튼을 클릭합니다.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="guide_box">
+                <span class="guide_num">2</span>
+                <div class="guide_desc">
+                  <h4>로그인/회원가입 버튼 클릭하기</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>로그인/회원가입 버튼 클릭 후 <strong>간편로그인</strong> 혹은 <strong>브이데스크 회원가입</strong>을 통해 로그인합니다.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="method_tab_img_box">
+              <img th:src="@{/assets/images/useage_app_new_pay.jpg}" src="/assets/images/useage_app_new_pay.jpg" loading="lazy" alt="앱사용방법2"/>
+            </div>
+            <div class="method_tab_content_txt">
+              <div class="guide_box">
+                <span class="guide_num">3</span>
+                <div class="guide_desc">
+                  <h4>결제하기</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>로그인 후, 원하는 사양의 PC를 <strong>베이직, 스탠다드, 비즈니스 등급 중</strong> 선택하여 결제합니다.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="guide_box">
+                <span class="guide_num">4</span>
+                <div class="guide_desc">
+                  <h4>사양 자세히보기</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>클릭 시 <strong>해당 등급 PC의 사양을 확인</strong>할 수 있습니다.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="method_tab_img_box">
+              <img th:src="@{/assets/images/useage_app_new_02.jpg}" src="/assets/images/useage_app_new_02.jpg" loading="lazy" alt="앱사용방법3"/>
+            </div>
+            <div class="method_tab_content_txt">
+              <div class="guide_box">
+                <span class="guide_num">5</span>
+                <div class="guide_desc">
+                  <h4>결제 후 접속하기</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>결제 완료 후, '접속기' 버튼을 누르면 <strong>구매한 PC 리스트를 볼 수 있습니다.</strong><br>구매한 PC 리스트 중에서 원하는 PC를 선택하여 해당 PC에 접속이 가능합니다.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="guide_box">
+                <span class="guide_num">6</span>
+                <div class="guide_desc">
+                  <h4>접속하기 버튼 클릭하여 PC 연결</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>구매한 PC 리스트중에서 원하는 PC를 선택하여 해당 PC에 접속이 가능합니다.<br><strong>별도 설정 없이 클릭 한 번</strong>으로 빠르게 원격 접속이 시작됩니다.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="method_tab_img_box">
+              <img th:src="@{/assets/images/useage_app_new_03.jpg}" src="/assets/images/useage_app_new_03.jpg" loading="lazy" alt="앱사용방법4"/>
+            </div>
+            <div class="method_tab_content_txt">
+              <div class="guide_box">
+                <span class="guide_num">7</span>
+                <div class="guide_desc">
+                  <h4>마이페이지</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>마이페이지 버튼 클릭 시 마이페이지로 이동합니다.<br>마이페이지에서는 <strong>계정정보, 이용내역</strong>을 한눈에 확인할 수 있습니다.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="guide_box">
+                <span class="guide_num">8</span>
+                <div class="guide_desc">
+                  <h4>정보 수정</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>변경 버튼 클릭 시 <strong>비밀번호를 변경</strong>할 수 있습니다.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="guide_box">
+                <span class="guide_num">9</span>
+                <div class="guide_desc">
+                  <h4>영수증 확인</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>영수증 버튼 클릭 시 해당 결제 건의 <strong>구매 영수증을 확인</strong>할 수 있습니다.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ③ 파일전송 방법 -->
+          <div class="method_tab_content">
+            <div class="method_tab_img_box">
+              <img th:src="@{/assets/images/useage_file_01.jpg}" src="/assets/images/useage_file_01.jpg" loading="eager" alt="파일전송방법1"/>
+            </div>
+            <div class="method_tab_content_txt">
+              <div class="guide_box">
+                <span class="guide_num">1</span>
+                <div class="guide_desc">
+                  <h4>파일 전송 아이콘 클릭</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>사용중인 원격 PC 화면의 오른쪽 상단에 있는 아이콘을 클릭합니다.<br><strong>내 PC에서 원격 PC로 파일을 전송할 수 있습니다.</strong></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="method_tab_img_box">
+              <img th:src="@{/assets/images/useage_file_02.jpg}" src="/assets/images/useage_file_02.jpg" loading="lazy" alt="파일전송방법2"/>
+            </div>
+            <div class="method_tab_content_txt">
+              <div class="guide_box">
+                <span class="guide_num">2</span>
+                <div class="guide_desc">
+                  <h4>파일 선택</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>전송할 파일을 선택합니다.<br>파일은 <strong>버튼을 통해</strong> 업로드할 수 있습니다.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="method_tab_img_box">
+              <img th:src="@{/assets/images/useage_file_03.jpg}" src="/assets/images/useage_file_03.jpg" loading="lazy" alt="파일전송방법3"/>
+            </div>
+            <div class="method_tab_content_txt">
+              <div class="guide_box">
+                <span class="guide_num">3</span>
+                <div class="guide_desc">
+                  <h4>파일 전송 중</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>전송시작 클릭 시 <strong>선택한 파일이 원격 PC로 전송</strong>됩니다.<br>(전송 속도는 파일 크기 및 네트워크 환경에 따라 달라질 수 있습니다.)</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="method_tab_img_box">
+              <img th:src="@{/assets/images/useage_file_04.jpg}" src="/assets/images/useage_file_04.jpg" loading="lazy" alt="파일전송방법4"/>
+            </div>
+            <div class="method_tab_content_txt">
+              <div class="guide_box">
+                <span class="guide_num">4</span>
+                <div class="guide_desc">
+                  <h4>파일 전송 완료</h4>
+                  <div class="guide_desc_txt">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>파일 전송이 완료되면 알림 메시지가 표시되며,<br>해당 파일은 <strong>원격 PC의 바탕화면에 저장</strong>됩니다.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ④ 결제 방법 -->
+          <div class="method_tab_content">
+            <div class="payment_method_box">
+              <h3>PC</h3>
+              <h3>1. 연장하기</h3>
+
+              <div class="method_tab_img_box">
+                <img th:src="@{/assets/images/useage_pay_01.jpg}" src="/assets/images/useage_pay_01.jpg" loading="eager" alt="결제방법1"/>
+              </div>
+              <div class="method_tab_content_txt">
+                <div class="guide_box">
+                  <span class="guide_num">1</span>
+                  <div class="guide_desc">
+                    <h4>결제하기</h4>
+                    <div class="guide_desc_txt">
+                      <i class="fa-solid fa-arrow-right"></i>
+                      <p>상단 메뉴에서 결제하기 클릭 시 <strong>결제 팝업</strong>이 열립니다.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="guide_box">
+                  <span class="guide_num">2</span>
+                  <div class="guide_desc">
+                    <h4>PC 등급 선택</h4>
+                    <div class="guide_desc_txt">
+                      <i class="fa-solid fa-arrow-right"></i>
+                      <p>사용 목적에 따라 <strong>베이직, 스탠다드, 비즈니스 등급 중</strong> 원하는 사양을 선택하세요.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="guide_box">
+                  <span class="guide_num">3</span>
+                  <div class="guide_desc">
+                    <h4>사용기간 선택</h4>
+                    <div class="guide_desc_txt">
+                      <i class="fa-solid fa-arrow-right"></i>
+                      <p><strong>월 단위로</strong> 원하는 기간을 선택하여 유연하게 이용 가능합니다.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="guide_box">
+                  <span class="guide_num">4</span>
+                  <div class="guide_desc">
+                    <h4>결제 정보 확인 및 완료</h4>
+                    <div class="guide_desc_txt">
+                      <i class="fa-solid fa-arrow-right"></i>
+                      <p>선택한 <strong>등급에 따라 총 결제 금액이 계산</strong>되며, 결제하기 버튼을 클릭하여 결제를 완료할 수 있습니다.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="method_tab_content_txt" style="margin-top: 40px;">
+                <div class="title_box">
+                  <h3>2. 만료된 PC 연장하기</h3>
+                  <p class="pay_txt">기간이 만료 된 PC의 경우 <strong><b>1일</b> 이내에 결제 하여야 유지되며</strong>, 만약 기간이 초과될 시 <strong>해당 PC는 삭제됩니다.</strong></p>
+                </div>
+              </div>
+
+              <div class="method_tab_img_box">
+                <img th:src="@{/assets/images/useage_pay_02.jpg}" src="/assets/images/useage_pay_02.jpg" loading="lazy" alt="결제방법2"/>
+              </div>
+              <div class="method_tab_content_txt">
+                <div class="guide_box">
+                  <span class="guide_num">1</span>
+                  <div class="guide_desc">
+                    <h4>기간이 만료된 PC 선택</h4>
+                    <div class="guide_desc_txt">
+                      <i class="fa-solid fa-arrow-right"></i>
+                      <p>결제하기 클릭 시 <strong>서버 사용 기간 연장 팝업</strong>이 열립니다.<br>여러대의 PC가 만료된 경우 다중선택해서 연장할 수 있습니다.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="guide_box">
+                  <span class="guide_num">2</span>
+                  <div class="guide_desc">
+                    <h4>사용기간 선택</h4>
+                    <div class="guide_desc_txt">
+                      <i class="fa-solid fa-arrow-right"></i>
+                      <p><strong>1개월부터 원하는 기간까지 월 단위로 선택</strong>하여 유연하게 이용 가능합니다.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="guide_box">
+                  <span class="guide_num">3</span>
+                  <div class="guide_desc">
+                    <h4>결제정보 확인 및 완료</h4>
+                    <div class="guide_desc_txt">
+                      <i class="fa-solid fa-arrow-right"></i>
+                      <p>선택한 <strong>등급에 따라 총 결제 금액이 계산</strong>되며, 결제하기 버튼을 클릭하여 결제를 완료할 수 있습니다.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="method_tab_content_txt" style="margin-top: 40px;">
+                <div class="title_box">
+                  <h3>3. 여러개의 PC 연장하기</h3>
+                </div>
+              </div>
+
+              <div class="method_tab_img_box">
+                <img th:src="@{/assets/images/useage_pay_03.jpg}" src="/assets/images/useage_pay_03.jpg" loading="lazy" alt="결제방법3"/>
+              </div>
+              <div class="method_tab_content_txt">
+                <div class="guide_box">
+                  <span class="guide_num">1</span>
+                  <div class="guide_desc">
+                    <h4>연장할 PC 선택</h4>
+                    <div class="guide_desc_txt">
+                      <i class="fa-solid fa-arrow-right"></i>
+                      <p>구매한 PC 목록 중에서 연장을 원하는 PC를 <strong>개별 선택</strong>하거나,<br><strong>전체 선택 기능</strong>으로 여러 대의 PC를 한 번에 선택할 수 있습니다.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="guide_box">
+                  <span class="guide_num">2</span>
+                  <div class="guide_desc">
+                    <h4>결제하기</h4>
+                    <div class="guide_desc_txt">
+                      <i class="fa-solid fa-arrow-right"></i>
+                      <p>상단 메뉴에서 <strong>결제하기</strong> 클릭 시 선택한 PC에 대한 <strong>연장 결제를 위한 팝업</strong>이 열립니다.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="guide_box">
+                  <span class="guide_num">3</span>
+                  <div class="guide_desc">
+                    <h4>사용 기간 선택</h4>
+                    <div class="guide_desc_txt">
+                      <i class="fa-solid fa-arrow-right"></i>
+                      <p><strong>월 단위로</strong> 원하는 기간을 선택하여 유연하게 이용 가능합니다.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="guide_box">
+                  <span class="guide_num">4</span>
+                  <div class="guide_desc">
+                    <h4>결제 정보 확인 및 완료</h4>
+                    <div class="guide_desc_txt">
+                      <i class="fa-solid fa-arrow-right"></i>
+                      <p><strong>선택한 등급에 따라</strong> 총 결제 금액이 계산되며, 결제하기 버튼을 클릭하여 결제를 완료할 수 있습니다.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- /.payment_method_box PC -->
+
+            <!-- APP 결제 -->
+            <div class="payment_method_box" style="margin-top: 60px;">
+              <h3>APP</h3>
+              <h3>1. 결제하기</h3>
+
+              <div class="method_tab_img_box">
+                <img th:src="@{/assets/images/pay_app_new_01.jpg}" src="/assets/images/pay_app_new_01.jpg" loading="lazy" alt="APP결제방법1"/>
+              </div>
+              <div class="method_tab_content_txt">
+                <div class="guide_box">
+                  <span class="guide_num">1</span>
+                  <div class="guide_desc">
+                    <h4>결제하기</h4>
+                    <div class="guide_desc_txt">
+                      <i class="fa-solid fa-arrow-right"></i>
+                      <p>로그인 후, 원하는 사양의 PC를 <strong>베이직, 스탠다드, 비즈니스 등급 중</strong> 선택하여 결제합니다.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="guide_box">
+                  <span class="guide_num">2</span>
+                  <div class="guide_desc">
+                    <h4>사양 자세히보기</h4>
+                    <div class="guide_desc_txt">
+                      <i class="fa-solid fa-arrow-right"></i>
+                      <p>클릭 시 <strong>해당 등급의 PC 사양을 확인</strong>할 수 있습니다.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h3>2. 연장하기</h3>
+
+              <div class="method_tab_img_box">
+                <img th:src="@{/assets/images/pay_app_new_02.jpg}" src="/assets/images/pay_app_new_02.jpg" loading="lazy" alt="APP결제방법2"/>
+              </div>
+              <div class="method_tab_content_txt">
+                <div class="guide_box">
+                  <span class="guide_num">1</span>
+                  <div class="guide_desc">
+                    <h4>PC 기간 연장하기</h4>
+                    <div class="guide_desc_txt">
+                      <i class="fa-solid fa-arrow-right"></i>
+                      <p>결제버튼 클릭 시 <strong>서버 사용 기간 연장 팝업</strong>이 열립니다.<br>기간이 만료된 PC의 경우 <strong><b>1일</b> 이내에 결제 하여야 유지되며</strong>, 만약 기간이 초과될 시 <strong>해당 PC는 삭제됩니다.</strong></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="guide_box">
+                  <span class="guide_num">2</span>
+                  <div class="guide_desc">
+                    <h4>연장 개월 선택</h4>
+                    <div class="guide_desc_txt">
+                      <i class="fa-solid fa-arrow-right"></i>
+                      <p><strong>1개월부터 원하는 기간까지 월 단위로 선택</strong>하여 유연하게 이용 가능합니다.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- /.payment_method_box APP -->
+          </div>
+
+        </div><!-- /.method_tab_content_wrap -->
+      </div><!-- /.sc_method_tab -->
+    </div><!-- /.container1 -->
+  </section>
+
+</div><!-- /.method-wrap -->
+
+<th:block th:replace="~{fragments/landing-footer :: footer}"/>
 
 <script>
-  function switchTab(btn, id) {
-    document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.method-content').forEach(c => c.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-' + id).classList.add('active');
+(function() {
+  var items = document.querySelectorAll('.method_tab_menu_item');
+  var contents = document.querySelectorAll('.method_tab_content');
+
+  // 탭 텍스트 모바일 축약 (≤880px에서 pill 탭으로 전환)
+  var tabTexts = { 'PC 사용환경': 'PC', '앱 사용환경': 'APP', '파일전송 방법': '파일전송', '결제 방법': '결제방법' };
+  function updateTabText() {
+    var isMobile = window.innerWidth <= 880;
+    document.querySelectorAll('.method_tab_btn').forEach(function(btn) {
+      var orig = btn.getAttribute('data-orig') || btn.textContent.trim();
+      if (!btn.getAttribute('data-orig')) btn.setAttribute('data-orig', orig);
+      btn.textContent = isMobile ? (tabTexts[orig] || orig) : orig;
+    });
   }
+  updateTabText();
+  window.addEventListener('resize', updateTabText);
+
+  // 탭 전환
+  items.forEach(function(item, idx) {
+    item.querySelector('.method_tab_btn').addEventListener('click', function() {
+      items.forEach(function(i) { i.classList.remove('active'); });
+      contents.forEach(function(c) { c.classList.remove('active'); });
+      item.classList.add('active');
+      contents[idx].classList.add('active');
+
+      var target = contents[idx].getBoundingClientRect().top + window.pageYOffset - 120;
+      var current = window.pageYOffset;
+      if (Math.abs(current - target) > 50) {
+        window.scrollTo({ top: target, behavior: 'smooth' });
+      }
+    });
+  });
+})();
 </script>
 </body>
 </html>

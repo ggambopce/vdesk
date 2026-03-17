@@ -6,118 +6,365 @@
   <title>구매하기 — Vdesk</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" th:href="@{/assets/css/common.css}" href="/assets/css/common.css"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; background: #fff; color: #111; }
-    a { text-decoration: none; color: inherit; }
-
-    .hero {
-      padding: 4.5rem 1.5rem 2.5rem;
-      text-align: center;
-      background: linear-gradient(135deg, #fff 0%, #fef2f2 60%, #fff 100%);
-      border-bottom: 1px solid #f0f0f0;
-    }
-    .hero h1 { font-size: clamp(2rem, 3.5vw, 2.8rem); font-weight: 800; }
-    .hero p { margin-top: 0.8rem; color: #6b7280; font-size: 0.95rem; line-height: 1.8; }
-
-    .section { padding: 3.5rem 1.5rem 5rem; }
-    .inner { max-width: 1200px; margin: 0 auto; }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.25rem;
-      margin-top: 2.25rem;
-    }
-    .card {
+    /* =====================================================
+       구매하기 페이지
+    ===================================================== */
+    .download_wrap {
       background: #fff;
-      border: 1.5px solid #f0f0f0;
-      border-radius: 18px;
-      padding: 1.75rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.04);
     }
-    .plan-name { font-weight: 800; font-size: 1.05rem; }
-    .plan-desc { color: #6b7280; font-size: 0.85rem; margin-top: 0.35rem; }
-    .price { margin-top: 1.15rem; font-size: 2.05rem; font-weight: 900; letter-spacing: -0.02em; }
-    .price small { font-size: 0.9rem; font-weight: 600; color: #9ca3af; margin-left: 2px; }
-    .cta {
-      margin-top: 1.4rem;
+
+    /* 본문 */
+    .main_wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 1.5rem 120px;
+    }
+    .main_wrap.pdt_0 {
+      padding-top: 0;
+    }
+
+    /* 페이지 타이틀 */
+    .sub_title {
+      font-size: 36px;
+      font-weight: 700;
+      color: #111;
+      letter-spacing: -1px;
+      margin-bottom: 40px;
+    }
+
+    /* 카드 그리드 */
+    .sub_card {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+    }
+
+    /* 개별 플랜 카드 */
+    .subscribe_area {
+      flex: 1;
+      max-width: 360px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+      cursor: default;
+    }
+    .subscribe_area:hover {
+      background-color: #FFF7F4;
+      border-color: #F44336;
+      box-shadow: 0 12px 40px rgba(244,67,54,0.12);
+    }
+    .subscribe_area:hover .p_btn {
+      background-color: #F44336;
+    }
+
+    /* sub_box: 카드 내부 전체 래퍼 (모바일 클릭 영역) */
+    .sub_box {
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    /* 플랜 소개 */
+    .product_intro {
+      margin-bottom: 20px;
+    }
+    .p_desc_box {
+      margin-bottom: 14px;
+    }
+    .p_name {
+      font-size: 22px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 4px;
+    }
+    .p_txt {
+      font-size: 13px;
+      color: #6b7280;
+    }
+    .p_price {
+      font-size: 15px;
+      color: #6b7280;
+    }
+    .p_price strong {
+      font-size: 36px;
+      font-weight: 800;
+      color: #111;
+      letter-spacing: -2px;
+      margin-right: 2px;
+    }
+
+    /* 구매 버튼 영역 */
+    .p_btn_area {
+      margin-bottom: 20px;
+    }
+    .p_btn {
+      display: block;
       width: 100%;
+      padding: 14px 0;
       border: none;
       border-radius: 999px;
-      padding: 0.95rem 1rem;
-      font-weight: 800;
+      font-size: 15px;
+      font-weight: 700;
       background: #111;
       color: #fff;
       cursor: pointer;
-      transition: transform 0.1s, background 0.15s;
+      transition: background 0.15s, transform 0.1s;
+      text-align: center;
+      text-decoration: none;
     }
-    .cta:hover { background: #000; transform: translateY(-1px); }
-
-    .divider { border: none; border-top: 1px solid #f3f4f6; margin: 1.5rem 0; }
-    .feat { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
-    .feat li { display: flex; gap: 0.5rem; font-size: 0.88rem; color: #4b5563; }
-    .feat li::before { content: '✓'; color: #ef4444; font-weight: 900; }
-
-    .spec {
-      margin-top: 1.25rem;
-      list-style: none;
+    .p_btn:hover {
+      background: #F44336;
+    }
+    .p_btn.mb_19 {
+      margin-bottom: 19px;
+    }
+    .p_btn.width_100 {
+      width: 100%;
+      display: block;
+      text-align: center;
+    }
+    .p_bottom {
       display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-      font-size: 0.85rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .p_bottom > p {
+      font-size: 13px;
       color: #6b7280;
     }
-    .spec li { display: flex; gap: 0.5rem; align-items: center; }
-    .spec li::before { content: '✓'; color: #ef4444; font-weight: 900; }
+    .p_more_btn_mobile {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 13px;
+      color: #6b7280;
+      cursor: pointer;
+      gap: 4px;
+      align-items: center;
+    }
+    .p_more_btn_mobile span img {
+      width: 16px;
+      height: 16px;
+      transition: transform 0.3s;
+    }
+    .p_more_btn_mobile span img.active {
+      transform: rotate(180deg);
+    }
 
-    .bulk {
-      margin-top: 3.25rem;
-      border-radius: 20px;
-      border: 1.5px solid #f0f0f0;
-      background: #fafafa;
-      padding: 2rem;
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 1.75rem;
-      align-items: center;
+    /* 구분선 */
+    .p_divider {
+      border: none;
+      border-top: 1px solid #f0f0f0;
+      margin: 20px 0;
     }
-    .bulk h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 0.6rem; }
-    .bulk p { color: #6b7280; font-size: 0.92rem; line-height: 1.8; }
-    .bulk ul { margin-top: 1rem; color: #4b5563; font-size: 0.88rem; line-height: 1.9; list-style: none; }
-    .bulk ul li { display: flex; gap: 0.55rem; }
-    .bulk ul li::before { content: '✓'; color: #ef4444; font-weight: 900; }
-    .bulk a {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 0.95rem 1.1rem;
-      border-radius: 12px;
-      background: #ef4444;
-      color: #fff;
-      font-weight: 800;
-      width: 100%;
-      transition: background 0.15s, transform 0.1s;
+
+    /* 추천 사용 목록 */
+    .p_list {
+      margin-bottom: 16px;
     }
-    .bulk a:hover { background: #dc2626; transform: translateY(-1px); }
-    .bulk .mock {
-      width: 100%;
-      aspect-ratio: 16/10;
-      border-radius: 16px;
-      border: 1.5px solid #e5e7eb;
-      background: linear-gradient(135deg, #fff 0%, #fef2f2 100%);
+    .p_list li {
       display: flex;
       align-items: center;
-      justify-content: center;
-      color: #9ca3af;
-      font-weight: 700;
-      font-size: 0.9rem;
+      gap: 8px;
+      font-size: 14px;
+      color: #374151;
+      padding: 4px 0;
+    }
+    .p_list li::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #F44336;
+      flex-shrink: 0;
     }
 
-    @media (max-width: 1000px) {
-      .grid { grid-template-columns: 1fr; }
-      .bulk { grid-template-columns: 1fr; }
+    /* 스펙 목록 */
+    .chk_list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .chk_list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #6b7280;
+    }
+    .chk_list li::before {
+      content: '✓';
+      color: #F44336;
+      font-weight: 900;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    /* 대량 견적 문의 */
+    .contact_area {
+      margin-top: 60px;
+      background: #f9fafb;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 48px;
+      display: flex;
+      gap: 60px;
+      align-items: center;
+    }
+    .contact_area .txt_cont {
+      flex: 1;
+    }
+    .c_tit_txt {
+      margin-bottom: 24px;
+    }
+    .c_tit_txt span {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: #F44336;
+      margin-bottom: 6px;
+    }
+    .c_tit_txt h1 {
+      font-size: 36px;
+      font-weight: 800;
+      color: #111;
+      letter-spacing: -2px;
+    }
+    .contact_area > img {
+      flex-shrink: 0;
+      width: 320px;
+      border-radius: 14px;
+    }
+    .chk_list_gray {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .chk_list_gray li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: #374151;
+    }
+    .chk_list_gray li::before {
+      content: '✓';
+      color: #9ca3af;
+      font-weight: 900;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    /* 결제 모달 */
+    #paymentModalOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      display: none;
+      z-index: 9999;
+      -webkit-backdrop-filter: blur(2px);
+      backdrop-filter: blur(2px);
+    }
+    #paymentModalOverlay .modal-container {
+      position: relative;
+      width: 95%;
+      height: 90vh;
+      max-width: 600px;
+      margin: 4vh auto;
+      background: #ffffff;
+      border-radius: 14px;
+      box-shadow: 0 20px 45px rgba(2, 6, 23, 0.25);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #paymentModalOverlay .modal-header {
+      padding: 16px 20px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    #paymentModalOverlay .modal-body2 {
+      flex: 1 1 auto;
+      background: #f8fafc;
+      padding: 0;
+    }
+    #paymentIframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    #paymentModalOverlay .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 0;
+      background: #f1f5f9;
+      color: #0f172a;
+      font-size: 22px;
+      line-height: 38px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    #paymentModalOverlay .modal-close:hover {
+      background: #e2e8f0;
+    }
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    /* 반응형 */
+    @media (max-width: 1024px) {
+      .sub_card { flex-wrap: wrap; }
+      .subscribe_area { max-width: calc(50% - 12px); }
+    }
+    @media (max-width: 767px) {
+      .main_wrap { padding: 40px 1.25rem 80px; }
+      .sub_title { font-size: 26px; margin-bottom: 28px; }
+
+      .sub_card { flex-direction: column; align-items: stretch; }
+      .subscribe_area { max-width: 100%; }
+
+      .p_more_btn_mobile { display: inline-flex; }
+      .p_list, .chk_list { display: none; }
+      .p_list.active, .chk_list.active { display: flex; flex-direction: column; }
+
+      .contact_area {
+        flex-direction: column;
+        padding: 32px 24px;
+        gap: 32px;
+      }
+      .contact_area > img { width: 100%; }
+      .c_tit_txt h1 { font-size: 28px; }
+
+      #paymentModalOverlay .modal-container {
+        height: 96vh;
+        margin: 2vh auto;
+        border-radius: 12px;
+      }
+      #paymentModalOverlay .modal-header {
+        padding: 14px 16px;
+        font-size: 16px;
+      }
+      #paymentModalOverlay .modal-close {
+        top: 8px;
+        right: 8px;
+      }
     }
   </style>
 </head>
@@ -125,123 +372,240 @@
 
 <div th:replace="~{fragments/header :: header('pricing')}"></div>
 
-<section class="hero">
-  <h1>구매하기</h1>
-  <p>
-    필요한 만큼만 선택해서 사용하세요.<br/>
-    일반 결제(기간 선택) 또는 정기 결제(매월 자동 청구)를 지원합니다.
-  </p>
-</section>
+<div class="download_wrap">
+  <section class="main_wrap pdt_0">
+    <h3 class="sub_title">구매하기</h3>
 
-<section class="section">
-  <div class="inner">
+    <div class="sub_card">
 
-    <div class="grid">
-      <div class="card">
-        <div class="plan-name">Basic</div>
-        <div class="plan-desc">일반 사무용 컴퓨팅</div>
-        <div class="price">45,000<small>원 /월</small></div>
-        <button class="cta" onclick="goPurchase()">구매하기</button>
-        <hr class="divider"/>
-        <ul class="feat">
-          <li>일반적인 사무용에 추천</li>
-          <li>마케팅</li>
-          <li>인터넷방송</li>
-          <li>SNS용</li>
-          <li>주식 거래</li>
-        </ul>
-        <ul class="spec">
-          <li>CPU Intel Xeon</li>
-          <li>RAM 3GB DDR4</li>
-          <li>SSD 256GB</li>
-          <li>GPU Share</li>
-          <li>OS Windows 10 Pro</li>
-          <li>IP 한국 공인 IP(독립)</li>
-        </ul>
+      <!-- Basic -->
+      <div class="subscribe_area">
+        <div class="sub_box">
+          <div class="product_intro">
+            <div class="p_desc_box">
+              <p class="p_name">Basic</p>
+              <p class="p_txt">일반 사무용 컴퓨팅</p>
+            </div>
+            <p class="p_price"><strong>45,000</strong>/ 매월</p>
+          </div>
+          <div class="p_btn_area">
+            <button type="button" class="p_btn mb_19 width_100" onclick="paymentWindowOpen('BASIC')">구매하기</button>
+            <div class="p_bottom">
+              <p>일반적인 사무용에 추천</p>
+              <button class="p_more_btn_mobile" type="button">
+                자세히보기
+                <span>
+                  <img th:src="@{/assets/images/nav-arrow-down.svg}" src="/assets/images/nav-arrow-down.svg" alt="펼치기버튼"/>
+                </span>
+              </button>
+            </div>
+          </div>
+          <hr class="p_divider"/>
+          <ul class="p_list">
+            <li>마케팅</li>
+            <li>인터넷방송</li>
+            <li>SNS용</li>
+            <li>2D 게임</li>
+            <li>주식 거래</li>
+          </ul>
+          <ul class="chk_list">
+            <li>CPU Intel(R) Xeon(R)</li>
+            <li>RAM 3GB DDR4</li>
+            <li>SSD 256 GB</li>
+            <li>GPU Share</li>
+            <li>OS Win 10 PRO</li>
+            <li>IP 한국 공인 IP (독립)</li>
+          </ul>
+        </div>
       </div>
 
-      <div class="card" style="border-color:#fecaca;box-shadow:0 16px 40px rgba(239,68,68,0.08);">
-        <div class="plan-name">Standard</div>
-        <div class="plan-desc">중간 사양의 컴퓨팅</div>
-        <div class="price">85,000<small>원 /월</small></div>
-        <button class="cta" onclick="goPurchase()">구매하기</button>
-        <hr class="divider"/>
-        <ul class="feat">
-          <li>앱(LD)플레이어 사용 가능</li>
-          <li>마케팅</li>
-          <li>작업장</li>
-          <li>앱플레이어</li>
-          <li>리니지M</li>
-          <li>스팀 고사양 게임</li>
-        </ul>
-        <ul class="spec">
-          <li>CPU Intel Core i5-8500</li>
-          <li>RAM 8GB DDR4</li>
-          <li>SSD 256GB</li>
-          <li>GPU Intel UHD 630</li>
-          <li>OS Windows 10 Pro</li>
-          <li>IP 한국 공인 IP(독립)</li>
-        </ul>
+      <!-- Standard -->
+      <div class="subscribe_area">
+        <div class="sub_box">
+          <div class="product_intro">
+            <div class="p_desc_box">
+              <p class="p_name">Standard</p>
+              <p class="p_txt">중간 사양의 컴퓨팅</p>
+            </div>
+            <p class="p_price"><strong>85,000</strong>/ 월</p>
+          </div>
+          <div class="p_btn_area">
+            <button type="button" class="p_btn mb_19 width_100" onclick="paymentWindowOpen('STANDARD')">구매하기</button>
+            <div class="p_bottom">
+              <p>앱(LD)플레이어 사용 가능</p>
+              <button class="p_more_btn_mobile" type="button">
+                자세히보기
+                <span>
+                  <img th:src="@{/assets/images/nav-arrow-down.svg}" src="/assets/images/nav-arrow-down.svg" alt="펼치기버튼"/>
+                </span>
+              </button>
+            </div>
+          </div>
+          <hr class="p_divider"/>
+          <ul class="p_list">
+            <li>마케팅</li>
+            <li>작업장</li>
+            <li>앱플레이어</li>
+            <li>리니지M</li>
+            <li>스펙 내 3D 게임</li>
+          </ul>
+          <ul class="chk_list">
+            <li>CPU Intel Core i5-8500</li>
+            <li>RAM 8 GB DDR4</li>
+            <li>SSD 256 GB</li>
+            <li>GPU Intel UHD 630</li>
+            <li>OS WIN 10 PRO</li>
+            <li>IP 한국 공인 IP (독립)</li>
+          </ul>
+        </div>
       </div>
 
-      <div class="card">
-        <div class="plan-name">Business</div>
-        <div class="plan-desc">전문가급의 컴퓨팅</div>
-        <div class="price">140,000<small>원 /월</small></div>
-        <button class="cta" onclick="goPurchase()">구매하기</button>
-        <hr class="divider"/>
-        <ul class="feat">
-          <li>다양한 고사양 작업 가능</li>
-          <li>영상 편집</li>
-          <li>마케팅</li>
-          <li>작업장</li>
-          <li>앱플레이어 다중 실행</li>
-          <li>리니지M/오딘/V4/히트2</li>
-        </ul>
-        <ul class="spec">
-          <li>CPU Intel Xeon 12 Core</li>
-          <li>RAM 64GB DDR4</li>
-          <li>SSD 256GB</li>
-          <li>GPU GeForce 1050Ti</li>
-          <li>OS Windows 10 Pro</li>
-          <li>IP 한국 공인 IP(독립)</li>
-        </ul>
+      <!-- Business -->
+      <div class="subscribe_area">
+        <div class="sub_box">
+          <div class="product_intro">
+            <div class="p_desc_box">
+              <p class="p_name">Business</p>
+              <p class="p_txt">전문가급의 컴퓨팅</p>
+            </div>
+            <p class="p_price"><strong>140,000</strong>/ 월</p>
+          </div>
+          <div class="p_btn_area">
+            <button type="button" class="p_btn mb_19 width_100" onclick="paymentWindowOpen('BUSINESS')">구매하기</button>
+            <div class="p_bottom">
+              <p>다양한 고사양 작업 가능</p>
+              <button class="p_more_btn_mobile" type="button">
+                자세히보기
+                <span>
+                  <img th:src="@{/assets/images/nav-arrow-down.svg}" src="/assets/images/nav-arrow-down.svg" alt="펼치기버튼"/>
+                </span>
+              </button>
+            </div>
+          </div>
+          <hr class="p_divider"/>
+          <ul class="p_list">
+            <li>영상 편집</li>
+            <li>마케팅</li>
+            <li>작업장</li>
+            <li>앱 플레이어 다중 실행</li>
+            <li>리니지M / 오딘 / V4 / 히트2</li>
+          </ul>
+          <ul class="chk_list">
+            <li>CPU Intel Xeon 12Core</li>
+            <li>RAM 64 GB DDR4</li>
+            <li>SSD 256 GB</li>
+            <li>GPU Geforce 1050TI</li>
+            <li>OS WIN 10 PRO</li>
+            <li>IP 한국 공인 IP (독립)</li>
+          </ul>
+        </div>
       </div>
-    </div>
 
-    <div class="bulk">
-      <div>
-        <div style="font-size:0.78rem;font-weight:800;color:#6b7280;margin-bottom:0.25rem;">원격 컴퓨팅 임대 서비스</div>
-        <h2>대량 견적 문의하기</h2>
-        <p>10대 이상 이용하거나 커스텀 사양이 필요하면 상담으로 빠르게 안내해드릴게요.</p>
-        <ul>
+    </div><!-- /sub_card -->
+
+    <!-- 대량 견적 문의 -->
+    <section class="contact_area">
+      <div class="txt_cont">
+        <div class="c_tit_txt">
+          <span>원격 컴퓨팅 임대 서비스</span>
+          <h1>Vdesk</h1>
+        </div>
+        <a href="https://open.kakao.com/o/sGm2lByh" target="_blank" class="p_btn width_100">대량 견적 문의하기</a>
+        <ul class="chk_list chk_list_gray">
           <li>10대 이상 활용하시는 경우</li>
-          <li>단일 결제보다 저렴한 가격</li>
-          <li>원하는 사양/대수 커스터마이징 가능</li>
-          <li>대량 주문 시 우선적으로 세팅 작업 진행</li>
+          <li>단일 견적 보다 저렴한 가격</li>
+          <li>원하는 사양 원하는 댓수로 커스터마이징 가능</li>
+          <li>대량 주문 시 우선적으로 세팅작업 진행</li>
           <li>1:1 전담 관리 서비스</li>
         </ul>
       </div>
-      <div>
-        <div class="mock">이미지/배너 영역</div>
-        <div style="margin-top:0.9rem;">
-          <a href="https://open.kakao.com/o/sGm2lByh" target="_blank">대량 견적 문의하기</a>
-        </div>
-      </div>
-    </div>
+      <img th:src="@{/assets/images/sub_img.png}" src="/assets/images/sub_img.png" alt="구독 이미지"/>
+    </section>
 
+  </section><!-- /main_wrap -->
+</div><!-- /download_wrap -->
+
+<!-- 결제 모달 -->
+<div id="paymentModalOverlay" role="dialog" aria-modal="true" aria-label="결제하기">
+  <div class="modal-container">
+    <div class="modal-header">
+      <span>결제하기</span>
+    </div>
+    <button type="button" class="modal-close" aria-label="닫기">×</button>
+    <div class="modal-body2">
+      <iframe id="paymentIframe" src="about:blank" allow="fullscreen; clipboard-write"></iframe>
+    </div>
   </div>
-</section>
+</div>
 
 <div th:replace="~{fragments/landing-footer :: footer}"></div>
 
 <script>
-  function goPurchase() {
-    // 구매는 로그인/대시보드에서 모달로 진행하는 흐름을 우선 사용
+  (function () {
+    // 호버: 카드 배경 + 버튼 색상 (CSS transition으로 처리, JS 불필요)
+
+    // 모바일 토글: .sub_box 클릭 시 .p_list / .chk_list 펼치기
+    document.querySelectorAll('.sub_box').forEach(function (box) {
+      box.addEventListener('click', function (e) {
+        if (window.innerWidth > 767) return;
+
+        // 구매하기 버튼 클릭 시 무시
+        if (e.target.classList.contains('p_btn') || e.target.closest('.p_btn')) return;
+
+        var pList   = this.querySelector('.p_list');
+        var chkList = this.querySelector('.chk_list');
+        var arrow   = this.querySelector('.p_more_btn_mobile span img');
+
+        var isOpen = pList && pList.classList.contains('active');
+
+        if (pList)   pList.classList.toggle('active', !isOpen);
+        if (chkList) chkList.classList.toggle('active', !isOpen);
+        if (arrow)   arrow.classList.toggle('active', !isOpen);
+
+        // 펼쳤으면 해당 위치로 스크롤
+        if (!isOpen && pList) {
+          var top = pList.getBoundingClientRect().top + window.scrollY - 100;
+          window.scrollTo({ top: top, behavior: 'smooth' });
+        }
+      });
+    });
+
+    // 결제 모달 이벤트
+    var overlay = document.getElementById('paymentModalOverlay');
+
+    // 오버레이 배경 클릭
+    overlay.addEventListener('click', function (e) {
+      if (e.target === this) closePaymentModal();
+    });
+
+    // 닫기 버튼
+    overlay.querySelector('.modal-close').addEventListener('click', closePaymentModal);
+
+    // ESC 키
+    document.addEventListener('keyup', function (e) {
+      if (e.key === 'Escape') closePaymentModal();
+    });
+  })();
+
+  function openPaymentModal(url) {
+    var overlay = document.getElementById('paymentModalOverlay');
+    document.getElementById('paymentIframe').src = url || 'about:blank';
+    overlay.style.display = 'block';
+    document.body.classList.add('modal-open');
+  }
+
+  function closePaymentModal() {
+    var overlay = document.getElementById('paymentModalOverlay');
+    overlay.style.display = 'none';
+    document.getElementById('paymentIframe').src = 'about:blank';
+    document.body.classList.remove('modal-open');
+  }
+
+  function paymentWindowOpen(grade) {
+    // 로그인 여부는 서버에서 처리 — 대시보드로 이동
     window.location.href = '/dashboard';
   }
 </script>
 
 </body>
 </html>
-

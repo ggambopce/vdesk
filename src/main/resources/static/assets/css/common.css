@@ -1,0 +1,92 @@
+@charset "utf-8";
+
+/* =====================================================
+   Reset
+===================================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: #fff;
+  color: #111;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.02em;
+}
+a { text-decoration: none; color: inherit; }
+img, video { display: block; max-width: 100%; }
+ul { list-style: none; padding: 0; margin: 0; }
+
+/* =====================================================
+   CSS 변수
+===================================================== */
+:root {
+  --red:    #F44336;
+  --red-dk: #d32f2f;
+  --red-lt: #fff5f5;
+  --ink:    #111;
+  --mid:    #374151;
+  --muted:  #6b7280;
+  --border: #e5e7eb;
+  --soft:   #f9fafb;
+  --ease:   cubic-bezier(.25, .46, .45, .94);
+}
+
+/* =====================================================
+   Layout 공통
+===================================================== */
+.container1 {
+  width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 1201px) {
+  .container1 { width: 95%; }
+}
+
+/* =====================================================
+   공통 색상
+===================================================== */
+.main-color { color: var(--red); }
+
+/* =====================================================
+   공통 컨텐츠 타이틀
+===================================================== */
+.content__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 20px;
+  word-break: keep-all;
+}
+
+.content__title .content__title__sub {
+  color: var(--red);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 40px;
+}
+
+.content__title h2 {
+  color: #111;
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 56px;
+}
+
+@media (max-width: 768px) {
+  .content__title .content__title__sub { font-size: 16px; line-height: 24px; }
+  .content__title h2 { font-size: 24px; line-height: 32px; }
+}
+
+/* =====================================================
+   공통 애니메이션 (scroll-animate)
+===================================================== */
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+}
+.scroll-animate.animate-in { opacity: 1; transform: translateY(0); }
+.scroll-animate.delay-1 { transition-delay: 0.3s; }
