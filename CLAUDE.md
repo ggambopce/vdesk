@@ -41,9 +41,13 @@ Stateless JWT in HttpOnly cookies. OAuth2 social login (Google, Kakao, Naver).
 
 ### Frontend / Thymeleaf Layout
 
+Page routing is handled by `PageController` (landing/auth/dashboard at `/`, `/login`, `/dashboard`, etc.) and `AdminPageController` (`/admin/**`) — both in `global/web/`.
+
 Two distinct layout patterns:
 - **Landing/user pages**: use `th:replace="~{fragments/header :: header('pageName')}"` — standard header with nav
 - **Admin pages**: use `th:replace="~{fragments/admin-sidebar :: sidebar('pageName')}"` — sidebar-only, no header
+
+Tailwind CSS is pre-compiled at `static/generated/tailwind.css` — no separate CSS build step needed.
 
 `sec:authorize` (from `thymeleaf-extras-springsecurity6`) works in templates because `JwtAuthenticationFilter` populates `SecurityContext` before Thymeleaf renders. Use:
 - `sec:authorize="!isAuthenticated()"` — guest
@@ -63,8 +67,8 @@ Two distinct layout patterns:
 | Domain | Key Entities | Notes |
 |--------|-------------|-------|
 | `users` | `Users` | `loginType`: "normal"/"google"/"kakao"/"naver" |
-| `devices` | `Device`, `UserDevice` | `UserDevice` is the M:M join with `aliasName` |
-| `sessions` | `RemoteSession` | Tracks active remote desktop sessions |
+| `devices` | `Device`, `UserDevice` | `UserDevice` is the M:M join with `aliasName`; `HostController` (`/api/host/register`, `/api/host/heartbeat`) serves the C# desktop agent |
+| `sessions` | `RemoteSession` | Two controllers: `RemoteSessionController` (`/api/remote/`) for web clients; `DeviceSessionController` (`/api/devices/sessions/`) called by C# desktop agent |
 | `payments` | `Payment`, `Orders`, `UserPlan`, `Product` | Multi-gateway: Welcome (KR), PayPal, Paddle |
 | `welcome` | `WelcomeBillingKey` | Korean PG integration with separate billing MID |
 | `admin/supportPost` | `SupportPosts`, `InquiryDetails`, `PartnershipDetails` | `BoardType`: NOTICE/FAQ/INQUIRY/PARTNERSHIP |
@@ -94,6 +98,3 @@ Timezone: `Asia/Seoul` throughout. `ddl-auto: update` (schema is updated, not dr
 
 Logging is configured at DEBUG for `org.springframework.security`, `org.springframework.web`, and `org.springframework.security.oauth2`.
 
-## Known Issues
-
-- `src/main/java/com/core/vdesk/admin/supportPost/dto/SupportpostUpdateRequestDto.java` has a filename case mismatch (lowercase 'p') vs the public class name `SupportPostUpdateRequestDto`. On Windows (case-insensitive FS) this causes a Java compilation error. Rename via delete + recreate with the correct filename.

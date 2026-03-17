@@ -1,691 +1,1399 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Vdesk — 빠르고 안전한 원격 제어 서비스</title>
-  <meta name="description" content="브이데스크는 Windows, Mac은 물론 Android, iOS에서도 리소스 걱정 없이 24시간 내내 사용할 수 있는 최고의 원격제어 서비스입니다."/>
+  <title>브이데스크 — 빠르고 안전한 원격 제어 서비스</title>
+  <meta name="description" content="브이데스크는 Windows, Mac, Android에서 리소스 걱정 없이 24시간 원격으로 내 컴퓨터를 제어할 수 있는 서비스입니다."/>
+  <meta property="og:title" content="브이데스크"/>
+  <meta property="og:description" content="빠르고 안전한 원격지원 프로그램"/>
+  <meta property="og:type" content="website"/>
+
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
   <style>
+    /* ────── Reset & Tokens ────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; background: #fff; color: #111;}
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: #fff; color: #111; -webkit-font-smoothing: antialiased; }
     a { text-decoration: none; color: inherit; }
+    img, video { display: block; max-width: 100%; }
+    ul { list-style: none; }
 
-    /* ── Hero ─────────────────────────────────────── */
-    .hero {
-      min-height: calc(100vh - 64px);
-      display: flex; align-items: center;
-      padding: 80px 24px 64px;
-      background: #fff;
-      position: relative; overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background:
-        radial-gradient(ellipse 70% 60% at 80% 40%, rgba(239,68,68,0.06) 0%, transparent 70%),
-        radial-gradient(ellipse 50% 40% at 10% 80%, rgba(239,68,68,0.04) 0%, transparent 60%);
-      pointer-events: none;
-    }
-    .hero-inner {
-      max-width: 1280px; margin: 0 auto; width: 100%;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
-      position: relative;
-    }
-    .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 7px;
-      background: #fef2f2; border: 1px solid #fecaca;
-      color: #dc2626; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em;
-      padding: 0.3rem 0.85rem; border-radius: 999px; margin-bottom: 1.5rem;
-    }
-    .hero-eyebrow-dot {
-      width: 6px; height: 6px; border-radius: 50%; background: #ef4444;
-      animation: blink 1.6s ease-in-out infinite;
-    }
-    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
-    .hero-title {
-      font-size: clamp(2.6rem, 5vw, 4rem); font-weight: 800; line-height: 1.1;
-      letter-spacing: -0.02em; margin-bottom: 1.5rem; color: #0f172a;
-    }
-    .hero-title .accent { color: #ef4444; }
-    .hero-desc {
-      font-size: 1.05rem; color: #64748b; line-height: 1.85;
-      margin-bottom: 2.25rem; max-width: 460px;
-    }
-    .hero-actions { display: flex; gap: 0.875rem; flex-wrap: wrap; margin-bottom: 3rem; }
-    .btn-primary {
-      padding: 0.9rem 1.85rem; background: #ef4444; color: #fff;
-      border-radius: 10px; font-weight: 700; font-size: 0.95rem;
-      transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
-      display: inline-flex; align-items: center; gap: 7px;
-      box-shadow: 0 4px 14px rgba(239,68,68,0.3);
-    }
-    .btn-primary:hover { background: #dc2626; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(239,68,68,0.35); }
-    .btn-ghost {
-      padding: 0.9rem 1.85rem; border: 1.5px solid #e2e8f0; color: #374151;
-      border-radius: 10px; font-weight: 600; font-size: 0.95rem;
-      transition: border-color 0.15s, transform 0.12s;
-      display: inline-flex; align-items: center; gap: 7px;
-    }
-    .btn-ghost:hover { border-color: #94a3b8; transform: translateY(-2px); }
-    .hero-trust {
-      display: flex; gap: 1.75rem; align-items: center;
-    }
-    .trust-item {
-      display: flex; flex-direction: column;
-    }
-    .trust-num { font-size: 1.55rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; }
-    .trust-label { font-size: 0.75rem; color: #94a3b8; margin-top: 1px; }
-    .trust-divider { width: 1px; height: 36px; background: #e2e8f0; }
-
-    /* ── Hero Visual ─────────────────────────────── */
-    .hero-visual { position: relative; }
-    .dashboard-mock {
-      background: #0f172a; border-radius: 16px; overflow: hidden;
-      box-shadow: 0 40px 100px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.04);
-    }
-    .mock-topbar {
-      background: #1e293b; padding: 0.75rem 1rem;
-      display: flex; align-items: center; gap: 0.5rem;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-    .mock-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .mock-title-bar {
-      flex: 1; height: 1px; background: rgba(255,255,255,0.06); margin: 0 0.5rem;
-    }
-    .mock-label { font-size: 0.6rem; color: #475569; font-family: monospace; }
-    .mock-body {
-      display: grid; grid-template-columns: 180px 1fr;
-    }
-    .mock-sidebar {
-      background: #0f172a; padding: 1rem 0.75rem;
-      border-right: 1px solid rgba(255,255,255,0.05);
-      display: flex; flex-direction: column; gap: 0.4rem;
-    }
-    .mock-section-label {
-      font-size: 0.55rem; color: #475569; font-weight: 600; letter-spacing: 0.08em;
-      text-transform: uppercase; margin-bottom: 0.3rem; padding-left: 0.4rem;
-    }
-    .mock-device {
-      display: flex; align-items: center; gap: 0.5rem;
-      padding: 0.4rem 0.5rem; border-radius: 6px; cursor: pointer;
-      transition: background 0.12s;
-    }
-    .mock-device:hover { background: rgba(255,255,255,0.04); }
-    .mock-device.active { background: rgba(239,68,68,0.15); }
-    .mock-status { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .mock-status.on { background: #22c55e; box-shadow: 0 0 0 2px rgba(34,197,94,0.2); }
-    .mock-status.off { background: #374151; }
-    .mock-device-name { font-size: 0.62rem; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .mock-device.active .mock-device-name { color: #fca5a5; }
-    .mock-main {
-      background: #0a0f1e; display: flex; flex-direction: column;
-    }
-    .mock-main-toolbar {
-      padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05);
-      display: flex; align-items: center; gap: 0.5rem;
-    }
-    .mock-toolbar-btn {
-      font-size: 0.58rem; color: #64748b; background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.06); border-radius: 4px;
-      padding: 0.18rem 0.5rem; cursor: pointer;
-    }
-    .mock-screen {
-      flex: 1; aspect-ratio: 16/8; display: flex; align-items: center; justify-content: center;
-      background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-      position: relative; overflow: hidden;
-    }
-    .mock-screen::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: repeating-linear-gradient(
-        0deg, transparent, transparent 3px,
-        rgba(255,255,255,0.006) 3px, rgba(255,255,255,0.006) 4px
-      );
-    }
-    .mock-screen-inner {
-      display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 1;
-    }
-    .mock-screen-logo {
-      width: 36px; height: 36px; border-radius: 9px;
-      background: rgba(239,68,68,0.8); display: flex; align-items: center; justify-content: center;
-    }
-    .mock-connected-text { font-size: 0.62rem; color: #22c55e; font-weight: 600; letter-spacing: 0.05em; }
-    .mock-ping { font-size: 0.55rem; color: #475569; }
-
-    /* Floating badges */
-    .float-badge {
-      position: absolute; background: #fff; border-radius: 10px;
-      padding: 0.55rem 0.85rem; box-shadow: 0 8px 28px rgba(0,0,0,0.13);
-      display: flex; align-items: center; gap: 0.45rem;
-      font-size: 0.76rem; font-weight: 600; color: #111;
-      animation: floatY 3.5s ease-in-out infinite;
-      z-index: 10;
-    }
-    .float-badge-1 { top: -18px; right: 12%; animation-delay: 0s; }
-    .float-badge-2 { bottom: -16px; left: 8%; animation-delay: 1.8s; }
-    @keyframes floatY {
-      0%,100% { transform: translateY(0); }
-      50% { transform: translateY(-7px); }
+    :root {
+      --red:    #f44336;
+      --red-dk: #d32f2f;
+      --red-lt: #fff5f5;
+      --ink:    #111827;
+      --mid:    #374151;
+      --muted:  #6b7280;
+      --pale:   #9ca3af;
+      --border: #e5e7eb;
+      --soft:   #f9fafb;
+      --dark:   #0d1117;
+      --ease:   cubic-bezier(.16,1,.3,1);
+      --r:      16px;
     }
 
-    /* ── Section Common ──────────────────────────── */
-    .section { padding: 6rem 1.5rem; }
-    .section-inner { max-width: 1280px; margin: 0 auto; }
-    .section-label {
-      display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
-      text-transform: uppercase; color: #ef4444; background: #fef2f2;
-      padding: 0.25rem 0.75rem; border-radius: 999px; margin-bottom: 1rem;
-    }
-    .section-title {
-      font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 800; color: #0f172a;
-      line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 0.85rem;
-    }
-    .section-desc { font-size: 1rem; color: #64748b; line-height: 1.8; }
+    /* ────── Scroll Reveal ────── */
+    .sa { opacity: 0; transform: translateY(28px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+    .sa.in { opacity: 1; transform: none; }
+    .sa-d1 { transition-delay: .08s; }
+    .sa-d2 { transition-delay: .16s; }
+    .sa-d3 { transition-delay: .24s; }
+    .sa-d4 { transition-delay: .32s; }
 
-    /* ── Features ────────────────────────────────── */
-    .features-bg { background: #fafafa; }
-    .feature-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 3.5rem;
-    }
-    .feature-card {
-      background: #fff; border: 1.5px solid #f1f5f9; border-radius: 18px;
-      padding: 1.75rem; transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
-    }
-    .feature-card:hover {
-      border-color: #fecaca; box-shadow: 0 8px 32px rgba(239,68,68,0.07);
-      transform: translateY(-3px);
-    }
-    .feature-icon {
-      width: 46px; height: 46px; border-radius: 12px; background: #fef2f2;
-      display: flex; align-items: center; justify-content: center; margin-bottom: 1.1rem;
-    }
-    .feature-title { font-size: 0.98rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; }
-    .feature-desc { font-size: 0.875rem; color: #64748b; line-height: 1.75; }
+    /* ────── Layout ────── */
+    .sec { padding: 6.5rem 1.5rem; }
+    .inner { max-width: 1200px; margin: 0 auto; }
+    .sec-gray { background: var(--soft); }
+    .sec-dark { background: var(--dark); }
 
-    /* ── How it works ────────────────────────────── */
-    .steps {
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;
-      margin-top: 3.5rem; position: relative;
+    /* ────── Section Titles ────── */
+    .stag {
+      display: inline-block; font-size: .72rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--red); background: var(--red-lt);
+      padding: .28rem .85rem; border-radius: 999px; margin-bottom: .9rem;
     }
-    .steps::before {
-      content: '';
-      position: absolute; top: 28px; left: calc(12.5% + 20px); right: calc(12.5% + 20px);
-      height: 1px; background: #f1f5f9; z-index: 0;
+    .stag-dark { background: rgba(244,67,54,.2); color: #ff8a80; }
+    h2.stit {
+      font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 800;
+      color: var(--ink); line-height: 1.2; letter-spacing: -.025em;
+      margin-bottom: .75rem;
     }
-    .step-card {
-      display: flex; flex-direction: column; align-items: center; text-align: center;
-      padding: 1.5rem 1rem; position: relative; z-index: 1;
-    }
-    .step-num {
-      width: 56px; height: 56px; border-radius: 50%;
-      background: #fff; border: 2px solid #f1f5f9;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem; font-weight: 800; color: #ef4444;
-      margin-bottom: 1.25rem; flex-shrink: 0;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    }
-    .step-title { font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.45rem; }
-    .step-desc { font-size: 0.83rem; color: #64748b; line-height: 1.7; }
+    h2.stit-dark { color: #fff; }
+    p.sdesc { font-size: .95rem; color: var(--muted); line-height: 1.9; }
+    p.sdesc-dark { color: rgba(255,255,255,.45); }
 
-    /* ── Use case teaser ─────────────────────────── */
-    .usecase-teaser {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      border-radius: 24px; padding: 3.5rem;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;
+    /* ────── Hero ────── */
+    .section__hero {
+      width: 100%; position: relative;
+      max-width: 1200px; margin: 100px auto;
+      padding: 0 1.5rem;
+      letter-spacing: -0.05em;
     }
-    .usecase-teaser-title {
-      font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; color: #fff;
-      line-height: 1.25; margin-bottom: 1rem;
+    .section__hero__text { width: 380px; }
+    .section__hero__image {
+      position: absolute; right: 0; bottom: 0;
+      width: calc(100% - 1.5rem - 400px);
     }
-    .usecase-teaser-desc { font-size: 0.9rem; color: rgba(255,255,255,0.6); line-height: 1.8; margin-bottom: 1.75rem; }
-    .btn-white {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: 0.8rem 1.6rem; background: #fff; color: #ef4444;
-      border-radius: 10px; font-weight: 700; font-size: 0.9rem;
-      transition: transform 0.12s, box-shadow 0.15s;
+    .section__hero__image img {
+      width: 100%; height: auto; display: block; object-fit: cover;
     }
-    .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
-    .usecase-chips {
-      display: flex; flex-wrap: wrap; gap: 0.65rem;
+    .section__hero__title {
+      padding-top: 87px; margin-bottom: 60px;
     }
-    .usecase-chip {
-      display: flex; align-items: center; gap: 0.5rem;
-      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px; padding: 0.75rem 1rem; transition: background 0.15s;
-      cursor: pointer; text-decoration: none;
+    .section__hero__title .section__hero__title__sub {
+      font-size: 22px; line-height: 40px;
+      color: #555; font-weight: 500;
+      margin-bottom: 12px; display: block;
     }
-    .usecase-chip:hover { background: rgba(255,255,255,0.1); }
-    .usecase-chip-icon {
-      width: 32px; height: 32px; border-radius: 8px;
-      background: rgba(239,68,68,0.25); display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
+    .section__hero_main_title {
+      font-size: 70px; line-height: 96px;
+      color: #111; font-weight: 600;
     }
-    .usecase-chip-text { font-size: 0.82rem; font-weight: 600; color: #e2e8f0; }
-
-    /* ── Plans ───────────────────────────────────── */
-    .plan-bg { background: #fafafa; }
-    .plan-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 3rem;
+    .section__hero_main_title .main-color {
+      color: var(--red); font-size: 70px;
+      line-height: 96px; font-weight: 600;
     }
-    .plan-card {
-      background: #fff; border: 1.5px solid #f1f5f9; border-radius: 20px;
-      padding: 2rem; position: relative; transition: transform 0.18s, box-shadow 0.18s;
+    /* hero animate */
+    .hero-animate { opacity: 0; transform: translateY(20px); transition: opacity .55s var(--ease), transform .55s var(--ease); }
+    .hero-animate.animate-in { opacity: 1; transform: none; }
+    .hero-delay-0 { transition-delay: 0s; }
+    .hero-delay-1 { transition-delay: .1s; }
+    .hero-delay-2 { transition-delay: .2s; }
+    .hero-delay-3 { transition-delay: .3s; }
+    .hero-delay-4 { transition-delay: .4s; }
+    /* link wrap */
+    .section__hero_link_wrap {
+      padding: 16px; display: flex; flex-direction: column; gap: 16px;
+      border-radius: 16px; box-shadow: 0 0 10px rgba(0,0,0,.15);
+      margin-bottom: 16px; cursor: pointer;
+      transition: box-shadow .4s ease;
     }
-    .plan-card:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,0.07); }
-    .plan-card.popular { border-color: #ef4444; box-shadow: 0 8px 32px rgba(239,68,68,0.12); }
-    .popular-badge {
-      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-      background: #ef4444; color: #fff; font-size: 0.7rem; font-weight: 700;
-      padding: 0.22rem 0.85rem; border-radius: 999px; white-space: nowrap;
+    .section__hero_link_wrap:hover { box-shadow: 0 0 10px rgba(244,67,54,.3); }
+    .section__hero_link_wrap p { font-size: 16px; line-height: 24px; color: #6d6d6d; }
+    .direct_link {
+      font-size: 16px; color: var(--red);
+      display: flex; align-items: center; gap: 8px;
     }
-    .plan-name { font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem; }
-    .plan-sub { font-size: 0.82rem; color: #94a3b8; margin-bottom: 1.25rem; }
-    .plan-price { font-size: 1.9rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; }
-    .plan-price-unit { font-size: 0.85rem; font-weight: 500; color: #94a3b8; }
-    .plan-divider { border: none; border-top: 1px solid #f1f5f9; margin: 1.25rem 0; }
-    .plan-features { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
-    .plan-features li {
-      display: flex; align-items: flex-start; gap: 0.5rem;
-      font-size: 0.85rem; color: #475569; line-height: 1.5;
-    }
-    .plan-features li::before { content: '✓'; color: #ef4444; font-weight: 700; flex-shrink: 0; }
-    .plan-btn {
-      display: block; text-align: center; margin-top: 1.5rem;
-      padding: 0.75rem; border-radius: 10px; font-weight: 600; font-size: 0.875rem;
-      transition: all 0.15s;
-    }
-    .plan-btn-outline { border: 1.5px solid #e2e8f0; color: #374151; }
-    .plan-btn-outline:hover { border-color: #94a3b8; }
-    .plan-btn-filled { background: #ef4444; color: #fff; border: none; }
-    .plan-btn-filled:hover { background: #dc2626; }
-
-    /* ── CTA ─────────────────────────────────────── */
-    .cta-section {
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-      padding: 6rem 1.5rem; text-align: center;
-      position: relative; overflow: hidden;
-    }
-    .cta-section::before {
-      content: '';
-      position: absolute; top: -50%; right: -10%;
-      width: 500px; height: 500px; border-radius: 50%;
-      background: rgba(255,255,255,0.05);
-    }
-    .cta-section::after {
-      content: '';
-      position: absolute; bottom: -40%; left: -8%;
-      width: 400px; height: 400px; border-radius: 50%;
-      background: rgba(0,0,0,0.06);
-    }
-    .cta-inner { max-width: 640px; margin: 0 auto; position: relative; z-index: 1; }
-    .cta-title { font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 800; color: #fff; margin-bottom: 1rem; line-height: 1.2; }
-    .cta-desc { font-size: 1rem; color: rgba(255,255,255,0.78); margin-bottom: 2.25rem; line-height: 1.7; }
-    .cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-    .btn-cta-white {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 0.95rem 2.1rem; background: #fff; color: #ef4444;
-      border-radius: 10px; font-weight: 700; font-size: 1rem;
-      transition: transform 0.12s, box-shadow 0.15s;
-    }
-    .btn-cta-white:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,0.18); }
-    .btn-cta-outline {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 0.95rem 2.1rem; border: 1.5px solid rgba(255,255,255,0.45); color: #fff;
-      border-radius: 10px; font-weight: 600; font-size: 1rem;
-      transition: border-color 0.15s, background 0.15s;
-    }
-    .btn-cta-outline:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
-
-    /* ── Responsive ──────────────────────────────── */
-    @media (max-width: 1024px) {
-      .feature-grid { grid-template-columns: repeat(2, 1fr); }
-      .steps { grid-template-columns: repeat(2, 1fr); }
-      .steps::before { display: none; }
-    }
+    /* responsive hero */
     @media (max-width: 900px) {
-      .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
-      .hero-visual { order: -1; }
-      .plan-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
-      .usecase-teaser { grid-template-columns: 1fr; padding: 2.5rem; }
+      .section__hero { margin: 48px auto; }
+      .section__hero__text { width: 100%; }
+      .section__hero__image { display: none; }
+      .section__hero_main_title { font-size: 48px; line-height: 64px; }
+      .section__hero_main_title .main-color { font-size: 48px; line-height: 64px; }
+      .section__hero__title { padding-top: 32px; margin-bottom: 32px; }
     }
     @media (max-width: 640px) {
-      .feature-grid { grid-template-columns: 1fr; }
-      .steps { grid-template-columns: 1fr; }
-      .hero-trust { gap: 1.25rem; }
-      .float-badge { display: none; }
+      .section__hero_main_title { font-size: 38px; line-height: 52px; }
+      .section__hero_main_title .main-color { font-size: 38px; line-height: 52px; }
+    }
+
+    /* ────── Use Case Tabs (legacy — replaced by section__usease) ────── */
+    .tab-panel.active {
+      display: grid; grid-template-columns: 1fr 1.3fr;
+      gap: 3.5rem; align-items: center;
+      animation: panelIn .3s var(--ease);
+    }
+    @keyframes panelIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+    .tab-text-title {
+      font-size: 1.45rem; font-weight: 800; color: var(--ink);
+      margin-bottom: .75rem; line-height: 1.3;
+    }
+    .tab-text-desc { font-size: .92rem; color: var(--muted); line-height: 1.85; }
+    .video-wrap {
+      border-radius: var(--r); overflow: hidden;
+      box-shadow: 0 16px 48px rgba(0,0,0,.1);
+      aspect-ratio: 16/10; background: var(--dark);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .video-wrap video { width: 100%; height: 100%; object-fit: cover; }
+    .video-ph {
+      display: flex; flex-direction: column; align-items: center; gap: .75rem;
+      color: rgba(255,255,255,.3); font-size: .8rem;
+    }
+
+    /* ────── Value / Stats ────── */
+    .stats-sec { padding: 5.5rem 1.5rem; background: var(--dark); }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      border: 1px solid rgba(255,255,255,.08); border-radius: 20px; overflow: hidden;
+      margin-top: 3rem;
+    }
+    .stat-item {
+      padding: 2.25rem 1.75rem;
+      border-right: 1px solid rgba(255,255,255,.08);
+      transition: background .2s;
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-item:hover { background: rgba(255,255,255,.03); }
+    .stat-icon {
+      width: 44px; height: 44px; border-radius: 11px;
+      background: rgba(244,67,54,.16); display: flex; align-items: center;
+      justify-content: center; margin-bottom: 1.3rem;
+    }
+    .stat-num {
+      font-size: clamp(1.8rem, 2.6vw, 2.5rem); font-weight: 800;
+      color: #fff; letter-spacing: -.03em; line-height: 1;
+      margin-bottom: .45rem;
+    }
+    .stat-label { font-size: .8rem; color: rgba(255,255,255,.4); font-weight: 500; }
+
+    /* ────── Main Function Cards ────── */
+    .fn-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 1.1rem; margin-top: 3rem;
+    }
+    .fn-card {
+      background: #fff; border: 1.5px solid var(--border);
+      border-radius: var(--r); padding: 1.75rem;
+      transition: border-color .16s, box-shadow .16s, transform .16s;
+    }
+    .fn-card:hover { border-color: #ffcdd2; box-shadow: 0 6px 24px rgba(244,67,54,.07); transform: translateY(-3px); }
+    .fn-img {
+      width: 100%; aspect-ratio: 16/9; object-fit: contain;
+      background: var(--soft); border-radius: 10px; margin-bottom: 1.1rem;
+    }
+    .fn-img-ph {
+      width: 100%; aspect-ratio: 16/9;
+      background: linear-gradient(135deg, #fff5f5 0%, #fef2f2 100%);
+      border-radius: 10px; margin-bottom: 1.1rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .fn-title { font-size: .95rem; font-weight: 700; color: var(--ink); margin-bottom: .4rem; }
+    .fn-desc  { font-size: .855rem; color: var(--muted); line-height: 1.75; }
+
+    /* ────── Pricing ────── */
+    .plan-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 1.25rem; margin-top: 2.75rem;
+    }
+    .plan-card {
+      background: #fff; border: 1.5px solid var(--border);
+      border-radius: 20px; padding: 2.1rem; position: relative;
+      transition: transform .18s, box-shadow .18s;
+    }
+    .plan-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.07); }
+    .plan-card.featured { border-color: var(--red); box-shadow: 0 6px 28px rgba(244,67,54,.12); }
+    .plan-badge {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--red); color: #fff; font-size: .66rem; font-weight: 700;
+      padding: .22rem .82rem; border-radius: 999px; white-space: nowrap;
+    }
+    .plan-name { font-size: 1.05rem; font-weight: 800; color: var(--ink); margin-bottom: .2rem; }
+    .plan-sub  { font-size: .8rem; color: var(--muted); margin-bottom: 1.1rem; }
+    .plan-price {
+      font-size: 1.95rem; font-weight: 800; color: var(--ink);
+      letter-spacing: -.03em; line-height: 1;
+    }
+    .plan-price.featured-price { color: var(--red); }
+    .plan-unit { font-size: .82rem; color: var(--muted); }
+    .plan-hr   { border: none; border-top: 1px solid var(--border); margin: 1.2rem 0; }
+    .plan-uses {
+      display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1rem;
+    }
+    .plan-use-tag {
+      background: var(--red-lt); color: var(--red);
+      font-size: .73rem; font-weight: 600;
+      padding: .2rem .65rem; border-radius: 999px;
+    }
+    .plan-specs { display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1.4rem; }
+    .plan-spec-row {
+      display: flex; align-items: center; gap: .5rem;
+      font-size: .82rem; color: var(--mid);
+    }
+    .plan-spec-row::before { content: '✓'; color: var(--red); font-weight: 800; flex-shrink: 0; }
+    .plan-btn {
+      display: block; text-align: center;
+      padding: .75rem; border-radius: 10px; font-weight: 700;
+      font-size: .88rem; cursor: pointer; transition: all .15s;
+    }
+    .plan-btn-outline {
+      border: 1.5px solid var(--border); color: var(--mid); background: #fff;
+    }
+    .plan-btn-outline:hover { border-color: var(--red); color: var(--red); }
+    .plan-btn-fill {
+      background: var(--red); color: #fff; border: none;
+    }
+    .plan-btn-fill:hover { background: var(--red-dk); }
+
+    /* ────── About ────── */
+    .about-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 1.25rem; margin-top: 3rem;
+    }
+    .about-card {
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px; padding: 2rem;
+      transition: background .18s, border-color .18s;
+    }
+    .about-card:hover { background: rgba(255,255,255,.07); border-color: rgba(244,67,54,.3); }
+    .about-ico {
+      width: 64px; height: 64px; border-radius: 14px;
+      overflow: hidden; background: rgba(244,67,54,.14);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.1rem;
+    }
+    .about-ico img { width: 100%; height: 100%; object-fit: cover; }
+    .about-title { font-size: .97rem; font-weight: 700; color: #fff; margin-bottom: .45rem; }
+    .about-desc  { font-size: .855rem; color: rgba(255,255,255,.45); line-height: 1.8; }
+
+    /* ────── Reviews Swiper ────── */
+    .review-head {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 2.5rem; gap: 1rem; flex-wrap: wrap;
+    }
+    .rev-navs { display: flex; gap: .5rem; }
+    .rev-nav-btn {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: #fff; border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all .15s;
+    }
+    .rev-nav-btn:hover { border-color: var(--red); background: var(--red-lt); }
+    .swiper-button-disabled { opacity: .3 !important; pointer-events: none; }
+    .rev-card {
+      background: #fff; border: 1.5px solid var(--border);
+      border-radius: var(--r); padding: 1.65rem; height: auto !important;
+    }
+    .rev-top { display: flex; align-items: center; gap: .85rem; margin-bottom: .85rem; }
+    .rev-avatar {
+      width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+      background: var(--red-lt); display: flex; align-items: center;
+      justify-content: center; font-size: 1rem; font-weight: 800; color: var(--red);
+      overflow: hidden;
+    }
+    .rev-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .rev-name    { font-size: .88rem; font-weight: 700; color: var(--ink); }
+    .rev-company { font-size: .74rem; color: var(--muted); margin-top: 2px; }
+    .rev-stars   { color: #f59e0b; font-size: .9rem; letter-spacing: .04em; margin-bottom: .7rem; }
+    .rev-body    { font-size: .855rem; color: #4b5563; line-height: 1.82; }
+    .rev-date    { font-size: .7rem; color: var(--pale); margin-top: .9rem; }
+    .swiper-pagination-bullet-active { background: var(--red) !important; }
+
+    /* ────── FAQ ────── */
+    .faq-wrap { max-width: 760px; margin: 2.75rem auto 0; }
+    .faq-item { border-bottom: 1px solid var(--border); }
+    .faq-item:first-child { border-top: 1px solid var(--border); }
+    .faq-q {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.3rem 0; cursor: pointer; gap: 1rem;
+    }
+    .faq-q-text { font-size: .95rem; font-weight: 600; color: var(--ink); line-height: 1.5; }
+    .faq-icon {
+      flex-shrink: 0; width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform .25s var(--ease);
+    }
+    .faq-item.open .faq-icon { transform: rotate(180deg); }
+    .faq-a { overflow: hidden; max-height: 0; transition: max-height .35s var(--ease); }
+    .faq-a-inner {
+      padding: .15rem 0 1.3rem;
+      font-size: .9rem; color: var(--muted); line-height: 1.85;
+    }
+    .faq-more { text-align: center; margin-top: 2.25rem; }
+    .btn-faq {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: .75rem 1.9rem; border: 1.5px solid var(--red); color: var(--red);
+      border-radius: 10px; font-weight: 700; font-size: .875rem;
+      background: transparent; cursor: pointer; transition: all .15s;
+    }
+    .btn-faq:hover { background: var(--red); color: #fff; }
+
+    /* ────── CTA Direct ────── */
+    .cta-sec {
+      padding: 6rem 1.5rem; text-align: center;
+      background: linear-gradient(135deg, var(--red) 0%, var(--red-dk) 100%);
+      position: relative; overflow: hidden;
+    }
+    .cta-sec::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(255,255,255,.08) 0%, transparent 70%);
+    }
+    .cta-title {
+      font-size: clamp(1.65rem, 3vw, 2.3rem); font-weight: 800;
+      color: #fff; line-height: 1.3; margin-bottom: 2rem;
+      position: relative; z-index: 1;
+    }
+    .cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; position: relative; z-index: 1; }
+    .btn-cta-w {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: .9rem 2rem; background: #fff; color: var(--red);
+      border-radius: 10px; font-weight: 800; font-size: .95rem;
+      transition: transform .12s, box-shadow .14s; border: none;
+    }
+    .btn-cta-w:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+    .btn-cta-t {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: .9rem 2rem;
+      border: 1.5px solid rgba(255,255,255,.5); color: #fff;
+      border-radius: 10px; font-weight: 600; font-size: .95rem;
+      transition: all .14s; background: transparent;
+    }
+    .btn-cta-t:hover { border-color: #fff; background: rgba(255,255,255,.1); }
+
+    /* ────── Responsive ────── */
+    @media (max-width: 1024px) {
+      .fn-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .stat-item:nth-child(2) { border-right: none; }
+      .stat-item:nth-child(3) { border-top: 1px solid rgba(255,255,255,.08); }
+    }
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .hero-img-wrap, .hero-img-placeholder { max-width: 520px; margin: 0 auto; }
+      .plan-grid { grid-template-columns: 1fr; max-width: 400px; margin: 2.75rem auto 0; }
+      .about-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .tab-panel.active { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .fn-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .stat-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,.08); }
+      .stat-item:last-child { border-bottom: none; }
+      .hero-links { flex-direction: column; }
     }
   </style>
 </head>
 <body>
 
-<div th:replace="~{fragments/header :: header('home')}"></div>
+<!-- ── Header ── -->
+<th:block th:replace="~{fragments/header :: header('home')}"/>
 
-<!-- ── Hero ─────────────────────────────────────── -->
-<section class="hero">
-  <div class="hero-inner">
-    <div>
-      <div class="hero-eyebrow">
-        <div class="hero-eyebrow-dot"></div>
-        베타 서비스 운영 중
-      </div>
-      <h1 class="hero-title">
-        언제 어디서나<br/>
-        내 PC에<br/>
-        <span class="accent">바로 접속</span>
+<!-- ════════════════════════════════════
+     HERO
+════════════════════════════════════ -->
+<section class="section__hero">
+  <!-- 오른쪽 히어로 이미지 (절대 위치) -->
+  <div class="section__hero__image hero-animate hero-delay-2">
+    <img th:src="@{/assets/images/hero.png}" src="/assets/images/hero.png" alt="브이데스크 이미지"
+         onerror="this.parentElement.style.display='none'"/>
+  </div>
+
+  <!-- 왼쪽 텍스트 + 링크 박스 -->
+  <div class="section__hero__text">
+    <div class="section__hero__title">
+      <span class="section__hero__title__sub hero-animate hero-delay-1">빠르고 안전한 원격지원 프로그램</span>
+      <h1 class="section__hero_main_title hero-animate hero-delay-0">
+        Fast &amp; Safe<br>
+        <span class="main-color">브이데스크</span>
       </h1>
-      <p class="hero-desc">
-        브이데스크는 Windows, Mac, Android, iOS에서<br/>
-        리소스 걱정 없이 24시간 원격으로<br/>
-        내 컴퓨터를 제어할 수 있는 서비스입니다.
-      </p>
-      <div class="hero-actions">
-        <a href="/dashboard" class="btn-primary">
-          <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653z" fill="white"/></svg>
-          지금 시작하기
-        </a>
-        <a href="/intro" class="btn-ghost">
-          서비스 소개
-          <svg width="14" height="14" fill="none" viewBox="0 0 20 20"><path d="M7 5l5 5-5 5" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+
+    <!-- 비로그인 -->
+    <div sec:authorize="!isAuthenticated()">
+      <div class="section__hero_link_wrap hero-animate hero-delay-3" onclick="goToVDesk()">
+        <p>브이데스크를 <br>즉시 사용해보고 싶다면?</p>
+        <a href="#" class="direct_link" onclick="event.preventDefault();">
+          브이데스크 바로가기
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
+            <mask id="mask-hero-1" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="17">
+              <rect y="0.6" width="16" height="16" fill="#D9D9D9"/>
+            </mask>
+            <g mask="url(#mask-hero-1)">
+              <path d="M5.35 15.27L4.17 14.08l5.48-5.48-5.48-5.48L5.35 1.93 12.02 8.6z" fill="#F44336"/>
+            </g>
+          </svg>
         </a>
       </div>
-      <div class="hero-trust">
-        <div class="trust-item">
-          <div class="trust-num">24/7</div>
-          <div class="trust-label">무중단 서비스</div>
-        </div>
-        <div class="trust-divider"></div>
-        <div class="trust-item">
-          <div class="trust-num">4+</div>
-          <div class="trust-label">지원 플랫폼</div>
-        </div>
-        <div class="trust-divider"></div>
-        <div class="trust-item">
-          <div class="trust-num">SSL</div>
-          <div class="trust-label">암호화 연결</div>
-        </div>
+      <div class="section__hero_link_wrap hero-animate hero-delay-4" onclick="location.href='/pricing'">
+        <p>브이데스크의 <br>더 많은 기능을 사용해 보고 싶다면?</p>
+        <a href="/pricing" class="direct_link" onclick="event.preventDefault();">
+          구매하기 바로가기
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
+            <mask id="mask-hero-2" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="17">
+              <rect y="0.6" width="16" height="16" fill="#D9D9D9"/>
+            </mask>
+            <g mask="url(#mask-hero-2)">
+              <path d="M5.35 15.27L4.17 14.08l5.48-5.48-5.48-5.48L5.35 1.93 12.02 8.6z" fill="#F44336"/>
+            </g>
+          </svg>
+        </a>
       </div>
     </div>
 
-    <!-- Dashboard mock UI -->
-    <div class="hero-visual">
-      <div style="position:relative;">
-        <div class="dashboard-mock">
-          <div class="mock-topbar">
-            <div class="mock-dot" style="background:#ef4444;"></div>
-            <div class="mock-dot" style="background:#f59e0b;"></div>
-            <div class="mock-dot" style="background:#22c55e;"></div>
-            <div class="mock-title-bar"></div>
-            <div class="mock-label">Vdesk — 원격 관리</div>
-          </div>
-          <div class="mock-body">
-            <div class="mock-sidebar">
-              <div class="mock-section-label">내 기기</div>
-              <div class="mock-device active">
-                <div class="mock-status on"></div>
-                <span class="mock-device-name">Vdesk PC-001</span>
-              </div>
-              <div class="mock-device">
-                <div class="mock-status on"></div>
-                <span class="mock-device-name">Vdesk PC-002</span>
-              </div>
-              <div class="mock-device">
-                <div class="mock-status on"></div>
-                <span class="mock-device-name">Vdesk PC-003</span>
-              </div>
-              <div class="mock-device">
-                <div class="mock-status off"></div>
-                <span class="mock-device-name">Vdesk PC-004</span>
-              </div>
-              <div class="mock-device">
-                <div class="mock-status on"></div>
-                <span class="mock-device-name">Vdesk PC-005</span>
-              </div>
-              <div class="mock-device">
-                <div class="mock-status off"></div>
-                <span class="mock-device-name">Vdesk PC-006</span>
-              </div>
-            </div>
-            <div class="mock-main">
-              <div class="mock-main-toolbar">
-                <span class="mock-toolbar-btn">연결</span>
-                <span class="mock-toolbar-btn">파일</span>
-                <span class="mock-toolbar-btn">설정</span>
-              </div>
-              <div class="mock-screen">
-                <div class="mock-screen-inner">
-                  <div class="mock-screen-logo">
-                    <svg width="18" height="18" viewBox="0 0 28 28" fill="none">
-                      <path d="M7 9h14M7 14h10M7 19h6" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-                    </svg>
-                  </div>
-                  <div class="mock-connected-text">● 연결됨</div>
-                  <div class="mock-ping">Ping 12ms · SSL 암호화</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="float-badge float-badge-1">
-          <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#22c55e" stroke-width="1.5"/></svg>
-          PC-001 연결 성공
-        </div>
-        <div class="float-badge float-badge-2">
-          <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke="#6366f1" stroke-width="1.5"/></svg>
-          SSL 보안 적용 중
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── Features ─────────────────────────────────── -->
-<section class="section features-bg">
-  <div class="section-inner">
-    <div style="text-align:center;max-width:580px;margin:0 auto;">
-      <div class="section-label">Features</div>
-      <h2 class="section-title">브이데스크만의 핵심 기능</h2>
-      <p class="section-desc">언제 어디서나 내 PC에 접속하고, 더 많은 가능성을 경험하세요.</p>
-    </div>
-    <div class="feature-grid">
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <div class="feature-title">최대 26대 동시 관리</div>
-        <p class="feature-desc">여러 대의 PC를 한 화면에서 동시에 등록하고 원격으로 제어합니다.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <div class="feature-title">AES-256 암호화</div>
-        <p class="feature-desc">모든 원격 세션은 AES-256 암호화와 SSL로 보호되어 안전하게 전송됩니다.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <div class="feature-title">모든 기기에서 접속</div>
-        <p class="feature-desc">Windows, Mac, iOS, Android 어디서든 동일한 경험으로 원격 접속합니다.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <div class="feature-title">초저지연 연결</div>
-        <p class="feature-desc">최적화된 화면 전송 기술로 마치 실제로 앉아서 사용하는 듯한 반응속도를 제공합니다.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <div class="feature-title">파일 전송</div>
-        <p class="feature-desc">원격 PC와 내 기기 사이에서 드래그 앤 드롭으로 파일을 간편하게 주고받습니다.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="#ef4444" stroke-width="1.8"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round"/></svg>
-        </div>
-        <div class="feature-title">24시간 무중단</div>
-        <p class="feature-desc">서버 다운타임 없이 365일 안정적인 서비스를 제공합니다. 야간·주말도 걱정 없이.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── How it works ──────────────────────────────── -->
-<section class="section">
-  <div class="section-inner">
-    <div style="text-align:center;max-width:540px;margin:0 auto;">
-      <div class="section-label">How It Works</div>
-      <h2 class="section-title">3분이면 시작할 수 있어요</h2>
-      <p class="section-desc">복잡한 설정 없이 간단한 4단계로 원격 접속을 시작하세요.</p>
-    </div>
-    <div class="steps">
-      <div class="step-card">
-        <div class="step-num">1</div>
-        <div class="step-title">회원가입</div>
-        <p class="step-desc">이메일 또는 소셜 계정으로<br/>빠르게 가입하세요.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-num">2</div>
-        <div class="step-title">호스트 설치</div>
-        <p class="step-desc">원격 접속할 PC에<br/>호스트 프로그램을 설치합니다.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-num">3</div>
-        <div class="step-title">기기 등록</div>
-        <p class="step-desc">호스트에 표시된 접속키로<br/>내 계정에 기기를 연결합니다.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-num">4</div>
-        <div class="step-title">원격 접속</div>
-        <p class="step-desc">대시보드에서 등록된 PC를<br/>클릭하면 바로 연결됩니다.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── Use case teaser ───────────────────────────── -->
-<section class="section" style="padding-top:0;">
-  <div class="section-inner">
-    <div class="usecase-teaser">
-      <div>
-        <div class="section-label" style="background:rgba(239,68,68,0.15);">Use Cases</div>
-        <h2 class="usecase-teaser-title">다양한 상황에서<br/>활용하세요</h2>
-        <p class="usecase-teaser-desc">게임, 트레이딩, 마케팅, 기업 IT 관리까지<br/>브이데스크가 필요한 모든 곳에 있습니다.</p>
-        <a href="/usecase" class="btn-white">
-          활용사례 전체 보기
-          <svg width="13" height="13" fill="none" viewBox="0 0 20 20"><path d="M7 5l5 5-5 5" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <!-- 로그인 -->
+    <div sec:authorize="isAuthenticated()">
+      <div class="section__hero_link_wrap hero-animate hero-delay-3" onclick="location.href='/dashboard'">
+        <p>브이데스크를 <br>즉시 사용해보고 싶다면?</p>
+        <a href="/dashboard" class="direct_link" onclick="event.preventDefault();">
+          접속기 바로가기
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
+            <mask id="mask-hero-3" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="17">
+              <rect y="0.6" width="16" height="16" fill="#D9D9D9"/>
+            </mask>
+            <g mask="url(#mask-hero-3)">
+              <path d="M5.35 15.27L4.17 14.08l5.48-5.48-5.48-5.48L5.35 1.93 12.02 8.6z" fill="#F44336"/>
+            </g>
+          </svg>
         </a>
       </div>
-      <div class="usecase-chips">
-        <a href="/usecase#game" class="usecase-chip">
-          <div class="usecase-chip-icon">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <span class="usecase-chip-text">모바일 게임</span>
-        </a>
-        <a href="/usecase#stock" class="usecase-chip">
-          <div class="usecase-chip-icon">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <span class="usecase-chip-text">주식 / 코인</span>
-        </a>
-        <a href="/usecase#marketing" class="usecase-chip">
-          <div class="usecase-chip-icon">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M22 4s-3.5 4-6 4-4.5-4-8-4S3 8 3 8v14" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <span class="usecase-chip-text">SNS 마케팅</span>
-        </a>
-        <a href="/usecase#multi" class="usecase-chip">
-          <div class="usecase-chip-icon">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <span class="usecase-chip-text">다수 PC 관리</span>
+      <div class="section__hero_link_wrap hero-animate hero-delay-4" onclick="location.href='/pricing'">
+        <p>브이데스크의 <br>더 많은 기능을 사용해 보고 싶다면?</p>
+        <a href="/pricing" class="direct_link" onclick="event.preventDefault();">
+          구매하기 바로가기
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
+            <mask id="mask-hero-4" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="17">
+              <rect y="0.6" width="16" height="16" fill="#D9D9D9"/>
+            </mask>
+            <g mask="url(#mask-hero-4)">
+              <path d="M5.35 15.27L4.17 14.08l5.48-5.48-5.48-5.48L5.35 1.93 12.02 8.6z" fill="#F44336"/>
+            </g>
+          </svg>
         </a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── Plans ─────────────────────────────────────── -->
-<section class="section plan-bg">
-  <div class="section-inner">
-    <div style="text-align:center;max-width:580px;margin:0 auto;">
-      <div class="section-label">Pricing</div>
-      <h2 class="section-title">합리적인 요금제</h2>
-      <p class="section-desc">필요한 만큼만 선택하세요. 언제든지 플랜을 변경할 수 있습니다.</p>
+<!-- ════════════════════════════════════
+     USE CASE TABS
+════════════════════════════════════ -->
+<style>
+  .section__usease { margin: 100px auto; }
+
+  .section__usease .content__title { text-align: center; margin-bottom: 0; }
+  .section__usease .content__title .content__title__sub {
+    display: inline-block; font-size: .72rem; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--red); background: var(--red-lt);
+    padding: .28rem .85rem; border-radius: 999px; margin-bottom: .9rem;
+  }
+  .section__usease .content__title h2 {
+    font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 800;
+    color: var(--ink); line-height: 1.2; letter-spacing: -.025em;
+  }
+
+  .section__usease_tab_wrapper {
+    margin-top: 80px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 80px;
+  }
+  .section__usease_tab_wrapper .section__usease_tab_list {
+    width: 170px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0; list-style: none;
+  }
+  .section__usease_tab_list .section__usease_tab_item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    line-height: 26px;
+    padding: 12px 24px;
+    border-radius: 99px;
+    color: #7c7c7c;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    user-select: none;
+  }
+  .section__usease_tab_list .section__usease_tab_item:hover { color: #F44336; }
+  .section__usease_tab_list .section__usease_tab_item.active {
+    color: #fff; background: #F44336;
+  }
+
+  .section__usease_tab_content_wrapper {
+    position: relative;
+    flex: 1;
+    min-height: 500px;
+  }
+  .section__usease_tab_content {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: none;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .section__usease_tab_content.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition: opacity 0.6s cubic-bezier(.25,.46,.45,.94), transform 0.6s cubic-bezier(.25,.46,.45,.94);
+  }
+  .tab_content_text { display: flex; flex-direction: column; gap: 24px; }
+  .tab_content_text .tab_content_text__title {
+    font-size: 32px; line-height: 40px; font-weight: 600; color: #000;
+  }
+  .tab_content_text .tab_content_text__desc {
+    font-size: 20px; line-height: 40px; color: #8e8e8e; font-weight: 400;
+  }
+  .tab_content_video_wrap {
+    border-radius: 40px; overflow: hidden; width: 100%;
+  }
+  .tab_video { width: 100%; height: auto; display: block; border-radius: 20px; }
+
+  /* 반응형 */
+  @media (max-width: 768px) {
+    .section__usease_tab_wrapper { flex-direction: column; gap: 32px; }
+    .section__usease_tab_wrapper .section__usease_tab_list {
+      width: 100%; flex-direction: row; flex-wrap: wrap; gap: 8px;
+    }
+    .section__usease_tab_list .section__usease_tab_item {
+      font-size: 14px; padding: 8px 16px;
+    }
+    .section__usease_tab_content_wrapper { min-height: auto; }
+    .section__usease_tab_content { position: relative; }
+    .section__usease_tab_content:not(.active) { display: none; }
+    .tab_content_text .tab_content_text__title { font-size: 22px; line-height: 32px; }
+    .tab_content_text .tab_content_text__desc  { font-size: 15px; line-height: 28px; }
+  }
+</style>
+
+<section class="section__usease container1" id="useCaseWrap">
+  <div class="content__title sa">
+    <span class="content__title__sub">Usage</span>
+    <h2>브이데스크의 다양한 활용방법 <br>미리 확인해 보세요!</h2>
+  </div>
+
+  <div class="section__usease_tab_wrapper sa sa-d1">
+    <!-- 왼쪽 세로 탭 -->
+    <ul class="section__usease_tab_list">
+      <li class="section__usease_tab_item active">모바일 게임</li>
+      <li class="section__usease_tab_item">주식/코인</li>
+      <li class="section__usease_tab_item">마케팅</li>
+      <li class="section__usease_tab_item">동시관리</li>
+    </ul>
+
+    <!-- 오른쪽 컨텐츠 -->
+    <div class="section__usease_tab_content_wrapper">
+
+      <!-- 모바일 게임 -->
+      <div class="section__usease_tab_content active" data-tab="모바일 게임">
+        <div class="tab_content_text">
+          <h3 class="tab_content_text__title">끊김없는 플레이</h3>
+          <p class="tab_content_text__desc">
+            고사양 모바일 게임을 쾌적하고 끊김없이 즐겨보세요! <br>
+            최신 유행하는 게임에 맞춰 지속적인 업데이트 진행 중입니다.
+          </p>
+        </div>
+        <div class="tab_content_video_wrap">
+          <video class="tab_video" th:src="@{/assets/video/video01.mp4}" autoplay muted loop playsinline>
+            <source th:src="@{/assets/video/video01.mp4}" type="video/mp4"/>
+          </video>
+        </div>
+      </div>
+
+      <!-- 주식/코인 -->
+      <div class="section__usease_tab_content" data-tab="주식/코인">
+        <div class="tab_content_text">
+          <h3 class="tab_content_text__title">효율적인 시스템</h3>
+          <p class="tab_content_text__desc">
+            기반 운영체제 없이 서버 하드웨어에서 직접 실행되므로 <br>
+            효율적이고 확장 가능한 시스템 구축이 가능합니다.
+          </p>
+        </div>
+        <div class="tab_content_video_wrap">
+          <video class="tab_video" th:src="@{/assets/video/video02.mp4}" muted loop playsinline>
+            <source th:src="@{/assets/video/video02.mp4}" type="video/mp4"/>
+          </video>
+        </div>
+      </div>
+
+      <!-- 마케팅 -->
+      <div class="section__usease_tab_content" data-tab="마케팅">
+        <div class="tab_content_text">
+          <h3 class="tab_content_text__title">각종 마케팅 가능!</h3>
+          <p class="tab_content_text__desc">
+            로그인 시 할당 아이피를 확인할 수 있으며 <br>
+            독립된 IP이기 때문에 각종 마케팅이 가능합니다.
+          </p>
+        </div>
+        <div class="tab_content_video_wrap">
+          <video class="tab_video" th:src="@{/assets/video/video03.mp4}" muted loop playsinline>
+            <source th:src="@{/assets/video/video03.mp4}" type="video/mp4"/>
+          </video>
+        </div>
+      </div>
+
+      <!-- 동시관리 -->
+      <div class="section__usease_tab_content" data-tab="동시관리">
+        <div class="tab_content_text">
+          <h3 class="tab_content_text__title">수십대 PC 동시관리</h3>
+          <p class="tab_content_text__desc">
+            수십대의 PC를 관리해야 하는 분들에게 <br>
+            최적의 업무환경을 제공합니다. (본인의 PC에서 수십대 관리)
+          </p>
+        </div>
+        <div class="tab_content_video_wrap">
+          <video class="tab_video" th:src="@{/assets/video/video04.mp4}" muted loop playsinline>
+            <source th:src="@{/assets/video/video04.mp4}" type="video/mp4"/>
+          </video>
+        </div>
+      </div>
+
     </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     VALUE / STATS
+════════════════════════════════════ -->
+<section class="stats-sec">
+  <div class="inner">
+    <div class="sa" style="text-align:center;">
+      <span class="stag stag-dark">Value</span>
+      <h2 class="stit stit-dark">No.1 원격 컴퓨팅 시스템, 브이데스크</h2>
+      <p class="sdesc sdesc-dark">안전하고 사용하기 쉬운 개인형 원격 컴퓨팅 시스템</p>
+    </div>
+
+    <div class="stats-grid sa sa-d1">
+      <!-- 누적 제품 구매건수 -->
+      <div class="stat-item">
+        <div class="stat-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff8a80" stroke-width="1.8">
+            <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          </svg>
+        </div>
+        <div class="stat-num" data-target="82285" data-suffix="건">0건</div>
+        <div class="stat-label">누적 제품 구매건수</div>
+      </div>
+
+      <!-- 현재 회원 수 -->
+      <div class="stat-item">
+        <div class="stat-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff8a80" stroke-width="1.8">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="stat-num" data-target="52285" data-suffix="명">0명</div>
+        <div class="stat-label">현재 회원 수</div>
+      </div>
+
+      <!-- 실시간 문의 건수 -->
+      <div class="stat-item">
+        <div class="stat-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff8a80" stroke-width="1.8">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <div class="stat-num" data-target="20180" data-suffix="건">0건</div>
+        <div class="stat-label">실시간 문의 건수</div>
+      </div>
+
+      <!-- 고객 만족 비율 -->
+      <div class="stat-item">
+        <div class="stat-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff8a80" stroke-width="1.8">
+            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/>
+            <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+          </svg>
+        </div>
+        <div class="stat-num" data-target="99" data-suffix="%">0%</div>
+        <div class="stat-label">고객 만족 비율</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     MAIN FUNCTION
+════════════════════════════════════ -->
+<section class="sec">
+  <div class="inner">
+    <div class="sa" style="text-align:center;">
+      <span class="stag">Main function</span>
+      <h2 class="stit">브이데스크의 주요 기능을 소개합니다.</h2>
+      <p class="sdesc">브이데스크는 통합적 제품 및 서비스로 어떤 목표 달성이라도 쉽게 가능한<br>안전하고 편리한 PC 접속형 서비스입니다.</p>
+    </div>
+
+    <div class="fn-grid">
+      <div class="fn-card sa sa-d1">
+        <img class="fn-img" th:src="@{/assets/images/function01.png}" src="/assets/images/function01.png"
+             alt="공인 IP 1개 무료 부여" loading="lazy"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="fn-img-ph" style="display:none;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <div class="fn-title">공인 IP 1개 무료 부여</div>
+        <p class="fn-desc">개별적인 공인 IP를 무료로 부여하여<br>독립적인 인터넷 컴퓨팅 환경을 제공해 드립니다.</p>
+      </div>
+
+      <div class="fn-card sa sa-d2">
+        <img class="fn-img" th:src="@{/assets/images/function02.png}" src="/assets/images/function02.png"
+             alt="독립된 컴퓨팅" loading="lazy"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="fn-img-ph" style="display:none;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <div class="fn-title">독립된 컴퓨팅</div>
+        <p class="fn-desc">완전히 독립적인 제공 방식으로<br>개인의 프라이버시를 완벽하게 보장해 드립니다.</p>
+      </div>
+
+      <div class="fn-card sa sa-d3">
+        <img class="fn-img" th:src="@{/assets/images/function03.png}" src="/assets/images/function03.png"
+             alt="어떠한 소프트웨어도 설치 가능" loading="lazy"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="fn-img-ph" style="display:none;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <div class="fn-title">어떠한 소프트웨어도 설치 가능</div>
+        <p class="fn-desc">광고, 홍보, 개발, 모니터링, 인터넷방송 게임 등<br>어떤 소프트웨어든 설치가 가능합니다.</p>
+      </div>
+
+      <div class="fn-card sa sa-d1">
+        <img class="fn-img" th:src="@{/assets/images/function04.png}" src="/assets/images/function04.png"
+             alt="어디서든 접속 및 사용가능" loading="lazy"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="fn-img-ph" style="display:none;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="1.5"><path d="M1 6l10.6 5.2a1 1 0 0 0 .8 0L23 6"/><rect x="1" y="6" width="22" height="13" rx="2"/></svg>
+        </div>
+        <div class="fn-title">어디서든 접속 및 사용가능</div>
+        <p class="fn-desc">가정집, 학교, 회사, 카페 등 어떤 환경에서도<br>제한 없는 매끄러운 접속 및 사용이 가능합니다.</p>
+      </div>
+
+      <div class="fn-card sa sa-d2">
+        <img class="fn-img" th:src="@{/assets/images/function05.png}" src="/assets/images/function05.png"
+             alt="24시간 구동되는 PC" loading="lazy"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="fn-img-ph" style="display:none;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="fn-title">24시간 구동되는 PC</div>
+        <p class="fn-desc">원하는 타이밍에 원하는 시간만큼<br>제한 없이 사용할 수 있습니다.</p>
+      </div>
+
+      <div class="fn-card sa sa-d3">
+        <img class="fn-img" th:src="@{/assets/images/function06.png}" src="/assets/images/function06.png"
+             alt="수십 대의 컴퓨터를 동시관리" loading="lazy"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="fn-img-ph" style="display:none;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><rect x="8" y="21" width="8" height="2"/><path d="M12 17v4"/></svg>
+        </div>
+        <div class="fn-title">수십 대의 컴퓨터를 동시관리</div>
+        <p class="fn-desc">수십 대의 컴퓨터를 관리해야 하는 분들에게<br>최적의 업무환경을 제공합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     PRICING
+════════════════════════════════════ -->
+<section class="sec sec-gray">
+  <div class="inner">
+    <div class="sa" style="text-align:center;">
+      <span class="stag">Service charge</span>
+      <h2 class="stit">브이데스크 서비스 요금 안내</h2>
+      <p class="sdesc">브이데스크는 합리적인 가격으로 서비스를 제공해 드립니다.</p>
+    </div>
+
     <div class="plan-grid">
-      <div class="plan-card">
+      <!-- Basic -->
+      <div class="plan-card sa sa-d1">
         <div class="plan-name">Basic</div>
-        <div class="plan-sub">일반 사무용</div>
-        <div class="plan-price">45,000<span class="plan-price-unit">원 /월</span></div>
-        <hr class="plan-divider"/>
-        <ul class="plan-features">
-          <li>일반 사무 업무 최적화</li>
-          <li>최대 26대 동시 관리</li>
-          <li>SSL 보안 연결</li>
-          <li>모바일 앱 지원</li>
-          <li>24시간 서비스</li>
-        </ul>
-        <a href="/pricing" class="plan-btn plan-btn-outline">시작하기</a>
+        <div class="plan-sub">일반 사무용 컴퓨팅</div>
+        <div class="plan-price">45,000<span class="plan-unit">원 / 매월</span></div>
+        <hr class="plan-hr"/>
+        <div class="plan-uses">
+          <span class="plan-use-tag">마케팅</span>
+          <span class="plan-use-tag">인터넷방송</span>
+          <span class="plan-use-tag">SNS용</span>
+          <span class="plan-use-tag">2D 게임</span>
+          <span class="plan-use-tag">주식 거래</span>
+        </div>
+        <div class="plan-specs">
+          <div class="plan-spec-row">CPU Intel(R) Xeon(R)</div>
+          <div class="plan-spec-row">RAM 3GB DDR4</div>
+          <div class="plan-spec-row">SSD 256 GB</div>
+          <div class="plan-spec-row">GPU Share</div>
+          <div class="plan-spec-row">OS Win 10 PRO</div>
+          <div class="plan-spec-row">IP 한국 공인 IP (독립)</div>
+        </div>
+        <a href="/pricing" class="plan-btn plan-btn-outline">구매하기</a>
       </div>
-      <div class="plan-card popular">
-        <div class="popular-badge">인기</div>
+
+      <!-- Standard (featured) -->
+      <div class="plan-card featured sa sa-d2">
+        <div class="plan-badge">인기</div>
         <div class="plan-name">Standard</div>
-        <div class="plan-sub">중간 사양</div>
-        <div class="plan-price" style="color:#ef4444;">85,000<span class="plan-price-unit">원 /월</span></div>
-        <hr class="plan-divider"/>
-        <ul class="plan-features">
-          <li>고성능 그래픽 작업 지원</li>
-          <li>최대 26대 동시 관리</li>
-          <li>SSL 보안 연결</li>
-          <li>파일 전송 기능</li>
-          <li>모바일 앱 지원</li>
-          <li>24시간 서비스</li>
-        </ul>
-        <a href="/pricing" class="plan-btn plan-btn-filled">시작하기</a>
+        <div class="plan-sub">중간 사양의 컴퓨팅</div>
+        <div class="plan-price featured-price">85,000<span class="plan-unit">원 / 월</span></div>
+        <hr class="plan-hr"/>
+        <div class="plan-uses">
+          <span class="plan-use-tag">마케팅</span>
+          <span class="plan-use-tag">작업장</span>
+          <span class="plan-use-tag">앱플레이어</span>
+          <span class="plan-use-tag">리니지M</span>
+          <span class="plan-use-tag">3D 게임</span>
+        </div>
+        <div class="plan-specs">
+          <div class="plan-spec-row">CPU Intel Core i5-8500</div>
+          <div class="plan-spec-row">RAM 8GB DDR4</div>
+          <div class="plan-spec-row">SSD 256 GB</div>
+          <div class="plan-spec-row">GPU Intel UHD 630</div>
+          <div class="plan-spec-row">OS Win 10 PRO</div>
+          <div class="plan-spec-row">IP 한국 공인 IP (독립)</div>
+        </div>
+        <a href="/pricing" class="plan-btn plan-btn-fill">구매하기</a>
       </div>
-      <div class="plan-card">
+
+      <!-- Business -->
+      <div class="plan-card sa sa-d3">
         <div class="plan-name">Business</div>
-        <div class="plan-sub">최고 사양</div>
-        <div class="plan-price">140,000<span class="plan-price-unit">원 /월</span></div>
-        <hr class="plan-divider"/>
-        <ul class="plan-features">
-          <li>최고 사양 업무 환경</li>
-          <li>최대 26대 동시 관리</li>
-          <li>SSL 보안 연결</li>
-          <li>파일 전송 기능</li>
-          <li>우선 고객 지원</li>
-          <li>24시간 서비스</li>
-        </ul>
-        <a href="/pricing" class="plan-btn plan-btn-outline">시작하기</a>
+        <div class="plan-sub">전문가급의 컴퓨팅</div>
+        <div class="plan-price">140,000<span class="plan-unit">원 / 월</span></div>
+        <hr class="plan-hr"/>
+        <div class="plan-uses">
+          <span class="plan-use-tag">영상 편집</span>
+          <span class="plan-use-tag">마케팅</span>
+          <span class="plan-use-tag">앱 플레이어 다중</span>
+          <span class="plan-use-tag">리니지M/오딘/V4</span>
+        </div>
+        <div class="plan-specs">
+          <div class="plan-spec-row">CPU Intel Xeon 12Core</div>
+          <div class="plan-spec-row">RAM 64GB DDR4</div>
+          <div class="plan-spec-row">SSD 256 GB</div>
+          <div class="plan-spec-row">GPU Geforce 1050TI</div>
+          <div class="plan-spec-row">OS Win 10 PRO</div>
+          <div class="plan-spec-row">IP 한국 공인 IP (독립)</div>
+        </div>
+        <a href="/pricing" class="plan-btn plan-btn-outline">구매하기</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── CTA ───────────────────────────────────────── -->
-<section class="cta-section">
-  <div class="cta-inner">
-    <h2 class="cta-title">지금 바로 시작해보세요</h2>
-    <p class="cta-desc">회원가입 후 즉시 사용 가능합니다.<br/>언제 어디서나 내 PC에 접속하세요.</p>
-    <div class="cta-actions">
-      <a href="/signup" class="btn-cta-white">
-        무료로 시작하기
-        <svg width="14" height="14" fill="none" viewBox="0 0 20 20"><path d="M7 5l5 5-5 5" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
-      <a href="/support" class="btn-cta-outline">문의하기</a>
+<!-- ════════════════════════════════════
+     ABOUT
+════════════════════════════════════ -->
+<section class="sec sec-dark">
+  <div class="inner">
+    <div class="sa" style="text-align:center;">
+      <span class="stag stag-dark">About</span>
+      <h2 class="stit stit-dark">언제 어디서든<br>원클릭 접속 가능한 브이데스크</h2>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-card sa sa-d1">
+        <div class="about-ico">
+          <img th:src="@{/assets/images/about01.png}" src="/assets/images/about01.png"
+               alt="비용 걱정 없이 24시간 가동"
+               onerror="this.style.display='none'"/>
+        </div>
+        <div class="about-title">비용 걱정 없이 24시간 가동</div>
+        <p class="about-desc">전기세, 회선비 등 비용 걱정 없는<br>최고의 원격 제어 서비스를 제공합니다.</p>
+      </div>
+
+      <div class="about-card sa sa-d2">
+        <div class="about-ico">
+          <img th:src="@{/assets/images/about02.png}" src="/assets/images/about02.png"
+               alt="어느 운영체제에서든 편리하게"
+               onerror="this.style.display='none'"/>
+        </div>
+        <div class="about-title">어느 운영체제에서든 편리하게</div>
+        <p class="about-desc">Windows, Mac, Android 환경에서도<br>클릭 한 번으로 열리는 클라이언트 프로그램입니다.</p>
+      </div>
+
+      <div class="about-card sa sa-d3">
+        <div class="about-ico">
+          <img th:src="@{/assets/images/about03.png}" src="/assets/images/about03.png"
+               alt="빠른 커뮤니케이션"
+               onerror="this.style.display='none'"/>
+        </div>
+        <div class="about-title">빠른 커뮤니케이션</div>
+        <p class="about-desc">실시간 문의로 고객님의 궁금증을 빠르게<br>해결해 드리고 있습니다.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<div th:replace="~{fragments/landing-footer :: footer}"></div>
+<!-- ════════════════════════════════════
+     REVIEWS
+════════════════════════════════════ -->
+<section class="sec">
+  <div class="inner">
+    <div class="review-head sa">
+      <div>
+        <span class="stag">Review</span>
+        <h2 class="stit">브이데스크 고객들의<br>다양한 이야기를 들어보세요!</h2>
+      </div>
+      <div class="rev-navs">
+        <div class="rev-nav-btn review-prev">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </div>
+        <div class="rev-nav-btn review-next">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="swiper review-swiper sa sa-d1">
+      <div class="swiper-wrapper" id="reviewWrapper">
+        <!-- JS로 동적 생성 -->
+      </div>
+      <div class="swiper-pagination" style="margin-top:1.75rem;position:relative;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     FAQ
+════════════════════════════════════ -->
+<section class="sec sec-gray">
+  <div class="inner">
+    <div class="sa" style="text-align:center;">
+      <span class="stag">FAQ</span>
+      <h2 class="stit">자주 묻는 질문을 확인해보세요!</h2>
+      <p class="sdesc">자주 묻는 질문을 모았습니다.<br>문의 전 꼭 필독해 주세요.</p>
+    </div>
+
+    <div class="faq-wrap sa sa-d1">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">브이데스크를 사용하려면 별도의 장비나 회선이 필요한가요?</span>
+          <span class="faq-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+        <div class="faq-a">
+          <p class="faq-a-inner">아니요. 브이데스크는 추가 장비나 전용 회선이 필요하지 않습니다. 인터넷이 가능한 환경이라면 언제 어디서든 접속할 수 있으며, 24시간 안정적으로 가동됩니다. 덕분에 전기세나 회선비 부담 없이 효율적인 원격제어 서비스를 이용할 수 있습니다.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">보안은 어떻게 보장되나요?</span>
+          <span class="faq-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+        <div class="faq-a">
+          <p class="faq-a-inner">브이데스크는 개별 사용자에게 무료로 공인 IP를 부여하고, 완전히 독립된 컴퓨팅 환경을 제공합니다. 이 방식은 다른 사용자와 자원이 공유되지 않아 프라이버시가 철저히 보호됩니다. 따라서 민감한 데이터나 개인정보를 다루는 업무도 안심하고 진행할 수 있습니다.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">어떤 환경에서 접속할 수 있나요?</span>
+          <span class="faq-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+        <div class="faq-a">
+          <p class="faq-a-inner">가정집, 학교, 회사, 카페 등 인터넷 연결만 가능한 환경이라면 어디서든 접속할 수 있습니다. 또한 Windows, Mac, Android 등 다양한 운영체제를 지원하므로 장소와 기기에 제약 없이 매끄럽게 원격 작업을 이어갈 수 있습니다.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">요금제를 중간에 변경할 수 있나요?</span>
+          <span class="faq-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+        <div class="faq-a">
+          <p class="faq-a-inner">네, 가능합니다. 현재 이용 중인 요금제에서 더 높은 등급의 요금제로 업그레이드하거나 변경이 필요한 경우 고객센터로 문의해 주시면 안내해 드리겠습니다. 변경 시 이용 기간에 따라 차액이 정산될 수 있습니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-more">
+      <button class="btn-faq" onclick="location.href='/support'">
+        FAQ 더보기
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     CTA DIRECT
+════════════════════════════════════ -->
+<section class="cta-sec">
+  <h2 class="cta-title">지금 바로 로그인하고<br>브이데스크를 사용해보세요!</h2>
+
+  <div class="cta-btns">
+    <div sec:authorize="!isAuthenticated()" style="display:contents;">
+      <a href="/signup" class="btn-cta-w">지금 시작하기 →</a>
+      <a href="/login"  class="btn-cta-t">로그인</a>
+    </div>
+    <div sec:authorize="isAuthenticated()" style="display:contents;">
+      <a href="/dashboard" class="btn-cta-w">접속기 바로가기 →</a>
+      <a href="/pricing"   class="btn-cta-t">구매하기</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<th:block th:replace="~{fragments/landing-footer :: footer}"/>
+
+<!-- ════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script th:inline="javascript">
+  /* Auth state from Thymeleaf */
+  const IS_AUTH = /*[[${#authorization.expression('isAuthenticated()')}]]*/ false;
+</script>
+
+<script>
+/* ════ HERO ANIMATE — 페이지 로드 시 순차 등장 ════ */
+(function() {
+  setTimeout(function() {
+    document.querySelectorAll('.hero-animate').forEach(function(el) { el.classList.add('animate-in'); });
+  }, 100);
+})();
+
+/* ════ SCROLL REVEAL (.sa) ════ */
+(function() {
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.sa').forEach(function(el) { io.observe(el); });
+})();
+
+/* ════ SCROLL ANIMATE (.scroll-animate) ════ */
+(function() {
+  var aboutDone = false;
+  function check() {
+    var wh = window.innerHeight, st = window.scrollY;
+    document.querySelectorAll('.scroll-animate:not(.animate-in)').forEach(function(el) {
+      if (st + wh - 150 > el.getBoundingClientRect().top + st) {
+        if (el.classList.contains('about_feature_item')) {
+          if (!aboutDone) {
+            aboutDone = true;
+            document.querySelectorAll('.about_feature_item').forEach(function(i) { i.classList.add('animate-in'); });
+          }
+        } else {
+          el.classList.add('animate-in');
+        }
+      }
+    });
+  }
+  window.addEventListener('scroll', check, { passive: true });
+  check();
+})();
+
+/* ════ COUNTUP — easeOutQuart, 천 단위 콤마 ════ */
+var countupDone = false;
+function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
+function animateCountup(el) {
+  var target = parseInt(el.dataset.target);
+  var suffix = el.dataset.suffix || '';
+  var dur = 2500, start = Date.now();
+  (function tick() {
+    var p = Math.min((Date.now() - start) / dur, 1);
+    el.textContent = Math.floor(target * easeOutQuart(p)).toLocaleString() + suffix;
+    if (p < 1) requestAnimationFrame(tick);
+  })();
+}
+(function() {
+  var sec = document.querySelector('.stats-sec') || document.querySelector('.section__value_list');
+  if (!sec) return;
+  var obs = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting && !countupDone) {
+      countupDone = true;
+      setTimeout(function() {
+        document.querySelectorAll('.stat-num[data-target]').forEach(animateCountup);
+      }, 300);
+    }
+  }, { threshold: 0.3 });
+  obs.observe(sec);
+})();
+
+/* ════ TAB SWITCHING — 탭 전환 + 비디오 재생/정지 ════ */
+document.querySelectorAll('.section__usease_tab_item').forEach(function(item) {
+  item.addEventListener('click', function() {
+    var tabText = this.textContent.trim();
+    document.querySelectorAll('.section__usease_tab_item').forEach(function(i) { i.classList.remove('active'); });
+    this.classList.add('active');
+    document.querySelectorAll('.section__usease_tab_content').forEach(function(c) {
+      c.classList.remove('active');
+      var vid = c.querySelector('video');
+      if (vid) vid.pause();
+    });
+    var target = document.querySelector('.section__usease_tab_content[data-tab="' + tabText + '"]');
+    if (target) {
+      target.classList.add('active');
+      var vid = target.querySelector('video');
+      if (vid) vid.play().catch(function() {});
+    }
+  });
+});
+
+/* ════ FAQ ACCORDION ════ */
+function toggleFaq(qEl) {
+  var item = qEl.closest('.faq-item');
+  var answer = item.querySelector('.faq-a');
+  var isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(function(i) {
+    i.classList.remove('open');
+    i.querySelector('.faq-a').style.maxHeight = '0';
+  });
+  if (!isOpen) {
+    item.classList.add('open');
+    var inner = answer.querySelector('.faq-a-inner');
+    var padding = window.innerWidth <= 768 ? 20 : 40;
+    answer.style.maxHeight = (inner.scrollHeight + padding) + 'px';
+  }
+}
+
+/* ════ REVIEW SWIPER — 카드 동적 생성 ════ */
+var reviewData = [
+  { name: '김민수', company: '마케팅 대행사 운영',   rating: 5, date: '2025.09.15',
+    content: '출장 중 노트북만 들고 다니면서도 브이데스크로 사무실 PC에 바로 접속할 수 있어 업무 공백이 전혀 없습니다. 클릭 한 번이면 안정적으로 연결되고, 속도도 빠른 덕분에 화상회의나 문서 편집까지 문제없이 진행할 수 있습니다. 이동이 많은 직장인에게 정말 꼭 필요한 원격지원 프로그램이에요.' },
+  { name: '이지영', company: '온라인 쇼핑몰 운영',   rating: 5, date: '2025.09.12',
+    content: '예전에는 서버를 24시간 켜 두느라 전기세와 유지비 부담이 컸는데, 브이데스크를 사용하면서 그런 걱정이 싹 사라졌습니다. 비용 부담 없이 언제든 접속 가능한 환경을 제공해주니 훨씬 효율적이고 안정적인 시스템 운영이 가능해졌습니다. 덕분에 회사 관리 비용이 확 줄었습니다.' },
+  { name: '박준호', company: '게임 스트리머',         rating: 4, date: '2025.09.08',
+    content: 'Windows, Mac, Android 모두 지원되니 집에서는 PC로, 외근 중에는 휴대폰으로, 사무실에서는 맥북으로 바로 접속할 수 있습니다. 운영체제에 구애받지 않고 클릭 한 번으로 열리는 편리함 덕분에 장소 제약 없이 업무를 이어갈 수 있어 정말 만족스럽습니다.' },
+  { name: '최수연', company: '디자인 프리랜서',       rating: 5, date: '2025.09.05',
+    content: '브이데스크는 별도의 비용 없이 공인 IP를 무료로 제공해 주어 독립적인 인터넷 환경을 만들어 줍니다. 덕분에 개인 정보와 작업 데이터가 다른 곳과 섞이지 않아 보안이 강화된 느낌이 확실히 듭니다. 프라이버시 보호가 중요한 업무를 하는 분들에게 특히 추천합니다.' },
+  { name: '정태현', company: '주식 투자자',           rating: 5, date: '2025.09.01',
+    content: '프로그램 자체도 안정적이지만, 무엇보다 고객 지원이 빠르고 정확합니다. 실시간으로 문의하면 바로 답변을 받을 수 있어 갑자기 문제가 생겨도 신속하게 해결할 수 있었습니다. 기술적인 지원에 민감한 고객들에게 안심할 수 있는 서비스라고 자신 있게 추천합니다.' },
+  { name: '한소희', company: '영상 편집자',           rating: 4, date: '2025.08.28',
+    content: '업무 특성상 동시에 여러 대의 컴퓨터를 관리해야 하는데, 브이데스크는 그 부분에서 큰 도움이 됩니다. 수십 대의 PC를 한 번에 원격으로 제어할 수 있어 관리 효율이 확실히 올라갔습니다. IT 관리자로서 업무 시간이 단축되고 실수도 줄어 만족도가 아주 높습니다.' }
+];
+
+function maskName(n) { return n.length <= 1 ? n : n[0] + '*'.repeat(n.length - 1); }
+function renderStars(r) {
+  var s = '';
+  for (var i = 0; i < 5; i++) {
+    s += i < r
+      ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>'
+      : '<svg width="15" height="15" viewBox="0 0 24 24" fill="#d1d5db"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>';
+  }
+  return s;
+}
+(function() {
+  var wrapper = document.getElementById('reviewWrapper');
+  if (!wrapper) return;
+  reviewData.forEach(function(r) {
+    var slide = document.createElement('div');
+    slide.className = 'swiper-slide';
+    var masked = maskName(r.name);
+    slide.innerHTML =
+      '<div class="rev-card">' +
+        '<div class="rev-top">' +
+          '<div class="rev-avatar">' + masked[0] + '</div>' +
+          '<div>' +
+            '<div class="rev-name">' + masked + '</div>' +
+            '<div class="rev-company">' + r.company + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="rev-stars">' + renderStars(r.rating) + '</div>' +
+        '<p class="rev-body">' + r.content + '</p>' +
+        '<div class="rev-date">' + r.date + '</div>' +
+      '</div>';
+    wrapper.appendChild(slide);
+  });
+  new Swiper('.review-swiper', {
+    slidesPerView: 1, spaceBetween: 20, loop: true,
+    autoplay: { delay: 5000, disableOnInteraction: false },
+    pagination: { el: '.swiper-pagination', clickable: true },
+    navigation: { nextEl: '.review-next', prevEl: '.review-prev' },
+    breakpoints: {
+      768:  { slidesPerView: 2, spaceBetween: 30 },
+      1024: { slidesPerView: 3, spaceBetween: 40 }
+    }
+  });
+})();
+
+/* ════ PRICING CARD — 모바일 아코디언 ════ */
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.price-card').forEach(function(card) {
+    var header = card.querySelector('.price-card-header');
+    var detail = card.querySelector('.price-card-detail');
+    if (!header || !detail) return;
+    header.addEventListener('click', function() {
+      if (window.innerWidth > 768) return;
+      var isOpen = card.classList.contains('open');
+      document.querySelectorAll('.price-card').forEach(function(c) {
+        c.classList.remove('open');
+        var d = c.querySelector('.price-card-detail');
+        if (d) d.style.maxHeight = '0';
+      });
+      if (!isOpen) {
+        card.classList.add('open');
+        detail.style.maxHeight = detail.scrollHeight + 'px';
+        setTimeout(function() {
+          window.scrollTo({ top: card.getBoundingClientRect().top + window.scrollY - 100, behavior: 'smooth' });
+        }, 100);
+      }
+    });
+  });
+});
+
+/* ════ PAYMENT MODAL — iframe 팝업 ════ */
+function openPaymentModal(url) {
+  var iframe = document.getElementById('paymentIframe');
+  var overlay = document.getElementById('paymentModalOverlay');
+  if (!iframe || !overlay) return;
+  iframe.src = url;
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closePaymentModal() {
+  var iframe = document.getElementById('paymentIframe');
+  var overlay = document.getElementById('paymentModalOverlay');
+  if (!iframe || !overlay) return;
+  iframe.src = 'about:blank';
+  overlay.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+/* ════ PAYMENT MODAL 2 — 결제 방법 선택 모달 ════ */
+var selectedGrade = null;
+function openPaymentModal2(grade) {
+  if (!IS_AUTH) {
+    alert('로그인 후 이용 부탁드립니다.');
+    window.location.href = '/login';
+    return;
+  }
+  selectedGrade = grade;
+  var modal = document.getElementById('payModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    if (typeof window.displayGradeInfo === 'function') setTimeout(window.displayGradeInfo, 100);
+  }
+}
+function closePaymentModal2() {
+  var modal = document.getElementById('payModal');
+  if (modal) modal.style.display = 'none';
+}
+
+/* ════ PAYMENT WINDOW — 잔여 수량 확인 후 VMS 접속 ════ */
+function paymentWindowOpen(grade) {
+  if (!IS_AUTH) {
+    alert('로그인 후 이용 부탁드립니다.');
+    window.location.href = '/login';
+    return;
+  }
+  fetch('/api/devices/available-count?grade=' + encodeURIComponent(grade), { credentials: 'include' })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data && data.data && data.data.available) {
+        var m = window.innerWidth <= 768 ? 'Y' : 'N';
+        window.open('/api/devices/vms-connect?grade=' + encodeURIComponent(grade) + '&m=' + m);
+      } else {
+        alert(data.message || '사용 가능한 기기가 없습니다.');
+      }
+    })
+    .catch(function() { window.location.href = '/dashboard'; });
+}
+
+function paymentbtn(grade) {
+  if (!IS_AUTH) {
+    alert('로그인 후 이용 부탁드립니다.');
+    window.location.href = '/login';
+    return;
+  }
+  var month = window.currentMonth || 1;
+  openPaymentModal('/payment/public/checkout.html?grade=' + encodeURIComponent(grade) + '&M=' + month);
+}
+
+/* ════ NAVIGATE ════ */
+function goToVDesk() {
+  if (IS_AUTH) { window.location.href = '/dashboard'; }
+  else { alert('로그인 후 이용해주세요.'); window.location.href = '/login'; }
+}
+function goToFaq()      { window.location.href = '/support'; }
+function goToSubscribe() { window.location.href = '/pricing'; }
+
+/* ════ SCROLL TO SECTION (다른 페이지 → localStorage) ════ */
+function scrollToUseCase() {
+  if (window.location.pathname !== '/') { localStorage.setItem('moveUseCase', 'true'); window.location.href = '/'; }
+  else scrollToUseCaseSection();
+}
+function scrollToUseCaseSection() {
+  var el = document.getElementById('useCaseWrap');
+  if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' });
+}
+function scrollToIntroduction() {
+  if (window.location.pathname !== '/') { localStorage.setItem('moveIntro', 'true'); window.location.href = '/'; }
+  else {
+    var el = document.querySelector('.introduction');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+/* ════ DOMContentLoaded — 모달 이벤트 + localStorage 플래그 ════ */
+document.addEventListener('DOMContentLoaded', function() {
+  /* payment modal overlay 클릭 닫기 */
+  var overlay = document.getElementById('paymentModalOverlay');
+  if (overlay) overlay.addEventListener('click', function(e) { if (e.target === overlay) closePaymentModal(); });
+  /* payModal 배경 클릭 닫기 */
+  var payModal = document.getElementById('payModal');
+  if (payModal) payModal.addEventListener('click', function(e) { if (e.target === payModal) closePaymentModal2(); });
+  /* ESC 키 닫기 */
+  document.addEventListener('keyup', function(e) { if (e.key === 'Escape') { closePaymentModal(); closePaymentModal2(); } });
+  /* localStorage 스크롤 플래그 */
+  if (localStorage.getItem('moveUseCase') === 'true') {
+    localStorage.removeItem('moveUseCase');
+    setTimeout(scrollToUseCaseSection, 300);
+  }
+  if (localStorage.getItem('moveIntro') === 'true') {
+    localStorage.removeItem('moveIntro');
+    var el = document.querySelector('.introduction');
+    if (el) setTimeout(function() { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 300);
+  }
+});
+</script>
 
 </body>
 </html>
