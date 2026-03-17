@@ -2,69 +2,105 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<footer th:fragment="footer"
-        style="background:#1a1a1a;color:#a3a3a3;padding:3rem 1.5rem 2rem;">
-  <div style="max-width:1280px;margin:0 auto;">
-    <div style="display:flex;flex-wrap:wrap;gap:2.5rem;justify-content:space-between;margin-bottom:2.5rem;">
+<th:block th:fragment="footer">
 
-      <!-- Logo & SNS -->
-      <div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;">
-          <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
-            <rect width="28" height="28" rx="7" fill="#ef4444"/>
-            <path d="M7 9h14M7 14h10M7 19h6" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
-          </svg>
-          <span style="font-size:1.1rem;font-weight:700;color:#fff;">Vdesk</span>
-        </div>
-        <p style="font-size:0.83rem;line-height:1.7;max-width:240px;">
-          빠르고 안전한 원격 제어 서비스.<br/>언제 어디서나 내 PC에 접속하세요.
-        </p>
-        <div style="display:flex;gap:0.75rem;margin-top:1.25rem;">
-          <a href="https://open.kakao.com/o/sGm2lByh" target="_blank"
-             style="width:36px;height:36px;border-radius:50%;background:#2a2a2a;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:background 0.15s;"
-             onmouseover="this.style.background='#3a3a3a'" onmouseout="this.style.background='#2a2a2a'">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="#FAE100"><path d="M12 3C6.477 3 2 6.477 2 10.8c0 2.748 1.742 5.163 4.372 6.617L5.188 21l4.637-2.426c.7.133 1.427.206 2.175.206 5.523 0 10-3.477 10-7.8S17.523 3 12 3z"/></svg>
-          </a>
-        </div>
-      </div>
+<style>
+  .footer {
+    background-color: #212121;
+    padding: 60px 0;
+  }
+  .footer__inner {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 80px;
+    padding: 0 1.5rem;
+  }
+  .footer_logo {
+    flex-shrink: 0;
+  }
+  .footer_logo img {
+    width: 120px;
+    height: auto;
+  }
+  .footer__inner .footer_cont {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .footer__inner .footer_cont .copyright {
+    color: #666;
+    font-size: 13px;
+    font-weight: 400;
+    margin-top: 30px;
+  }
+  .footer__inner .footer_cont ul {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .footer__inner .footer_cont ul.link {
+    gap: 30px;
+    margin-bottom: 20px;
+  }
+  .footer__inner .footer_cont ul.link li a {
+    font-size: 16px;
+    font-weight: 700;
+    color: #999;
+    text-decoration: none;
+  }
+  .footer__inner .footer_cont ul.link li:first-child a {
+    color: #fff;
+  }
+  .footer__inner .footer_cont ul li {
+    color: #666;
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: 400;
+    word-break: keep-all;
+  }
+  .footer__inner .footer_cont ul li span {
+    font-weight: 700;
+    color: #333;
+    margin-right: 8px;
+  }
+  .footer__inner .footer_cont ul:not(.link) li:not(:last-of-type)::after {
+    margin: 0 8px;
+    content: "|";
+  }
+  @media (max-width: 768px) {
+    .footer__inner {
+      flex-direction: column;
+      gap: 32px;
+    }
+    .footer__inner .footer_cont ul.link { gap: 20px; }
+  }
+</style>
 
-      <!-- Quick Links -->
-      <div>
-        <h4 style="font-size:0.85rem;font-weight:600;color:#fff;margin-bottom:1rem;text-transform:uppercase;letter-spacing:0.05em;">서비스</h4>
-        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0.6rem;">
-          <li><a href="/intro"    style="color:#a3a3a3;text-decoration:none;font-size:0.875rem;transition:color 0.15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#a3a3a3'">소개</a></li>
-          <li><a href="/pricing"  style="color:#a3a3a3;text-decoration:none;font-size:0.875rem;transition:color 0.15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#a3a3a3'">구매하기</a></li>
-          <li><a href="/method"   style="color:#a3a3a3;text-decoration:none;font-size:0.875rem;transition:color 0.15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#a3a3a3'">사용방법</a></li>
-          <li><a href="/support"  style="color:#a3a3a3;text-decoration:none;font-size:0.875rem;transition:color 0.15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#a3a3a3'">고객센터</a></li>
-        </ul>
-      </div>
-
-      <!-- Legal -->
-      <div>
-        <h4 style="font-size:0.85rem;font-weight:600;color:#fff;margin-bottom:1rem;text-transform:uppercase;letter-spacing:0.05em;">약관</h4>
-        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0.6rem;">
-          <li><a href="/privacy"  style="color:#a3a3a3;text-decoration:none;font-size:0.875rem;transition:color 0.15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#a3a3a3'">개인정보취급방침</a></li>
-          <li><a href="/terms"    style="color:#a3a3a3;text-decoration:none;font-size:0.875rem;transition:color 0.15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#a3a3a3'">이용약관</a></li>
-          <li><a href="https://naver.me/5A3p4CZv" target="_blank" style="color:#a3a3a3;text-decoration:none;font-size:0.875rem;transition:color 0.15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#a3a3a3'">오시는 길</a></li>
-        </ul>
-      </div>
-
-      <!-- Company Info -->
-      <div>
-        <h4 style="font-size:0.85rem;font-weight:600;color:#fff;margin-bottom:1rem;text-transform:uppercase;letter-spacing:0.05em;">회사 정보</h4>
-        <dl style="font-size:0.82rem;line-height:2;margin:0;">
-          <div style="display:flex;gap:0.5rem;"><dt style="color:#6b7280;min-width:80px;">상호</dt><dd style="color:#d1d5db;margin:0;">(주)코어플랫폼</dd></div>
-          <div style="display:flex;gap:0.5rem;"><dt style="color:#6b7280;min-width:80px;">대표</dt><dd style="color:#d1d5db;margin:0;">이주하</dd></div>
-          <div style="display:flex;gap:0.5rem;"><dt style="color:#6b7280;min-width:80px;">사업자번호</dt><dd style="color:#d1d5db;margin:0;">464-88-02817</dd></div>
-          <div style="display:flex;gap:0.5rem;"><dt style="color:#6b7280;min-width:80px;">주소</dt><dd style="color:#d1d5db;margin:0;">부산 해운대구 센텀중앙로 97<br/>센텀스카이비즈 1601호</dd></div>
-          <div style="display:flex;gap:0.5rem;"><dt style="color:#6b7280;min-width:80px;">이메일</dt><dd style="color:#d1d5db;margin:0;">coreplatform09@gmail.com</dd></div>
-        </dl>
-      </div>
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer_logo">
+      <img th:src="@{/assets/images/f_v_logo.png}" src="/assets/images/f_v_logo.png" alt="브이데스크 로고"/>
     </div>
-
-    <div style="border-top:1px solid #2a2a2a;padding-top:1.5rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;">
-      <p style="font-size:0.8rem;margin:0;">Copyright © (주)코어플랫폼 All rights Reserved.</p>
-      <p style="font-size:0.8rem;margin:0;">통신판매업신고번호 2024-부산해운대-1559호</p>
+    <div class="footer_cont">
+      <ul class="link">
+        <li><a href="/privacy">개인정보취급방침</a></li>
+        <li><a href="https://naver.me/5A3p4CZv" target="_blank">오시는 길</a></li>
+      </ul>
+      <ul>
+        <li><span>상호</span>(주)코어플랫폼</li>
+        <li><span>대표</span>이주하</li>
+        <li><span>사업자번호</span>464-88-02817</li>
+        <li><span>통신판매업신고번호</span>2024-부산해운대-1559호</li>
+      </ul>
+      <ul>
+        <li><span>주소</span>부산 해운대구 센텀중앙로 97 센텀스카이비즈 1601호</li>
+        <li><span>메일</span>coreplatform09@gmail.com</li>
+      </ul>
+      <div class="copyright">Copyright©(주)코어플랫폼 All rights Reserved.</div>
     </div>
   </div>
 </footer>
@@ -83,6 +119,8 @@
     <path d="M12 3C6.477 3 2 6.477 2 10.8c0 2.748 1.742 5.163 4.372 6.617L5.188 21l4.637-2.426c.7.133 1.427.206 2.175.206 5.523 0 10-3.477 10-7.8S17.523 3 12 3z"/>
   </svg>
 </a>
+
+</th:block>
 
 </body>
 </html>

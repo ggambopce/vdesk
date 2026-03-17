@@ -17,393 +17,1189 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 
   <style>
-    /* ────── Reset & Tokens ────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Noto Sans KR', sans-serif; background: #fff; color: #111; -webkit-font-smoothing: antialiased; }
-    a { text-decoration: none; color: inherit; }
-    img, video { display: block; max-width: 100%; }
-    ul { list-style: none; }
+/* =====================================================
+   Reset & Base Tokens
+===================================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Noto Sans KR', sans-serif; background: #fff; color: #111; -webkit-font-smoothing: antialiased; }
+a { text-decoration: none; color: inherit; }
+img, video { display: block; max-width: 100%; }
+ul { list-style: none; }
 
-    :root {
-      --red:    #f44336;
-      --red-dk: #d32f2f;
-      --red-lt: #fff5f5;
-      --ink:    #111827;
-      --mid:    #374151;
-      --muted:  #6b7280;
-      --pale:   #9ca3af;
-      --border: #e5e7eb;
-      --soft:   #f9fafb;
-      --dark:   #0d1117;
-      --ease:   cubic-bezier(.16,1,.3,1);
-      --r:      16px;
-    }
+:root {
+  --red:    #f44336;
+  --red-dk: #d32f2f;
+  --red-lt: #fff5f5;
+  --ink:    #111827;
+  --mid:    #374151;
+  --muted:  #6b7280;
+  --pale:   #9ca3af;
+  --border: #e5e7eb;
+  --soft:   #f9fafb;
+  --dark:   #0d1117;
+  --ease:   cubic-bezier(.16, 1, .3, 1);
+  --r:      16px;
+}
 
-    /* ────── Scroll Reveal ────── */
-    .sa { opacity: 0; transform: translateY(28px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
-    .sa.in { opacity: 1; transform: none; }
-    .sa-d1 { transition-delay: .08s; }
-    .sa-d2 { transition-delay: .16s; }
-    .sa-d3 { transition-delay: .24s; }
-    .sa-d4 { transition-delay: .32s; }
+/* =====================================================
+   Layout 공통
+===================================================== */
+.container1 { width: 1200px; margin: 0 auto; }
+.sec { padding: 6.5rem 1.5rem; }
+.inner { max-width: 1200px; margin: 0 auto; }
+.sec-gray { background: var(--soft); }
+.sec-dark { background: var(--dark); }
+.main_container { letter-spacing: -0.1em; }
 
-    /* ────── Layout ────── */
-    .sec { padding: 6.5rem 1.5rem; }
-    .inner { max-width: 1200px; margin: 0 auto; }
-    .sec-gray { background: var(--soft); }
-    .sec-dark { background: var(--dark); }
+/* =====================================================
+   레거시 Scroll Reveal (.sa / .in)
+===================================================== */
+.sa { opacity: 0; transform: translateY(28px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+.sa.in { opacity: 1; transform: none; }
+.sa-d1 { transition-delay: .08s; }
+.sa-d2 { transition-delay: .16s; }
+.sa-d3 { transition-delay: .24s; }
+.sa-d4 { transition-delay: .32s; }
 
-    /* ────── Section Titles ────── */
-    .stag {
-      display: inline-block; font-size: .72rem; font-weight: 700;
-      letter-spacing: .12em; text-transform: uppercase;
-      color: var(--red); background: var(--red-lt);
-      padding: .28rem .85rem; border-radius: 999px; margin-bottom: .9rem;
-    }
-    .stag-dark { background: rgba(244,67,54,.2); color: #ff8a80; }
-    h2.stit {
-      font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 800;
-      color: var(--ink); line-height: 1.2; letter-spacing: -.025em;
-      margin-bottom: .75rem;
-    }
-    h2.stit-dark { color: #fff; }
-    p.sdesc { font-size: .95rem; color: var(--muted); line-height: 1.9; }
-    p.sdesc-dark { color: rgba(255,255,255,.45); }
+/* =====================================================
+   Section Titles (레거시)
+===================================================== */
+.stag {
+  display: inline-block; font-size: .72rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--red); background: var(--red-lt);
+  padding: .28rem .85rem; border-radius: 999px; margin-bottom: .9rem;
+}
+.stag-dark { background: rgba(244,67,54,.2); color: #ff8a80; }
+h2.stit {
+  font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 800;
+  color: var(--ink); line-height: 1.2; letter-spacing: -.025em;
+  margin-bottom: .75rem;
+}
+h2.stit-dark { color: #fff; }
+p.sdesc { font-size: .95rem; color: var(--muted); line-height: 1.9; }
+p.sdesc-dark { color: rgba(255,255,255,.45); }
 
-    /* ────── Hero ────── */
-    .section__hero {
-      width: 100%; position: relative;
-      max-width: 1200px; margin: 100px auto;
-      padding: 0 1.5rem;
-      letter-spacing: -0.05em;
-    }
-    .section__hero__text { width: 380px; }
-    .section__hero__image {
-      position: absolute; right: 0; bottom: 0;
-      width: calc(100% - 1.5rem - 400px);
-    }
-    .section__hero__image img {
-      width: 100%; height: auto; display: block; object-fit: cover;
-    }
-    .section__hero__title {
-      padding-top: 87px; margin-bottom: 60px;
-    }
-    .section__hero__title .section__hero__title__sub {
-      font-size: 22px; line-height: 40px;
-      color: #555; font-weight: 500;
-      margin-bottom: 12px; display: block;
-    }
-    .section__hero_main_title {
-      font-size: 70px; line-height: 96px;
-      color: #111; font-weight: 600;
-    }
-    .section__hero_main_title .main-color {
-      color: var(--red); font-size: 70px;
-      line-height: 96px; font-weight: 600;
-    }
-    /* hero animate */
-    .hero-animate { opacity: 0; transform: translateY(20px); transition: opacity .55s var(--ease), transform .55s var(--ease); }
-    .hero-animate.animate-in { opacity: 1; transform: none; }
-    .hero-delay-0 { transition-delay: 0s; }
-    .hero-delay-1 { transition-delay: .1s; }
-    .hero-delay-2 { transition-delay: .2s; }
-    .hero-delay-3 { transition-delay: .3s; }
-    .hero-delay-4 { transition-delay: .4s; }
-    /* link wrap */
-    .section__hero_link_wrap {
-      padding: 16px; display: flex; flex-direction: column; gap: 16px;
-      border-radius: 16px; box-shadow: 0 0 10px rgba(0,0,0,.15);
-      margin-bottom: 16px; cursor: pointer;
-      transition: box-shadow .4s ease;
-    }
-    .section__hero_link_wrap:hover { box-shadow: 0 0 10px rgba(244,67,54,.3); }
-    .section__hero_link_wrap p { font-size: 16px; line-height: 24px; color: #6d6d6d; }
-    .direct_link {
-      font-size: 16px; color: var(--red);
-      display: flex; align-items: center; gap: 8px;
-    }
-    /* responsive hero */
-    @media (max-width: 900px) {
-      .section__hero { margin: 48px auto; }
-      .section__hero__text { width: 100%; }
-      .section__hero__image { display: none; }
-      .section__hero_main_title { font-size: 48px; line-height: 64px; }
-      .section__hero_main_title .main-color { font-size: 48px; line-height: 64px; }
-      .section__hero__title { padding-top: 32px; margin-bottom: 32px; }
-    }
-    @media (max-width: 640px) {
-      .section__hero_main_title { font-size: 38px; line-height: 52px; }
-      .section__hero_main_title .main-color { font-size: 38px; line-height: 52px; }
-    }
+/* =====================================================
+   메인 히어로 섹션
+===================================================== */
+.section__hero {
+  width: 100%;
+  position: relative;
+  margin: 100px auto;
+}
 
-    /* ────── Use Case Tabs (legacy — replaced by section__usease) ────── */
-    .tab-panel.active {
-      display: grid; grid-template-columns: 1fr 1.3fr;
-      gap: 3.5rem; align-items: center;
-      animation: panelIn .3s var(--ease);
-    }
-    @keyframes panelIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
-    .tab-text-title {
-      font-size: 1.45rem; font-weight: 800; color: var(--ink);
-      margin-bottom: .75rem; line-height: 1.3;
-    }
-    .tab-text-desc { font-size: .92rem; color: var(--muted); line-height: 1.85; }
-    .video-wrap {
-      border-radius: var(--r); overflow: hidden;
-      box-shadow: 0 16px 48px rgba(0,0,0,.1);
-      aspect-ratio: 16/10; background: var(--dark);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .video-wrap video { width: 100%; height: 100%; object-fit: cover; }
-    .video-ph {
-      display: flex; flex-direction: column; align-items: center; gap: .75rem;
-      color: rgba(255,255,255,.3); font-size: .8rem;
-    }
+.section__hero .section__hero__text {
+  width: 380px;
+}
 
-    /* ────── Value / Stats ────── */
-    .stats-sec { padding: 5.5rem 1.5rem; background: var(--dark); }
-    .stats-grid {
-      display: grid; grid-template-columns: repeat(4,1fr);
-      border: 1px solid rgba(255,255,255,.08); border-radius: 20px; overflow: hidden;
-      margin-top: 3rem;
-    }
-    .stat-item {
-      padding: 2.25rem 1.75rem;
-      border-right: 1px solid rgba(255,255,255,.08);
-      transition: background .2s;
-    }
-    .stat-item:last-child { border-right: none; }
-    .stat-item:hover { background: rgba(255,255,255,.03); }
-    .stat-icon {
-      width: 44px; height: 44px; border-radius: 11px;
-      background: rgba(244,67,54,.16); display: flex; align-items: center;
-      justify-content: center; margin-bottom: 1.3rem;
-    }
-    .stat-num {
-      font-size: clamp(1.8rem, 2.6vw, 2.5rem); font-weight: 800;
-      color: #fff; letter-spacing: -.03em; line-height: 1;
-      margin-bottom: .45rem;
-    }
-    .stat-label { font-size: .8rem; color: rgba(255,255,255,.4); font-weight: 500; }
+.section__hero .section__hero__image {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: calc(100% - 400px);
+}
 
-    /* ────── Main Function Cards ────── */
-    .fn-grid {
-      display: grid; grid-template-columns: repeat(3,1fr);
-      gap: 1.1rem; margin-top: 3rem;
-    }
-    .fn-card {
-      background: #fff; border: 1.5px solid var(--border);
-      border-radius: var(--r); padding: 1.75rem;
-      transition: border-color .16s, box-shadow .16s, transform .16s;
-    }
-    .fn-card:hover { border-color: #ffcdd2; box-shadow: 0 6px 24px rgba(244,67,54,.07); transform: translateY(-3px); }
-    .fn-img {
-      width: 100%; aspect-ratio: 16/9; object-fit: contain;
-      background: var(--soft); border-radius: 10px; margin-bottom: 1.1rem;
-    }
-    .fn-img-ph {
-      width: 100%; aspect-ratio: 16/9;
-      background: linear-gradient(135deg, #fff5f5 0%, #fef2f2 100%);
-      border-radius: 10px; margin-bottom: 1.1rem;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .fn-title { font-size: .95rem; font-weight: 700; color: var(--ink); margin-bottom: .4rem; }
-    .fn-desc  { font-size: .855rem; color: var(--muted); line-height: 1.75; }
+.section__hero .section__hero__image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
 
-    /* ────── Pricing ────── */
-    .plan-grid {
-      display: grid; grid-template-columns: repeat(3,1fr);
-      gap: 1.25rem; margin-top: 2.75rem;
-    }
-    .plan-card {
-      background: #fff; border: 1.5px solid var(--border);
-      border-radius: 20px; padding: 2.1rem; position: relative;
-      transition: transform .18s, box-shadow .18s;
-    }
-    .plan-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.07); }
-    .plan-card.featured { border-color: var(--red); box-shadow: 0 6px 28px rgba(244,67,54,.12); }
-    .plan-badge {
-      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-      background: var(--red); color: #fff; font-size: .66rem; font-weight: 700;
-      padding: .22rem .82rem; border-radius: 999px; white-space: nowrap;
-    }
-    .plan-name { font-size: 1.05rem; font-weight: 800; color: var(--ink); margin-bottom: .2rem; }
-    .plan-sub  { font-size: .8rem; color: var(--muted); margin-bottom: 1.1rem; }
-    .plan-price {
-      font-size: 1.95rem; font-weight: 800; color: var(--ink);
-      letter-spacing: -.03em; line-height: 1;
-    }
-    .plan-price.featured-price { color: var(--red); }
-    .plan-unit { font-size: .82rem; color: var(--muted); }
-    .plan-hr   { border: none; border-top: 1px solid var(--border); margin: 1.2rem 0; }
-    .plan-uses {
-      display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1rem;
-    }
-    .plan-use-tag {
-      background: var(--red-lt); color: var(--red);
-      font-size: .73rem; font-weight: 600;
-      padding: .2rem .65rem; border-radius: 999px;
-    }
-    .plan-specs { display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1.4rem; }
-    .plan-spec-row {
-      display: flex; align-items: center; gap: .5rem;
-      font-size: .82rem; color: var(--mid);
-    }
-    .plan-spec-row::before { content: '✓'; color: var(--red); font-weight: 800; flex-shrink: 0; }
-    .plan-btn {
-      display: block; text-align: center;
-      padding: .75rem; border-radius: 10px; font-weight: 700;
-      font-size: .88rem; cursor: pointer; transition: all .15s;
-    }
-    .plan-btn-outline {
-      border: 1.5px solid var(--border); color: var(--mid); background: #fff;
-    }
-    .plan-btn-outline:hover { border-color: var(--red); color: var(--red); }
-    .plan-btn-fill {
-      background: var(--red); color: #fff; border: none;
-    }
-    .plan-btn-fill:hover { background: var(--red-dk); }
+.section__hero__title {
+  padding-top: 87px;
+  margin-bottom: 60px;
+}
 
-    /* ────── About ────── */
-    .about-grid {
-      display: grid; grid-template-columns: repeat(3,1fr);
-      gap: 1.25rem; margin-top: 3rem;
-    }
-    .about-card {
-      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
-      border-radius: 18px; padding: 2rem;
-      transition: background .18s, border-color .18s;
-    }
-    .about-card:hover { background: rgba(255,255,255,.07); border-color: rgba(244,67,54,.3); }
-    .about-ico {
-      width: 64px; height: 64px; border-radius: 14px;
-      overflow: hidden; background: rgba(244,67,54,.14);
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 1.1rem;
-    }
-    .about-ico img { width: 100%; height: 100%; object-fit: cover; }
-    .about-title { font-size: .97rem; font-weight: 700; color: #fff; margin-bottom: .45rem; }
-    .about-desc  { font-size: .855rem; color: rgba(255,255,255,.45); line-height: 1.8; }
+.section__hero__title .section__hero__title__sub {
+  font-size: 22px;
+  line-height: 40px;
+  color: #555;
+  font-weight: 500;
+  margin-bottom: 12px;
+  display: block;
+}
 
-    /* ────── Reviews Swiper ────── */
-    .review-head {
-      display: flex; align-items: flex-end; justify-content: space-between;
-      margin-bottom: 2.5rem; gap: 1rem; flex-wrap: wrap;
-    }
-    .rev-navs { display: flex; gap: .5rem; }
-    .rev-nav-btn {
-      width: 42px; height: 42px; border-radius: 50%;
-      background: #fff; border: 1.5px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all .15s;
-    }
-    .rev-nav-btn:hover { border-color: var(--red); background: var(--red-lt); }
-    .swiper-button-disabled { opacity: .3 !important; pointer-events: none; }
-    .rev-card {
-      background: #fff; border: 1.5px solid var(--border);
-      border-radius: var(--r); padding: 1.65rem; height: auto !important;
-    }
-    .rev-top { display: flex; align-items: center; gap: .85rem; margin-bottom: .85rem; }
-    .rev-avatar {
-      width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
-      background: var(--red-lt); display: flex; align-items: center;
-      justify-content: center; font-size: 1rem; font-weight: 800; color: var(--red);
-      overflow: hidden;
-    }
-    .rev-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .rev-name    { font-size: .88rem; font-weight: 700; color: var(--ink); }
-    .rev-company { font-size: .74rem; color: var(--muted); margin-top: 2px; }
-    .rev-stars   { color: #f59e0b; font-size: .9rem; letter-spacing: .04em; margin-bottom: .7rem; }
-    .rev-body    { font-size: .855rem; color: #4b5563; line-height: 1.82; }
-    .rev-date    { font-size: .7rem; color: var(--pale); margin-top: .9rem; }
-    .swiper-pagination-bullet-active { background: var(--red) !important; }
+.section__hero__title h1,
+.section__hero_main_title {
+  font-size: 70px;
+  line-height: 96px;
+  color: #111;
+  font-weight: 600;
+}
 
-    /* ────── FAQ ────── */
-    .faq-wrap { max-width: 760px; margin: 2.75rem auto 0; }
-    .faq-item { border-bottom: 1px solid var(--border); }
-    .faq-item:first-child { border-top: 1px solid var(--border); }
-    .faq-q {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1.3rem 0; cursor: pointer; gap: 1rem;
-    }
-    .faq-q-text { font-size: .95rem; font-weight: 600; color: var(--ink); line-height: 1.5; }
-    .faq-icon {
-      flex-shrink: 0; width: 22px; height: 22px;
-      display: flex; align-items: center; justify-content: center;
-      transition: transform .25s var(--ease);
-    }
-    .faq-item.open .faq-icon { transform: rotate(180deg); }
-    .faq-a { overflow: hidden; max-height: 0; transition: max-height .35s var(--ease); }
-    .faq-a-inner {
-      padding: .15rem 0 1.3rem;
-      font-size: .9rem; color: var(--muted); line-height: 1.85;
-    }
-    .faq-more { text-align: center; margin-top: 2.25rem; }
-    .btn-faq {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: .75rem 1.9rem; border: 1.5px solid var(--red); color: var(--red);
-      border-radius: 10px; font-weight: 700; font-size: .875rem;
-      background: transparent; cursor: pointer; transition: all .15s;
-    }
-    .btn-faq:hover { background: var(--red); color: #fff; }
+.section__hero__title h1 .main-color,
+.section__hero_main_title .main-color {
+  color: #F44336;
+  font-size: 70px;
+  line-height: 96px;
+  font-weight: 600;
+}
 
-    /* ────── CTA Direct ────── */
-    .cta-sec {
-      padding: 6rem 1.5rem; text-align: center;
-      background: linear-gradient(135deg, var(--red) 0%, var(--red-dk) 100%);
-      position: relative; overflow: hidden;
-    }
-    .cta-sec::before {
-      content: ''; position: absolute; inset: 0; pointer-events: none;
-      background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(255,255,255,.08) 0%, transparent 70%);
-    }
-    .cta-title {
-      font-size: clamp(1.65rem, 3vw, 2.3rem); font-weight: 800;
-      color: #fff; line-height: 1.3; margin-bottom: 2rem;
-      position: relative; z-index: 1;
-    }
-    .cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; position: relative; z-index: 1; }
-    .btn-cta-w {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: .9rem 2rem; background: #fff; color: var(--red);
-      border-radius: 10px; font-weight: 800; font-size: .95rem;
-      transition: transform .12s, box-shadow .14s; border: none;
-    }
-    .btn-cta-w:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.18); }
-    .btn-cta-t {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: .9rem 2rem;
-      border: 1.5px solid rgba(255,255,255,.5); color: #fff;
-      border-radius: 10px; font-weight: 600; font-size: .95rem;
-      transition: all .14s; background: transparent;
-    }
-    .btn-cta-t:hover { border-color: #fff; background: rgba(255,255,255,.1); }
+.section__hero_link_wrap {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-radius: 16px;
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.15);
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
 
-    /* ────── Responsive ────── */
-    @media (max-width: 1024px) {
-      .fn-grid { grid-template-columns: repeat(2, 1fr); }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .stat-item:nth-child(2) { border-right: none; }
-      .stat-item:nth-child(3) { border-top: 1px solid rgba(255,255,255,.08); }
-    }
-    @media (max-width: 900px) {
-      .hero-grid { grid-template-columns: 1fr; gap: 3rem; }
-      .hero-img-wrap, .hero-img-placeholder { max-width: 520px; margin: 0 auto; }
-      .plan-grid { grid-template-columns: 1fr; max-width: 400px; margin: 2.75rem auto 0; }
-      .about-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 768px) {
-      .tab-panel.active { grid-template-columns: 1fr; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .fn-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 640px) {
-      .stats-grid { grid-template-columns: 1fr; }
-      .stat-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,.08); }
-      .stat-item:last-child { border-bottom: none; }
-      .hero-links { flex-direction: column; }
-    }
+.section__hero_link_wrap:hover {
+  box-shadow: 0px 0px 10px rgba(244, 67, 54, 0.3);
+}
+
+.section__hero_link_wrap p {
+  font-size: 16px;
+  line-height: 24px;
+  color: #6d6d6d;
+}
+
+.section__hero_link_wrap .direct_link,
+.direct_link {
+  font-size: 16px;
+  color: #F44336;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 히어로 애니메이션 */
+.hero-animate {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.hero-animate.animate-in { opacity: 1; transform: translateY(0); }
+.hero-animate.hero-delay-0 { transition-delay: 0.1s; }
+.hero-animate.hero-delay-1 { transition-delay: 0.3s; }
+.hero-animate.hero-delay-2 { transition-delay: 0.7s; }
+.hero-animate.hero-delay-3 { transition-delay: 1.1s; }
+.hero-animate.hero-delay-4 { transition-delay: 1.4s; }
+
+/* =====================================================
+   공통 컨텐츠 타이틀
+===================================================== */
+.content__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 20px;
+  position: relative;
+  word-break: keep-all;
+}
+
+.content__title span,
+.content__title .content__title__sub {
+  color: #F44336;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 40px;
+}
+
+.content__title h2 {
+  color: #111;
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 56px;
+}
+
+/* =====================================================
+   Usage 섹션
+===================================================== */
+.section__usease {
+  margin: 100px auto;
+}
+
+.section__usease_tab_wrapper {
+  margin-top: 80px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 80px;
+}
+
+.section__usease_tab_wrapper .section__usease_tab_list {
+  width: 170px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section__usease_tab_list .section__usease_tab_item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 26px;
+  padding: 12px 24px;
+  border-radius: 99px;
+  color: #7c7c7c;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.section__usease_tab_list .section__usease_tab_item:hover {
+  color: #F44336;
+}
+
+.section__usease_tab_list .section__usease_tab_item.active {
+  color: #fff;
+  background: #F44336;
+}
+
+.section__usease_tab_content_wrapper {
+  position: relative;
+  width: 100%;
+  height: 700px;
+}
+
+.section__usease_tab_content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: none;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.section__usease_tab_content.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 탭 패널 레거시 */
+.tab-panel.active {
+  display: grid; grid-template-columns: 1fr 1.3fr;
+  gap: 3.5rem; align-items: center;
+  animation: panelIn .3s var(--ease);
+}
+@keyframes panelIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+
+.tab_content_text {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.tab_content_text .tab_content_text__title {
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 600;
+  color: #000;
+}
+
+.tab_content_text .tab_content_text__desc {
+  font-size: 20px;
+  line-height: 40px;
+  color: #8e8e8e;
+  font-weight: 400;
+}
+
+.tab_content_video_wrap {
+  border-radius: 40px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.tab_video {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 20px;
+}
+
+/* =====================================================
+   Value 섹션
+===================================================== */
+.section__value {
+  margin: 40px auto;
+  width: 95%;
+  padding: 160px 0;
+  background: url('/assets/images/gradient_bg.png') no-repeat;
+  background-size: cover;
+  background-position: bottom;
+  border-radius: 40px;
+}
+
+.section__value_inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.section__value .content__title {
+  margin-bottom: 80px;
+}
+
+.section__value .content__title .content__title__sub {
+  color: #fff;
+}
+
+.section__value .content__title h2 {
+  color: #fff;
+}
+
+.section__value .content__title p {
+  font-size: 20px;
+  line-height: 40px;
+  color: #e2e2e2;
+}
+
+.section__value_list {
+  width: 100%;
+}
+
+.section__value_list_inner {
+  display: flex;
+  width: 100%;
+  gap: 80px;
+}
+
+.section__value_list_inner .section__value_list_item {
+  width: 25%;
+  display: flex;
+  gap: 36px;
+  align-items: center;
+  position: relative;
+}
+
+.section__value_list_inner .section__value_list_item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: -40px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: #F44336;
+}
+
+.section__value_list_item .svg_icon_wrap {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+
+.section__value_list_item .value_item_content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section__value_list_item .value_item_label {
+  font-size: 16px;
+  line-height: 24px;
+  color: #e2e2e2;
+  font-weight: 400;
+}
+
+.section__value_list_item .value_item_number {
+  font-size: 32px;
+  line-height: 40px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* =====================================================
+   Main Function 섹션
+===================================================== */
+.section__main_function {
+  margin: 100px auto;
+}
+
+.section__main_function .content__title {
+  margin-bottom: 80px;
+}
+
+.section__main_function .content__title p {
+  font-size: 20px;
+  line-height: 40px;
+  color: #aaa;
+}
+
+.main_function_grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 24px;
+  width: 100%;
+}
+
+.function_card {
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.function_card_image {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  height: auto;
+  aspect-ratio: 1 / 1;
+}
+
+.function_card_image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  z-index: 8;
+}
+
+.function_card_content {
+  padding: 30px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 11;
+  background: transparent;
+  width: 100%;
+  height: 100%;
+}
+
+.function_card_bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.9));
+  width: 100%;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.function_card:hover .function_card_bg {
+  opacity: 0.8;
+}
+
+.function_card_title {
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 500;
+  color: #fff;
+  margin: 0;
+}
+
+.function_card_desc {
+  font-size: 15px;
+  line-height: 24px;
+  color: #d4d4d4;
+  margin: 0;
+}
+
+/* =====================================================
+   Price 섹션
+===================================================== */
+.section__price {
+  margin: 100px auto;
+}
+
+.section__price .content__title {
+  margin-bottom: 80px;
+}
+
+.section__price .content__title p {
+  font-size: 20px;
+  line-height: 40px;
+  color: #aaa;
+}
+
+/* sub_card 요금제 카드 */
+.sub_card { display: flex; gap: 24px; width: 100%; margin-top: 48px; }
+.subscribe_area { flex: 1; }
+.sub_box {
+  border: 1px solid #efefef;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,.06);
+  transition: transform .2s, box-shadow .2s;
+}
+.sub_box:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.1); }
+.product_intro {
+  padding: 32px 28px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid #f0f0f0;
+}
+.p_desc_box .p_name { font-size: 22px; font-weight: 700; color: #111; margin-bottom: 6px; }
+.p_desc_box .p_txt  { font-size: 14px; color: #888; }
+.p_price { font-size: 14px; color: #555; text-align: right; }
+.p_price strong { display: block; font-size: 26px; font-weight: 700; color: #F44336; }
+.p_btn_area { padding: 20px 28px; border-bottom: 1px solid #f0f0f0; }
+.p_btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  background: #F44336;
+  color: #fff;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+}
+.p_btn:hover { background: var(--red-dk); }
+.p_btn:disabled { background: #ccc; cursor: not-allowed; }
+.p_bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+.p_bottom p { font-size: 13px; color: #888; }
+.p_more_btn_mobile { display: none; font-size: 13px; color: #888; background: none; border: none; cursor: pointer; }
+.p_list {
+  padding: 16px 28px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.p_list li {
+  background: #fff5f5;
+  color: #F44336;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.chk_list { padding: 16px 28px 28px; display: flex; flex-direction: column; gap: 8px; }
+.chk_list li { font-size: 13px; color: #555; display: flex; align-items: center; gap: 8px; }
+.chk_list li::before { content: '✓'; color: #F44336; font-weight: 700; flex-shrink: 0; }
+
+/* =====================================================
+   About 섹션
+===================================================== */
+.section__about {
+  margin: 100px auto 200px;
+}
+
+.section__about_content {
+  margin-top: 80px;
+}
+
+.about_features_grid {
+  display: flex;
+  justify-content: center;
+  gap: 56px;
+  flex-wrap: wrap;
+}
+
+.about_feature_item {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.about_feature_icon {
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.about_feature_icon .icon_circle {
+  width: 80%;
+  max-width: 200px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.about_feature_icon .icon_circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about_feature_content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.about_feature_title {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+  color: #111;
+  margin: 0;
+}
+
+.about_feature_desc {
+  font-size: 16px;
+  line-height: 24px;
+  color: #666;
+  margin: 0;
+}
+
+/* =====================================================
+   Review 섹션
+===================================================== */
+.section__review {
+  padding: 100px 0;
+  background-color: #f8f8f8;
+}
+
+.section__review .content__title {
+  margin-bottom: 80px;
+}
+
+.review_swiper_container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.review_swiper {
+  width: 100%;
+  padding: 20px 0 60px;
+}
+
+.review_card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px 30px 40px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: 480px;
+}
+
+.review_card_header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.review_card_avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #666;
+  font-size: 18px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.review_card_name  { font-size: 18px; line-height: 28px; font-weight: 600; color: #111; }
+.review_card_company { font-size: 14px; color: #666; margin: 0; }
+.review_card_stars { display: flex; gap: 4px; align-items: center; }
+.review_card_date  { font-size: 14px; line-height: 24px; font-weight: 400; color: #919191; }
+.review_card_body  {
+  font-size: 16px; line-height: 28px; color: #737373; margin: 0;
+  flex: 1; overflow: hidden;
+  display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical;
+}
+
+.review_navigation_buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  align-items: center;
+}
+
+.section__review .review_swiper_next,
+.section__review .review_swiper_prev {
+  width: 50px !important;
+  height: 50px !important;
+  background: #ffffff;
+  border-radius: 50% !important;
+  color: #F44336 !important;
+  font-size: 18px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  border: 1px solid #ececec !important;
+  position: static !important;
+  margin: 0 !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 0 !important;
+}
+
+.review_swiper_next:hover,
+.review_swiper_prev:hover {
+  background: #f7f8f9 !important;
+}
+
+.review_swiper_next::after,
+.review_swiper_prev::after {
+  display: none;
+}
+
+.swiper-pagination-bullet-active { background: var(--red) !important; }
+
+/* =====================================================
+   FAQ 섹션
+===================================================== */
+.section__faq {
+  margin: 100px auto;
+}
+
+.section__faq .content__title p {
+  font-size: 20px;
+  line-height: 40px;
+  color: #aaa;
+}
+
+.faq_accordion {
+  width: 100%;
+  margin: 60px auto 0;
+}
+
+.faq_item {
+  border-bottom: 1px solid #e5e5e5;
+  overflow: hidden;
+  background: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.faq_question {
+  padding: 40px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  transition: background-color 0.3s ease;
+}
+
+.faq_question h3 {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 400;
+  color: #333;
+  margin: 0;
+  flex: 1;
+  padding-right: 20px;
+}
+
+.faq_toggle {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.faq_item.active .faq_toggle {
+  transform: rotate(180deg);
+}
+
+.faq_item.active .faq_toggle svg path {
+  stroke: #F44336;
+}
+
+.faq_answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.4s ease;
+  background: #f9f9f9;
+  padding: 0 40px;
+}
+
+.faq_item.active .faq_answer {
+  max-height: 1000px;
+  padding: 40px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.faq_answer p {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #4a4a4a;
+  margin: 0;
+}
+
+.faq_more_btn_wrap {
+  text-align: center;
+  margin-top: 80px;
+}
+
+.faq_more_btn {
+  width: 100%;
+  max-width: 320px;
+  background: #F44336;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  padding: 16px 32px;
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.faq_more_btn:hover { background: var(--red-dk); }
+
+/* =====================================================
+   Direct 섹션
+===================================================== */
+.section__direct {
+  margin: 0px auto;
+  width: 100%;
+  padding: 200px 0;
+  background: url('/assets/images/gradient_bg2.png') no-repeat;
+  background-size: cover;
+  background-position: top;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.section__direct_content {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.section__direct_content p {
+  font-size: 40px;
+  line-height: 56px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.section__direct_content a {
+  color: #F44336;
+  border: 1px solid #F44336;
+  border-radius: 999px;
+  padding: 16px 24px;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 95%;
+  max-width: 330px;
+  margin: 0 auto;
+  display: block;
+}
+
+.section__direct_content a:hover {
+  background: #F44336;
+  color: #ffffff;
+}
+
+/* =====================================================
+   애니메이션 스타일
+===================================================== */
+
+/* 스크롤 애니메이션 */
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.scroll-animate.animate-in { opacity: 1; transform: translateY(0); }
+.scroll-animate.delay-1 { transition-delay: 0.3s; }
+
+/* Value 섹션 내부 콘텐츠 */
+.section__value .content__title.scroll-animate,
+.section__value .section__value_list.scroll-animate {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.section__value .section__value_list.scroll-animate { transition-delay: 0.3s; }
+.section__value .content__title.scroll-animate.animate-in,
+.section__value .section__value_list.scroll-animate.animate-in { opacity: 1; transform: translateY(0); }
+
+/* About 섹션 순차 애니메이션 */
+.section__about .about-delay-0 { transition-delay: 0.2s; }
+.section__about .about-delay-1 { transition-delay: 0.4s; }
+.section__about .about-delay-2 { transition-delay: 0.6s; }
+
+/* Review 섹션 */
+.section__review .scroll-animate {
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+.section__review .scroll-animate.animate-in { opacity: 1; }
+
+/* FAQ 섹션 */
+.section__faq .faq_accordion.scroll-animate {
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+.section__faq .faq_accordion.scroll-animate.animate-in { opacity: 1; }
+
+/* =====================================================
+   반응형 스타일
+===================================================== */
+@media (max-width: 1201px) {
+  .container1 {
+    width: 95%;
+    margin: 0 auto;
+  }
+
+  .section__value_list_inner {
+    flex-wrap: wrap;
+    gap: 40px;
+  }
+  .section__value_list_inner .section__value_list_item {
+    width: calc(50% - 40px);
+    justify-content: center;
+  }
+  .section__value_list_inner .section__value_list_item:not(:last-child)::after {
+    display: none;
+  }
+}
+
+/* 태블릿 (1024px 이하) */
+@media (max-width: 1024px) {
+  .contents_wrap { padding-bottom: 0 !important; }
+
+  .section__hero {
+    width: 100%;
+    position: relative;
+    margin: 80px auto;
+  }
+  .section__hero .section__hero__text {
+    width: 100%;
+    text-align: center;
+  }
+  .section__hero .section__hero__image {
+    position: static;
+    width: 95%;
+    height: auto;
+    margin: 0 auto;
+    margin-bottom: 60px;
+  }
+  .section__hero__title {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .section__hero__title .section__hero__title__sub {
+    font-size: 18px;
+    line-height: 22px;
+  }
+  .section__hero_link_wrap {
+    text-align: left;
+    width: 95%;
+    margin: 0 auto 16px;
+  }
+  .section__hero__title h1,
+  .section__hero_main_title {
+    font-size: 60px;
+    line-height: 64px;
+  }
+  .section__hero__title h1 .main-color,
+  .section__hero_main_title .main-color {
+    font-size: 60px;
+    line-height: 64px;
+  }
+
+  /* Usage */
+  .section__usease { margin: 80px auto; }
+  .section__usease_tab_wrapper {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+  }
+  .section__usease_tab_wrapper .section__usease_tab_list {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 16px;
+  }
+  .section__usease_tab_list .section__usease_tab_item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25%;
+  }
+  .section__usease_tab_content_wrapper {
+    position: relative;
+    text-align: center;
+  }
+
+  /* Value */
+  .section__value {
+    padding: 80px 0;
+    border-radius: 30px;
+    margin-bottom: 80px;
+  }
+  .section__value_list_inner .section__value_list_item {
+    width: calc(50% - 20px);
+    justify-content: center;
+  }
+  .section__value_list_inner { gap: 40px; }
+
+  /* Main Function */
+  .section__main_function { margin-bottom: 80px; }
+  .main_function_grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 30px;
+  }
+
+  /* About */
+  .about_features_grid { gap: 0; }
+  .about_feature_item { width: 33%; max-width: 320px; }
+
+  /* Review */
+  .section__review { margin: 80px auto; }
+  .section__review .content__title { margin-bottom: 60px; }
+  .review_card { padding: 30px 24px; }
+
+  /* Price */
+  .section__price { margin-bottom: 80px; }
+
+  /* FAQ */
+  .section__faq { margin-bottom: 80px; }
+}
+
+/* 모바일 (768px 이하) */
+@media (max-width: 768px) {
+  .content__title span,
+  .content__title .content__title__sub {
+    font-size: 16px;
+    line-height: 24px;
+  }
+  .content__title h2 {
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  /* Hero */
+  .section__hero_link_wrap p { font-size: 14px; line-height: 20px; }
+  .section__hero_link_wrap .direct_link,
+  .direct_link { font-size: 14px; }
+
+  /* Usage */
+  .section__usease_tab_wrapper .section__usease_tab_list { gap: 8px; }
+  .section__usease_tab_list .section__usease_tab_item {
+    padding: 8px 0;
+    font-size: 14px;
+    line-height: 16px;
+  }
+  .section__usease_tab_wrapper {
+    gap: 40px;
+    margin-top: 40px;
+    height: 600px;
+  }
+  .section__usease_tab_content_wrapper { height: 600px; }
+  .tab_content_text .tab_content_text__title { font-size: 20px; line-height: 28px; }
+  .tab_content_text .tab_content_text__desc { font-size: 14px; line-height: 22px; }
+  .tab_content_video_wrap { border-radius: 8px; }
+
+  /* Value */
+  .section__value { padding: 80px 0; }
+  .section__value .content__title p { font-size: 14px; line-height: 22px; }
+  .section__value_list_inner {
+    gap: 40px;
+    flex-direction: column;
+  }
+  .section__value_list_inner .section__value_list_item { width: 100%; }
+  .section__value_list_inner .section__value_list_item:not(:last-child)::after { display: none; }
+  .section__value_list_item .svg_icon_wrap { width: 32px; display: flex; align-items: center; justify-content: flex-end; }
+  .section__value_list_item .svg_icon_wrap svg { width: 32px; height: 32px; }
+  .section__value_list_item .value_item_content { min-width: 100px; gap: 4px; }
+  .section__value_list_item .value_item_label { font-size: 14px; line-height: 22px; }
+  .section__value_list_item .value_item_number { font-size: 22px; line-height: 30px; }
+
+  /* Main Function */
+  .section__main_function { margin: 60px auto; }
+  .section__main_function .content__title { margin-bottom: 60px; }
+  .section__main_function .content__title p { font-size: 14px; line-height: 22px; }
+  .main_function_grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(6, 1fr);
+    gap: 24px;
+  }
+  .function_card_content { padding: 24px 20px; }
+  .function_card_title { font-size: 18px; line-height: 26px; }
+  .function_card_desc { font-size: 14px; line-height: 22px; }
+
+  /* Price */
+  .section__price .content__title { margin-bottom: 60px; }
+  .section__price .content__title p { font-size: 14px; line-height: 22px; }
+  .sub_card { flex-direction: column; }
+
+  /* About */
+  .section__about { margin: 60px auto 120px; }
+  .section__about_content { margin-top: 60px; }
+  .about_features_grid { gap: 24px; }
+  .about_feature_item { width: 100%; max-width: 320px; padding: 30px 20px; }
+  .about_feature_icon { margin-bottom: 24px; }
+  .about_feature_title { font-size: 18px; line-height: 26px; }
+  .about_feature_desc { font-size: 14px; line-height: 22px; }
+
+  /* Review */
+  .section__review { padding: 80px 0; }
+
+  /* FAQ */
+  .section__faq .content__title p { font-size: 14px; line-height: 22px; }
+  .faq_question { padding: 10px; }
+  .faq_question h3 { font-size: 15px; line-height: 24px; }
+  .faq_answer { padding: 0 10px; }
+  .faq_item.active .faq_answer { padding: 10px; }
+  .faq_answer p { font-size: 14px; line-height: 22px; }
+
+  /* Direct */
+  .section__direct { padding: 80px 0; }
+  .section__direct_content p { font-size: 24px; line-height: 32px; }
+}
+
+@media (max-width: 576px) {
+  .section__usease_tab_wrapper  { height: 520px; }
+  .section__usease_tab_content_wrapper { height: 520px; }
+}
+
+@media (max-width: 480px) {
+  .section__usease_tab_wrapper  { gap: 40px; margin-top: 40px; height: 420px; }
+  .section__usease_tab_content_wrapper { height: 420px; }
+}
   </style>
 </head>
 <body>
@@ -607,7 +1403,7 @@
     <h2>브이데스크의 다양한 활용방법 <br>미리 확인해 보세요!</h2>
   </div>
 
-  <div class="section__usease_tab_wrapper sa sa-d1">
+  <div class="section__usease_tab_wrapper scroll-animate delay-1">
     <!-- 왼쪽 세로 탭 -->
     <ul class="section__usease_tab_list">
       <li class="section__usease_tab_item active">모바일 게임</li>
@@ -690,60 +1486,62 @@
 <!-- ════════════════════════════════════
      VALUE / STATS
 ════════════════════════════════════ -->
-<section class="stats-sec">
-  <div class="inner">
-    <div class="sa" style="text-align:center;">
-      <span class="stag stag-dark">Value</span>
-      <h2 class="stit stit-dark">No.1 원격 컴퓨팅 시스템, 브이데스크</h2>
-      <p class="sdesc sdesc-dark">안전하고 사용하기 쉬운 개인형 원격 컴퓨팅 시스템</p>
+<section class="section__value">
+  <div class="section__value_inner container1">
+    <div class="content__title sa">
+      <span class="content__title__sub">Value</span>
+      <h2>No.1 원격 컴퓨팅 시스템, <br class="md:hidden"> 브이데스크</h2>
+      <p>안전하고 사용하기 쉬운 개인형 원격 컴퓨팅 시스템</p>
     </div>
-
-    <div class="stats-grid sa sa-d1">
-      <!-- 누적 제품 구매건수 -->
-      <div class="stat-item">
-        <div class="stat-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff8a80" stroke-width="1.8">
-            <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-          </svg>
-        </div>
-        <div class="stat-num" data-target="82285" data-suffix="건">0건</div>
-        <div class="stat-label">누적 제품 구매건수</div>
-      </div>
-
-      <!-- 현재 회원 수 -->
-      <div class="stat-item">
-        <div class="stat-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff8a80" stroke-width="1.8">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-          </svg>
-        </div>
-        <div class="stat-num" data-target="52285" data-suffix="명">0명</div>
-        <div class="stat-label">현재 회원 수</div>
-      </div>
-
-      <!-- 실시간 문의 건수 -->
-      <div class="stat-item">
-        <div class="stat-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff8a80" stroke-width="1.8">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-          </svg>
-        </div>
-        <div class="stat-num" data-target="20180" data-suffix="건">0건</div>
-        <div class="stat-label">실시간 문의 건수</div>
-      </div>
-
-      <!-- 고객 만족 비율 -->
-      <div class="stat-item">
-        <div class="stat-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff8a80" stroke-width="1.8">
-            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/>
-            <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
-          </svg>
-        </div>
-        <div class="stat-num" data-target="99" data-suffix="%">0%</div>
-        <div class="stat-label">고객 만족 비율</div>
-      </div>
+    <div class="section__value_list sa sa-d1">
+      <ul class="section__value_list_inner">
+        <li class="section__value_list_item">
+          <span class="svg_icon_wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="49" viewBox="0 0 48 49" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M43.4473 5.00516C45.9833 5.13386 48 7.23068 48 9.79872V38.5987C48 41.1668 45.9833 43.2636 43.4473 43.3923L43.2 43.3987H4.8C2.14903 43.3987 0 41.2497 0 38.5987V9.79872C0 7.14775 2.14903 4.99872 4.8 4.99872H43.2L43.4473 5.00516ZM4.8 20.5987V38.5987H43.2V20.5987H4.8ZM4.8 15.7987H43.2V9.79872H4.8V15.7987Z" fill="#F6695E"/>
+              <path d="M36 28.9987C37.3255 28.9987 38.4 30.0732 38.4 31.3987C38.4 32.7242 37.3255 33.7987 36 33.7987H28.8C27.4745 33.7987 26.4 32.7242 26.4 31.3987C26.4 30.0732 27.4745 28.9987 28.8 28.9987H36Z" fill="#F6695E"/>
+            </svg>
+          </span>
+          <div class="value_item_content">
+            <span class="value_item_label">누적 제품 구매건수</span>
+            <span class="value_item_number countup" data-target="82285" data-suffix="건">0건</span>
+          </div>
+        </li>
+        <li class="section__value_list_item">
+          <span class="svg_icon_wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="49" viewBox="0 0 48 49" fill="none">
+              <path d="M28.8016 12.1988C28.8016 9.54779 26.6525 7.39876 24.0016 7.39876C21.3506 7.39876 19.2016 9.54779 19.2016 12.1988C19.2016 14.8497 21.3506 16.9988 24.0016 16.9988V21.7988C18.6996 21.7988 14.4016 17.5007 14.4016 12.1988C14.4016 6.89682 18.6996 2.59875 24.0016 2.59875C29.3035 2.59875 33.6016 6.89682 33.6016 12.1988C33.6016 17.5007 29.3035 21.7988 24.0016 21.7988V16.9988C26.6525 16.9988 28.8016 14.8497 28.8016 12.1988Z" fill="#F6695E"/>
+              <path d="M39.6016 38.5601C39.6016 37.1045 38.681 35.1302 35.8246 33.2872C33.0174 31.4761 28.8504 30.1988 24.0016 30.1988C19.1527 30.1988 14.9858 31.4761 12.1785 33.2872C9.32208 35.1302 8.40156 37.1045 8.40156 38.5601C8.40157 39.2579 8.56893 39.334 8.57734 39.3423C8.7376 39.5005 9.28153 39.8925 10.7148 40.2423C13.7126 40.974 18.1249 40.9988 24.0016 40.9988V45.7988L21.9156 45.7976C11.8002 45.7747 3.86938 45.3877 3.60801 38.8952L3.60156 38.5601C3.60156 31.2913 12.735 25.3988 24.0016 25.3988C35.2682 25.3988 44.4016 31.2913 44.4016 38.5601L44.3951 38.8952C44.116 45.8279 35.0922 45.7988 24.0016 45.7988V40.9988C29.8782 40.9988 34.2905 40.974 37.2883 40.2423C38.7216 39.8925 39.2655 39.5005 39.4258 39.3423C39.4342 39.334 39.6016 39.2579 39.6016 38.5601Z" fill="#F6695E"/>
+            </svg>
+          </span>
+          <div class="value_item_content">
+            <span class="value_item_label">현재 회원 수</span>
+            <span class="value_item_number countup" data-target="52285" data-suffix="명">0명</span>
+          </div>
+        </li>
+        <li class="section__value_list_item">
+          <span class="svg_icon_wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="49" viewBox="0 0 48 49" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M24.3 1.39874C32.1609 1.39874 38.6881 7.10353 39.9703 14.5987H40.2C44.5078 14.5987 48 18.0909 48 22.3987C48 26.7066 44.5078 30.1987 40.2 30.1987V32.5612C40.2 37.1633 37.3313 41.0946 33.2848 42.6663C32.4582 45.1819 30.0921 46.9987 27.3 46.9987H21.9C18.4206 46.9987 15.6 44.1781 15.6 40.6987C15.6 37.328 18.2472 34.5756 21.576 34.4069L21.9 34.3987H27.3L27.624 34.4069C29.8209 34.5182 31.7205 35.7552 32.7586 37.5523C34.3527 36.4655 35.4 34.6361 35.4 32.5612V17.2987C35.4 11.1684 30.4304 6.19874 24.3 6.19874C18.1696 6.19874 13.2 11.1684 13.2 17.2987V30.1987H7.8C3.49218 30.1987 0 26.7066 0 22.3987C0 18.0909 3.49218 14.5987 7.8 14.5987H8.62969C9.91193 7.10353 16.4391 1.39874 24.3 1.39874ZM21.9 39.1987C21.0716 39.1987 20.4 39.8703 20.4 40.6987C20.4 41.5272 21.0716 42.1987 21.9 42.1987H27.3C28.1284 42.1987 28.8 41.5272 28.8 40.6987C28.8 39.8703 28.1284 39.1987 27.3 39.1987H21.9ZM7.8 19.3987C6.14315 19.3987 4.8 20.7419 4.8 22.3987C4.8 24.0556 6.14315 25.3987 7.8 25.3987H8.4V19.3987H7.8ZM40.2 25.3987C41.8569 25.3987 43.2 24.0556 43.2 22.3987C43.2 20.7419 41.8569 19.3987 40.2 19.3987V25.3987Z" fill="#F6695E"/>
+            </svg>
+          </span>
+          <div class="value_item_content">
+            <span class="value_item_label">실시간 문의 건수</span>
+            <span class="value_item_number countup" data-target="20180" data-suffix="건">0건</span>
+          </div>
+        </li>
+        <li class="section__value_list_item">
+          <span class="svg_icon_wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="49" viewBox="0 0 48 49" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M22.0814 2.77806C23.9947 2.4811 26.9564 2.44975 29.5662 3.50286C30.9055 4.04331 32.2406 4.90714 33.2389 6.25384C34.2532 7.6223 34.7992 9.32857 34.7992 11.3269V17.5988H38.4174C43.6547 17.5989 47.615 22.3397 46.6832 27.4935L44.9477 37.0935C44.2247 41.0913 40.7439 43.9988 36.6812 43.9988H16.1236C15.8572 45.0339 14.9175 45.7988 13.7992 45.7988H3.59922C2.31522 45.7988 1.26652 44.7904 1.20215 43.5224L1.19922 43.3988V21.1988C1.19922 19.9147 2.20756 18.866 3.47559 18.8017L3.59922 18.7988H13.7992L13.9229 18.8017C15.1909 18.866 16.1992 19.9147 16.1992 21.1988V22.1872C16.9848 21.3107 17.719 20.314 18.3484 19.1743C20.051 16.0913 21.1079 11.7565 20.0816 5.54075L19.6867 3.14954L22.0814 2.77806ZM5.99922 40.9988H11.3992V23.5988H5.99922V40.9988ZM25.1576 7.41927C25.6831 13.2944 24.5369 17.8979 22.5502 21.4952C20.7713 24.7162 18.3889 26.9996 16.1992 28.6355V39.1988H36.6812C38.4224 39.1988 39.914 37.9526 40.2238 36.2392L41.96 26.6392C42.3592 24.4305 40.6618 22.3989 38.4174 22.3988H29.9992V11.3269C29.9992 10.2369 29.7157 9.56188 29.3828 9.11263C29.0338 8.64175 28.5032 8.25022 27.7697 7.95423C26.9764 7.63414 26.0557 7.4721 25.1576 7.41927Z" fill="#F6695E"/>
+            </svg>
+          </span>
+          <div class="value_item_content">
+            <span class="value_item_label">고객 만족 비율</span>
+            <span class="value_item_number countup" data-target="99" data-suffix="%">0%</span>
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
 </section>
@@ -751,210 +1549,222 @@
 <!-- ════════════════════════════════════
      MAIN FUNCTION
 ════════════════════════════════════ -->
-<section class="sec">
-  <div class="inner">
-    <div class="sa" style="text-align:center;">
-      <span class="stag">Main function</span>
-      <h2 class="stit">브이데스크의 주요 기능을 소개합니다.</h2>
-      <p class="sdesc">브이데스크는 통합적 제품 및 서비스로 어떤 목표 달성이라도 쉽게 가능한<br>안전하고 편리한 PC 접속형 서비스입니다.</p>
-    </div>
-
-    <div class="fn-grid">
-      <div class="fn-card sa sa-d1">
-        <img class="fn-img" th:src="@{/assets/images/function01.png}" src="/assets/images/function01.png"
-             alt="공인 IP 1개 무료 부여" loading="lazy"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-        <div class="fn-img-ph" style="display:none;">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        </div>
-        <div class="fn-title">공인 IP 1개 무료 부여</div>
-        <p class="fn-desc">개별적인 공인 IP를 무료로 부여하여<br>독립적인 인터넷 컴퓨팅 환경을 제공해 드립니다.</p>
-      </div>
-
-      <div class="fn-card sa sa-d2">
-        <img class="fn-img" th:src="@{/assets/images/function02.png}" src="/assets/images/function02.png"
-             alt="독립된 컴퓨팅" loading="lazy"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-        <div class="fn-img-ph" style="display:none;">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-        </div>
-        <div class="fn-title">독립된 컴퓨팅</div>
-        <p class="fn-desc">완전히 독립적인 제공 방식으로<br>개인의 프라이버시를 완벽하게 보장해 드립니다.</p>
-      </div>
-
-      <div class="fn-card sa sa-d3">
-        <img class="fn-img" th:src="@{/assets/images/function03.png}" src="/assets/images/function03.png"
-             alt="어떠한 소프트웨어도 설치 가능" loading="lazy"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-        <div class="fn-img-ph" style="display:none;">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-        </div>
-        <div class="fn-title">어떠한 소프트웨어도 설치 가능</div>
-        <p class="fn-desc">광고, 홍보, 개발, 모니터링, 인터넷방송 게임 등<br>어떤 소프트웨어든 설치가 가능합니다.</p>
-      </div>
-
-      <div class="fn-card sa sa-d1">
-        <img class="fn-img" th:src="@{/assets/images/function04.png}" src="/assets/images/function04.png"
-             alt="어디서든 접속 및 사용가능" loading="lazy"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-        <div class="fn-img-ph" style="display:none;">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="1.5"><path d="M1 6l10.6 5.2a1 1 0 0 0 .8 0L23 6"/><rect x="1" y="6" width="22" height="13" rx="2"/></svg>
-        </div>
-        <div class="fn-title">어디서든 접속 및 사용가능</div>
-        <p class="fn-desc">가정집, 학교, 회사, 카페 등 어떤 환경에서도<br>제한 없는 매끄러운 접속 및 사용이 가능합니다.</p>
-      </div>
-
-      <div class="fn-card sa sa-d2">
-        <img class="fn-img" th:src="@{/assets/images/function05.png}" src="/assets/images/function05.png"
-             alt="24시간 구동되는 PC" loading="lazy"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-        <div class="fn-img-ph" style="display:none;">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        </div>
-        <div class="fn-title">24시간 구동되는 PC</div>
-        <p class="fn-desc">원하는 타이밍에 원하는 시간만큼<br>제한 없이 사용할 수 있습니다.</p>
-      </div>
-
-      <div class="fn-card sa sa-d3">
-        <img class="fn-img" th:src="@{/assets/images/function06.png}" src="/assets/images/function06.png"
-             alt="수십 대의 컴퓨터를 동시관리" loading="lazy"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-        <div class="fn-img-ph" style="display:none;">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><rect x="8" y="21" width="8" height="2"/><path d="M12 17v4"/></svg>
-        </div>
-        <div class="fn-title">수십 대의 컴퓨터를 동시관리</div>
-        <p class="fn-desc">수십 대의 컴퓨터를 관리해야 하는 분들에게<br>최적의 업무환경을 제공합니다.</p>
-      </div>
-    </div>
+<section class="section__main_function container1 scroll-animate">
+  <div class="content__title">
+    <span class="content__title__sub">Main function</span>
+    <h2>브이데스크의 주요 기능을 소개합니다.</h2>
+    <p>브이데스크는 통합적 제품 및 서비스로 어떤 목표 달성이라도 쉽게 가능한 안전하고 편리한 PC 접속형 서비스입니다.</p>
   </div>
+
+    <div class="main_function_grid">
+      <div class="function_card scroll-animate">
+        <div class="function_card_image">
+          <img th:src="@{/assets/images/function01.png}" src="/assets/images/function01.png" alt="공인 IP 1개 무료 부여" loading="lazy"/>
+        </div>
+        <div class="function_card_content">
+          <h3 class="function_card_title">공인 IP 1개 무료 부여</h3>
+          <p class="function_card_desc">개별적인 공인 IP를 무료로 부여하여<br>독립적인 인터넷 컴퓨팅 환경을 제공해 드립니다.</p>
+        </div>
+        <div class="function_card_bg"></div>
+      </div>
+
+      <div class="function_card scroll-animate">
+        <div class="function_card_image">
+          <img th:src="@{/assets/images/function02.png}" src="/assets/images/function02.png" alt="독립된 컴퓨팅" loading="lazy"/>
+        </div>
+        <div class="function_card_content">
+          <h3 class="function_card_title">독립된 컴퓨팅</h3>
+          <p class="function_card_desc">완전히 독립적인 제공 방식으로<br>개인의 프라이버시를 완벽하게 보장해 드립니다.</p>
+        </div>
+        <div class="function_card_bg"></div>
+      </div>
+
+      <div class="function_card scroll-animate">
+        <div class="function_card_image">
+          <img th:src="@{/assets/images/function03.png}" src="/assets/images/function03.png" alt="어떠한 소프트웨어도 설치 가능" loading="lazy"/>
+        </div>
+        <div class="function_card_content">
+          <h3 class="function_card_title">어떠한 소프트웨어도 설치 가능</h3>
+          <p class="function_card_desc">광고, 홍보, 개발, 모니터링, 인터넷방송 게임 등<br>어떤 소프트웨어든 설치가 가능합니다.</p>
+        </div>
+        <div class="function_card_bg"></div>
+      </div>
+
+      <div class="function_card scroll-animate">
+        <div class="function_card_image">
+          <img th:src="@{/assets/images/function04.png}" src="/assets/images/function04.png" alt="어디서든 접속 및 사용가능" loading="lazy"/>
+        </div>
+        <div class="function_card_content">
+          <h3 class="function_card_title">어디서든 접속 및 사용가능</h3>
+          <p class="function_card_desc">가정집, 학교, 회사, 카페 등 어떤 환경에서도<br>제한 없는 매끄러운 접속 및 사용이 가능합니다.</p>
+        </div>
+        <div class="function_card_bg"></div>
+      </div>
+
+      <div class="function_card scroll-animate">
+        <div class="function_card_image">
+          <img th:src="@{/assets/images/function05.png}" src="/assets/images/function05.png" alt="24시간 구동되는 PC" loading="lazy"/>
+        </div>
+        <div class="function_card_content">
+          <h3 class="function_card_title">24시간 구동되는 PC</h3>
+          <p class="function_card_desc">원하는 타이밍에 원하는 시간만큼<br>제한 없이 사용할 수 있습니다.</p>
+        </div>
+        <div class="function_card_bg"></div>
+      </div>
+
+      <div class="function_card scroll-animate">
+        <div class="function_card_image">
+          <img th:src="@{/assets/images/function06.png}" src="/assets/images/function06.png" alt="수십 대의 컴퓨터를 동시관리" loading="lazy"/>
+        </div>
+        <div class="function_card_content">
+          <h3 class="function_card_title">수십 대의 컴퓨터를 동시관리</h3>
+          <p class="function_card_desc">수십 대의 컴퓨터를 관리해야 하는 분들에게<br>최적의 업무환경을 제공합니다.</p>
+        </div>
+        <div class="function_card_bg"></div>
+      </div>
+    </div>
 </section>
 
 <!-- ════════════════════════════════════
      PRICING
 ════════════════════════════════════ -->
-<section class="sec sec-gray">
-  <div class="inner">
-    <div class="sa" style="text-align:center;">
-      <span class="stag">Service charge</span>
-      <h2 class="stit">브이데스크 서비스 요금 안내</h2>
-      <p class="sdesc">브이데스크는 합리적인 가격으로 서비스를 제공해 드립니다.</p>
-    </div>
-
-    <div class="plan-grid">
-      <!-- Basic -->
-      <div class="plan-card sa sa-d1">
-        <div class="plan-name">Basic</div>
-        <div class="plan-sub">일반 사무용 컴퓨팅</div>
-        <div class="plan-price">45,000<span class="plan-unit">원 / 매월</span></div>
-        <hr class="plan-hr"/>
-        <div class="plan-uses">
-          <span class="plan-use-tag">마케팅</span>
-          <span class="plan-use-tag">인터넷방송</span>
-          <span class="plan-use-tag">SNS용</span>
-          <span class="plan-use-tag">2D 게임</span>
-          <span class="plan-use-tag">주식 거래</span>
-        </div>
-        <div class="plan-specs">
-          <div class="plan-spec-row">CPU Intel(R) Xeon(R)</div>
-          <div class="plan-spec-row">RAM 3GB DDR4</div>
-          <div class="plan-spec-row">SSD 256 GB</div>
-          <div class="plan-spec-row">GPU Share</div>
-          <div class="plan-spec-row">OS Win 10 PRO</div>
-          <div class="plan-spec-row">IP 한국 공인 IP (독립)</div>
-        </div>
-        <a href="/pricing" class="plan-btn plan-btn-outline">구매하기</a>
-      </div>
-
-      <!-- Standard (featured) -->
-      <div class="plan-card featured sa sa-d2">
-        <div class="plan-badge">인기</div>
-        <div class="plan-name">Standard</div>
-        <div class="plan-sub">중간 사양의 컴퓨팅</div>
-        <div class="plan-price featured-price">85,000<span class="plan-unit">원 / 월</span></div>
-        <hr class="plan-hr"/>
-        <div class="plan-uses">
-          <span class="plan-use-tag">마케팅</span>
-          <span class="plan-use-tag">작업장</span>
-          <span class="plan-use-tag">앱플레이어</span>
-          <span class="plan-use-tag">리니지M</span>
-          <span class="plan-use-tag">3D 게임</span>
-        </div>
-        <div class="plan-specs">
-          <div class="plan-spec-row">CPU Intel Core i5-8500</div>
-          <div class="plan-spec-row">RAM 8GB DDR4</div>
-          <div class="plan-spec-row">SSD 256 GB</div>
-          <div class="plan-spec-row">GPU Intel UHD 630</div>
-          <div class="plan-spec-row">OS Win 10 PRO</div>
-          <div class="plan-spec-row">IP 한국 공인 IP (독립)</div>
-        </div>
-        <a href="/pricing" class="plan-btn plan-btn-fill">구매하기</a>
-      </div>
-
-      <!-- Business -->
-      <div class="plan-card sa sa-d3">
-        <div class="plan-name">Business</div>
-        <div class="plan-sub">전문가급의 컴퓨팅</div>
-        <div class="plan-price">140,000<span class="plan-unit">원 / 월</span></div>
-        <hr class="plan-hr"/>
-        <div class="plan-uses">
-          <span class="plan-use-tag">영상 편집</span>
-          <span class="plan-use-tag">마케팅</span>
-          <span class="plan-use-tag">앱 플레이어 다중</span>
-          <span class="plan-use-tag">리니지M/오딘/V4</span>
-        </div>
-        <div class="plan-specs">
-          <div class="plan-spec-row">CPU Intel Xeon 12Core</div>
-          <div class="plan-spec-row">RAM 64GB DDR4</div>
-          <div class="plan-spec-row">SSD 256 GB</div>
-          <div class="plan-spec-row">GPU Geforce 1050TI</div>
-          <div class="plan-spec-row">OS Win 10 PRO</div>
-          <div class="plan-spec-row">IP 한국 공인 IP (독립)</div>
-        </div>
-        <a href="/pricing" class="plan-btn plan-btn-outline">구매하기</a>
-      </div>
-    </div>
+<section class="section__price container1 scroll-animate">
+  <div class="content__title">
+    <span class="content__title__sub scroll-animate">Service charge</span>
+    <h2 class="scroll-animate">브이데스크 서비스 요금 안내</h2>
+    <p class="scroll-animate">브이데스크는 합리적인 가격으로 서비스를 제공해 드립니다.</p>
   </div>
+
+    <div class="sub_card scroll-animate">
+      <div class="subscribe_area">
+        <div class="sub_box">
+          <div class="product_intro">
+            <div class="p_desc_box">
+              <p class="p_name">Basic</p>
+              <p class="p_txt">일반 사무용 컴퓨팅</p>
+            </div>
+            <p class="p_price"><strong>45,000</strong>/ 매월</p>
+          </div>
+          <div class="p_btn_area">
+            <button type="button" class="p_btn" onclick="paymentWindowOpen('BASIC')">구매하기</button>
+            <div class="p_bottom"><p>일반적인 사무용에 추천</p></div>
+          </div>
+          <ul class="p_list">
+            <li>마케팅</li><li>인터넷방송</li><li>SNS용</li><li>2D 게임</li><li>주식 거래</li>
+          </ul>
+          <ul class="chk_list">
+            <li>CPU Intel(R) Xeon(R)</li>
+            <li>RAM 3GB DDR4</li>
+            <li>SSD 256 GB</li>
+            <li>GPU Share</li>
+            <li>OS Win 10 PRO</li>
+            <li>IP 한국 공인 IP (독립)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="subscribe_area">
+        <div class="sub_box">
+          <div class="product_intro">
+            <div class="p_desc_box">
+              <p class="p_name">Standard</p>
+              <p class="p_txt">중간 사양의 컴퓨팅</p>
+            </div>
+            <p class="p_price"><strong>85,000</strong>/ 월</p>
+          </div>
+          <div class="p_btn_area">
+            <button type="button" class="p_btn" onclick="paymentWindowOpen('STANDARD')">구매하기</button>
+            <div class="p_bottom"><p>앱(LD)플레이어 사용 가능</p></div>
+          </div>
+          <ul class="p_list">
+            <li>마케팅</li><li>작업장</li><li>앱플레이어</li><li>리니지M</li><li>스펙 내 3D 게임</li>
+          </ul>
+          <ul class="chk_list">
+            <li>CPU Intel Core i5-8500</li>
+            <li>RAM 8 GB DDR4</li>
+            <li>SSD 256 GB</li>
+            <li>GPU Intel UHD 630</li>
+            <li>OS WIN 10 PRO</li>
+            <li>IP 한국 공인 IP (독립)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="subscribe_area">
+        <div class="sub_box">
+          <div class="product_intro">
+            <div class="p_desc_box">
+              <p class="p_name">Business</p>
+              <p class="p_txt">전문가급의 컴퓨팅</p>
+            </div>
+            <p class="p_price"><strong>140,000</strong>/ 월</p>
+          </div>
+          <div class="p_btn_area">
+            <button type="button" class="p_btn" onclick="paymentWindowOpen('BUSINESS')">구매하기</button>
+            <div class="p_bottom"><p>다양한 고사양 작업 가능</p></div>
+          </div>
+          <ul class="p_list">
+            <li>영상 편집</li><li>마케팅</li><li>작업장</li><li>앱 플레이어 다중 실행</li><li>리니지M / 오딘 / V4 / 히트2</li>
+          </ul>
+          <ul class="chk_list">
+            <li>CPU Intel Xeon 12Core</li>
+            <li>RAM 64 GB DDR4</li>
+            <li>SSD 256 GB</li>
+            <li>GPU Geforce 1050TI</li>
+            <li>OS WIN 10 PRO</li>
+            <li>IP 한국 공인 IP (독립)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
 </section>
 
 <!-- ════════════════════════════════════
      ABOUT
 ════════════════════════════════════ -->
-<section class="sec sec-dark">
-  <div class="inner">
-    <div class="sa" style="text-align:center;">
-      <span class="stag stag-dark">About</span>
-      <h2 class="stit stit-dark">언제 어디서든<br>원클릭 접속 가능한 브이데스크</h2>
-    </div>
+<section class="section__about container1 scroll-animate">
+  <div class="content__title">
+    <span class="content__title__sub scroll-animate">About</span>
+    <h2 class="scroll-animate">언제 어디서든<br>원클릭 접속 가능한 브이데스크</h2>
+  </div>
 
-    <div class="about-grid">
-      <div class="about-card sa sa-d1">
-        <div class="about-ico">
-          <img th:src="@{/assets/images/about01.png}" src="/assets/images/about01.png"
-               alt="비용 걱정 없이 24시간 가동"
-               onerror="this.style.display='none'"/>
+  <div class="section__about_content">
+    <div class="about_features_grid">
+      <div class="about_feature_item scroll-animate about-delay-0">
+        <div class="about_feature_icon">
+          <div class="icon_circle">
+            <img th:src="@{/assets/images/about01.png}" src="/assets/images/about01.png"
+                 alt="비용 걱정 없이 24시간 가동" loading="lazy"/>
+          </div>
         </div>
-        <div class="about-title">비용 걱정 없이 24시간 가동</div>
-        <p class="about-desc">전기세, 회선비 등 비용 걱정 없는<br>최고의 원격 제어 서비스를 제공합니다.</p>
+        <div class="about_feature_content">
+          <h3 class="about_feature_title">비용 걱정 없이 24시간 가동</h3>
+          <p class="about_feature_desc">전기세, 회선비 등 비용 걱정 없는<br>최고의 원격 제어 서비스를 제공합니다.</p>
+        </div>
       </div>
 
-      <div class="about-card sa sa-d2">
-        <div class="about-ico">
-          <img th:src="@{/assets/images/about02.png}" src="/assets/images/about02.png"
-               alt="어느 운영체제에서든 편리하게"
-               onerror="this.style.display='none'"/>
+      <div class="about_feature_item scroll-animate about-delay-1">
+        <div class="about_feature_icon">
+          <div class="icon_circle">
+            <img th:src="@{/assets/images/about02.png}" src="/assets/images/about02.png"
+                 alt="어느 운영체제에서든 편리하게" loading="lazy"/>
+          </div>
         </div>
-        <div class="about-title">어느 운영체제에서든 편리하게</div>
-        <p class="about-desc">Windows, Mac, Android 환경에서도<br>클릭 한 번으로 열리는 클라이언트 프로그램입니다.</p>
+        <div class="about_feature_content">
+          <h3 class="about_feature_title">어느 운영체제에서든 편리하게</h3>
+          <p class="about_feature_desc">Windows, Mac, Android 환경에서도<br>클릭 한 번으로 열리는 클라이언트 프로그램입니다.</p>
+        </div>
       </div>
 
-      <div class="about-card sa sa-d3">
-        <div class="about-ico">
-          <img th:src="@{/assets/images/about03.png}" src="/assets/images/about03.png"
-               alt="빠른 커뮤니케이션"
-               onerror="this.style.display='none'"/>
+      <div class="about_feature_item scroll-animate about-delay-2">
+        <div class="about_feature_icon">
+          <div class="icon_circle">
+            <img th:src="@{/assets/images/about03.png}" src="/assets/images/about03.png"
+                 alt="빠른 커뮤니케이션" loading="lazy"/>
+          </div>
         </div>
-        <div class="about-title">빠른 커뮤니케이션</div>
-        <p class="about-desc">실시간 문의로 고객님의 궁금증을 빠르게<br>해결해 드리고 있습니다.</p>
+        <div class="about_feature_content">
+          <h3 class="about_feature_title">빠른 커뮤니케이션</h3>
+          <p class="about_feature_desc">실시간 문의로 고객님의 궁금증을 빠르게<br>해결해 드리고 있습니다.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -963,28 +1773,34 @@
 <!-- ════════════════════════════════════
      REVIEWS
 ════════════════════════════════════ -->
-<section class="sec">
-  <div class="inner">
-    <div class="review-head sa">
-      <div>
-        <span class="stag">Review</span>
-        <h2 class="stit">브이데스크 고객들의<br>다양한 이야기를 들어보세요!</h2>
+<section class="section__review">
+  <div class="container1 scroll-animate">
+    <div class="content__title">
+      <span class="content__title__sub">Review</span>
+      <h2>브이데스크 고객들의<br>다양한 이야기를 들어보세요!</h2>
+    </div>
+
+    <div class="review_navigation_buttons">
+      <div class="swiper-button-prev review_swiper_prev">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none">
+          <path d="M14 18.1987L8 12.1987L14 6.19873L15.4 7.59873L10.8 12.1987L15.4 16.7987L14 18.1987Z" fill="#F44336"/>
+        </svg>
       </div>
-      <div class="rev-navs">
-        <div class="rev-nav-btn review-prev">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-        </div>
-        <div class="rev-nav-btn review-next">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </div>
+      <div class="swiper-button-next review_swiper_next">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none">
+          <path d="M12.6 12.1987L8 7.59873L9.4 6.19873L15.4 12.1987L9.4 18.1987L8 16.7987L12.6 12.1987Z" fill="#F44336"/>
+        </svg>
       </div>
     </div>
 
-    <div class="swiper review-swiper sa sa-d1">
-      <div class="swiper-wrapper" id="reviewWrapper">
-        <!-- JS로 동적 생성 -->
+    <div class="section__review_content">
+      <div class="review_swiper_container">
+        <div class="swiper review_swiper">
+          <div class="swiper-wrapper" id="reviewWrapper">
+            <!-- JS로 동적 생성 -->
+          </div>
+        </div>
       </div>
-      <div class="swiper-pagination" style="margin-top:1.75rem;position:relative;"></div>
     </div>
   </div>
 </section>
@@ -992,87 +1808,84 @@
 <!-- ════════════════════════════════════
      FAQ
 ════════════════════════════════════ -->
-<section class="sec sec-gray">
-  <div class="inner">
-    <div class="sa" style="text-align:center;">
-      <span class="stag">FAQ</span>
-      <h2 class="stit">자주 묻는 질문을 확인해보세요!</h2>
-      <p class="sdesc">자주 묻는 질문을 모았습니다.<br>문의 전 꼭 필독해 주세요.</p>
-    </div>
+<section class="section__faq container1 scroll-animate">
+  <div class="content__title">
+    <span class="content__title__sub">FAQ</span>
+    <h2>자주 묻는 질문을 확인해보세요!</h2>
+    <p>자주 묻는 질문을 모았습니다.<br>문의 전 꼭 필독해 주세요.</p>
+  </div>
 
-    <div class="faq-wrap sa sa-d1">
-      <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
-          <span class="faq-q-text">브이데스크를 사용하려면 별도의 장비나 회선이 필요한가요?</span>
-          <span class="faq-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </span>
-        </div>
-        <div class="faq-a">
-          <p class="faq-a-inner">아니요. 브이데스크는 추가 장비나 전용 회선이 필요하지 않습니다. 인터넷이 가능한 환경이라면 언제 어디서든 접속할 수 있으며, 24시간 안정적으로 가동됩니다. 덕분에 전기세나 회선비 부담 없이 효율적인 원격제어 서비스를 이용할 수 있습니다.</p>
+  <div class="faq_accordion scroll-animate">
+    <div class="faq_item">
+      <div class="faq_question">
+        <h3>브이데스크를 사용하려면 별도의 장비나 회선이 필요한가요?</h3>
+        <div class="faq_toggle">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M6 9L12 15L18 9" stroke="#4a4a4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
       </div>
-
-      <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
-          <span class="faq-q-text">보안은 어떻게 보장되나요?</span>
-          <span class="faq-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </span>
-        </div>
-        <div class="faq-a">
-          <p class="faq-a-inner">브이데스크는 개별 사용자에게 무료로 공인 IP를 부여하고, 완전히 독립된 컴퓨팅 환경을 제공합니다. 이 방식은 다른 사용자와 자원이 공유되지 않아 프라이버시가 철저히 보호됩니다. 따라서 민감한 데이터나 개인정보를 다루는 업무도 안심하고 진행할 수 있습니다.</p>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
-          <span class="faq-q-text">어떤 환경에서 접속할 수 있나요?</span>
-          <span class="faq-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </span>
-        </div>
-        <div class="faq-a">
-          <p class="faq-a-inner">가정집, 학교, 회사, 카페 등 인터넷 연결만 가능한 환경이라면 어디서든 접속할 수 있습니다. 또한 Windows, Mac, Android 등 다양한 운영체제를 지원하므로 장소와 기기에 제약 없이 매끄럽게 원격 작업을 이어갈 수 있습니다.</p>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
-          <span class="faq-q-text">요금제를 중간에 변경할 수 있나요?</span>
-          <span class="faq-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </span>
-        </div>
-        <div class="faq-a">
-          <p class="faq-a-inner">네, 가능합니다. 현재 이용 중인 요금제에서 더 높은 등급의 요금제로 업그레이드하거나 변경이 필요한 경우 고객센터로 문의해 주시면 안내해 드리겠습니다. 변경 시 이용 기간에 따라 차액이 정산될 수 있습니다.</p>
-        </div>
+      <div class="faq_answer">
+        <p>아니요. 브이데스크는 추가 장비나 전용 회선이 필요하지 않습니다. 인터넷이 가능한 환경이라면 언제 어디서든 접속할 수 있으며, 24시간 안정적으로 가동됩니다. 덕분에 전기세나 회선비 부담 없이 효율적인 원격제어 서비스를 이용할 수 있습니다.</p>
       </div>
     </div>
 
-    <div class="faq-more">
-      <button class="btn-faq" onclick="location.href='/support'">
-        FAQ 더보기
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
+    <div class="faq_item">
+      <div class="faq_question">
+        <h3>보안은 어떻게 보장되나요?</h3>
+        <div class="faq_toggle">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M6 9L12 15L18 9" stroke="#4a4a4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="faq_answer">
+        <p>브이데스크는 개별 사용자에게 무료로 공인 IP를 부여하고, 완전히 독립된 컴퓨팅 환경을 제공합니다. 이 방식은 다른 사용자와 자원이 공유되지 않아 프라이버시가 철저히 보호됩니다. 따라서 민감한 데이터나 개인정보를 다루는 업무도 안심하고 진행할 수 있습니다.</p>
+      </div>
     </div>
+
+    <div class="faq_item">
+      <div class="faq_question">
+        <h3>어떤 환경에서 접속할 수 있나요?</h3>
+        <div class="faq_toggle">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M6 9L12 15L18 9" stroke="#4a4a4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="faq_answer">
+        <p>가정집, 학교, 회사, 카페 등 인터넷 연결만 가능한 환경이라면 어디서든 접속할 수 있습니다. 또한 Windows, Mac, Android 등 다양한 운영체제를 지원하므로 장소와 기기에 제약 없이 매끄럽게 원격 작업을 이어갈 수 있습니다.</p>
+      </div>
+    </div>
+
+    <div class="faq_item">
+      <div class="faq_question">
+        <h3>요금제를 중간에 변경할 수 있나요?</h3>
+        <div class="faq_toggle">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M6 9L12 15L18 9" stroke="#4a4a4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="faq_answer">
+        <p>네, 가능합니다. 현재 이용 중인 요금제에서 더 높은 등급의 요금제로 업그레이드하거나 변경이 필요한 경우 고객센터로 문의해 주시면 안내해 드리겠습니다. 변경 시 이용 기간에 따라 차액이 정산될 수 있습니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="faq_more_btn_wrap">
+    <button class="faq_more_btn" onclick="goToFaq()">FAQ 더보기</button>
   </div>
 </section>
 
 <!-- ════════════════════════════════════
-     CTA DIRECT
+     DIRECT
 ════════════════════════════════════ -->
-<section class="cta-sec">
-  <h2 class="cta-title">지금 바로 로그인하고<br>브이데스크를 사용해보세요!</h2>
-
-  <div class="cta-btns">
-    <div sec:authorize="!isAuthenticated()" style="display:contents;">
-      <a href="/signup" class="btn-cta-w">지금 시작하기 →</a>
-      <a href="/login"  class="btn-cta-t">로그인</a>
-    </div>
-    <div sec:authorize="isAuthenticated()" style="display:contents;">
-      <a href="/dashboard" class="btn-cta-w">접속기 바로가기 →</a>
-      <a href="/pricing"   class="btn-cta-t">구매하기</a>
+<section class="section__direct">
+  <div class="section__direct_content">
+    <p>지금 바로 로그인하고 <br> 브이데스크를 사용해보세요!</p>
+    <div onclick="goToVDesk()">
+      <a href="#" class="section__direct_link" onclick="event.preventDefault();">브이데스크 바로가기</a>
     </div>
   </div>
 </section>
@@ -1144,13 +1957,13 @@ function animateCountup(el) {
   })();
 }
 (function() {
-  var sec = document.querySelector('.stats-sec') || document.querySelector('.section__value_list');
+  var sec = document.querySelector('.section__value_list');
   if (!sec) return;
   var obs = new IntersectionObserver(function(entries) {
     if (entries[0].isIntersecting && !countupDone) {
       countupDone = true;
       setTimeout(function() {
-        document.querySelectorAll('.stat-num[data-target]').forEach(animateCountup);
+        document.querySelectorAll('.countup[data-target]').forEach(animateCountup);
       }, 300);
     }
   }, { threshold: 0.3 });
@@ -1178,21 +1991,17 @@ document.querySelectorAll('.section__usease_tab_item').forEach(function(item) {
 });
 
 /* ════ FAQ ACCORDION ════ */
-function toggleFaq(qEl) {
-  var item = qEl.closest('.faq-item');
-  var answer = item.querySelector('.faq-a');
-  var isOpen = item.classList.contains('open');
-  document.querySelectorAll('.faq-item').forEach(function(i) {
-    i.classList.remove('open');
-    i.querySelector('.faq-a').style.maxHeight = '0';
+document.querySelectorAll('.faq_question').forEach(function(q) {
+  q.addEventListener('click', function() {
+    var item = this.closest('.faq_item');
+    var isOpen = item.classList.contains('active');
+    document.querySelectorAll('.faq_item').forEach(function(i) { i.classList.remove('active'); });
+    if (!isOpen) item.classList.add('active');
   });
-  if (!isOpen) {
-    item.classList.add('open');
-    var inner = answer.querySelector('.faq-a-inner');
-    var padding = window.innerWidth <= 768 ? 20 : 40;
-    answer.style.maxHeight = (inner.scrollHeight + padding) + 'px';
-  }
-}
+});
+
+function goToFaq() { location.href = '/support'; }
+function goToVDesk() { location.href = IS_AUTH ? '/dashboard' : '/login'; }
 
 /* ════ REVIEW SWIPER — 카드 동적 생성 ════ */
 var reviewData = [
@@ -1228,25 +2037,24 @@ function renderStars(r) {
     slide.className = 'swiper-slide';
     var masked = maskName(r.name);
     slide.innerHTML =
-      '<div class="rev-card">' +
-        '<div class="rev-top">' +
-          '<div class="rev-avatar">' + masked[0] + '</div>' +
-          '<div>' +
-            '<div class="rev-name">' + masked + '</div>' +
-            '<div class="rev-company">' + r.company + '</div>' +
+      '<div class="review_card">' +
+        '<div class="review_card_header">' +
+          '<div class="review_card_avatar">' + masked[0] + '</div>' +
+          '<div class="review_card_info">' +
+            '<div class="review_card_name">' + masked + '</div>' +
+            '<div class="review_card_company">' + r.company + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="rev-stars">' + renderStars(r.rating) + '</div>' +
-        '<p class="rev-body">' + r.content + '</p>' +
-        '<div class="rev-date">' + r.date + '</div>' +
+        '<div class="review_card_stars">' + renderStars(r.rating) + '</div>' +
+        '<p class="review_card_body">' + r.content + '</p>' +
+        '<div class="review_card_date">' + r.date + '</div>' +
       '</div>';
     wrapper.appendChild(slide);
   });
-  new Swiper('.review-swiper', {
+  new Swiper('.review_swiper', {
     slidesPerView: 1, spaceBetween: 20, loop: true,
     autoplay: { delay: 5000, disableOnInteraction: false },
-    pagination: { el: '.swiper-pagination', clickable: true },
-    navigation: { nextEl: '.review-next', prevEl: '.review-prev' },
+    navigation: { nextEl: '.review_swiper_next', prevEl: '.review_swiper_prev' },
     breakpoints: {
       768:  { slidesPerView: 2, spaceBetween: 30 },
       1024: { slidesPerView: 3, spaceBetween: 40 }
