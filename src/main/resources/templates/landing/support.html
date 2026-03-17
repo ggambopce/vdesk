@@ -1,139 +1,442 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>고객센터 — Vdesk</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/assets/css/common.css}" href="/assets/css/common.css"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; background: #fff; color: #111; }
-    a { text-decoration: none; color: inherit; }
+    /* ===================================================
+       고객센터 배너
+    =================================================== */
+    .center-banner {
+      position: relative;
+      background: #111;
+      height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .center-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('/assets/images/support_bg.jpg') center/cover no-repeat;
+      opacity: 0.35;
+    }
+    .center-banner h1 {
+      position: relative;
+      color: #fff;
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: -1px;
+    }
 
-    .page-banner {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      color: #fff; text-align: center; padding: 5rem 1.5rem;
+    /* ===================================================
+       center_nav (탭)
+    =================================================== */
+    .center-wrap {
+      background: #fff;
     }
-    .page-banner h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; }
-    .page-banner p { font-size: 0.95rem; color: rgba(255,255,255,0.6); margin-top: 0.5rem; }
+    .center-nav {
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .center-nav .container1 {
+      display: flex;
+    }
+    .center-nav ul {
+      display: flex;
+    }
+    .center-nav ul li a {
+      display: block;
+      padding: 18px 36px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #6b7280;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .center-nav ul li a:hover {
+      color: #F44336;
+    }
+    .center-nav ul li a.on {
+      color: #F44336;
+      font-weight: 700;
+      border-bottom-color: #F44336;
+    }
 
-    .section { padding: 4rem 1.5rem; }
-    .section-inner { max-width: 900px; margin: 0 auto; }
+    /* ===================================================
+       본문 영역
+    =================================================== */
+    .center-content {
+      padding: 52px 1.5rem 100px;
+    }
 
-    /* Support tabs */
-    .support-tabs {
-      display: flex; border-bottom: 2px solid #f0f0f0;
-      margin-bottom: 2.5rem;
+    /* 섹션 타이틀 */
+    .center-title {
+      text-align: center;
+      margin-bottom: 36px;
     }
-    .support-tab {
-      flex: 1; padding: 1rem 0; text-align: center;
-      font-size: 0.95rem; font-weight: 500; color: #9ca3af;
-      cursor: pointer; border-bottom: 2px solid transparent;
-      margin-bottom: -2px; transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none;
+    .center-title h3 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 8px;
     }
-    .support-tab.active { color: #ef4444; border-bottom-color: #ef4444; font-weight: 700; }
-    .support-content { display: none; }
-    .support-content.active { display: block; }
+    .center-title p {
+      font-size: 14px;
+      color: #9ca3af;
+    }
 
-    /* Notice board */
-    .board-header {
-      text-align: center; margin-bottom: 2rem;
+    /* ===================================================
+       게시판 목록 테이블
+    =================================================== */
+    .center-table {
+      overflow-x: auto;
     }
-    .board-header h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.25rem; }
-    .board-header p { font-size: 0.875rem; color: #9ca3af; }
-
-    .board-table { width: 100%; border-collapse: collapse; }
-    .board-table th {
-      padding: 0.75rem 1rem; text-align: left; font-size: 0.8rem;
-      font-weight: 600; color: #6b7280; border-bottom: 2px solid #f0f0f0;
+    .center-table table {
+      width: 100%;
+      border-collapse: collapse;
+      border-top: 2px solid #111;
     }
-    .board-table th:first-child { width: 80px; text-align: center; }
-    .board-table th:last-child { width: 120px; text-align: right; }
-    .board-table td {
-      padding: 1rem; font-size: 0.875rem; border-bottom: 1px solid #f9fafb;
+    .center-table table th {
+      padding: 13px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      background: #f9fafb;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: center;
+      white-space: nowrap;
     }
-    .board-table td:first-child { text-align: center; color: #9ca3af; }
-    .board-table td:last-child { text-align: right; color: #9ca3af; }
-    .board-table tr:hover td { background: #fafafa; }
-    .board-table td a { color: #374151; transition: color 0.15s; }
-    .board-table td a:hover { color: #ef4444; }
+    .center-table table th.title-th {
+      text-align: left;
+    }
+    .center-table table td {
+      padding: 15px 14px;
+      font-size: 14px;
+      color: #374151;
+      border-bottom: 1px solid #f0f0f0;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .center-table table td.title-td,
+    .center-table table td.text-left {
+      text-align: left;
+    }
+    .center-table table td a {
+      color: #374151;
+      transition: color 0.15s;
+    }
+    .center-table table td a:hover {
+      color: #F44336;
+    }
+    .center-table table tr:hover td {
+      background: #fafafa;
+    }
     .board-empty {
-      text-align: center; padding: 4rem 0; color: #9ca3af; font-size: 0.9rem;
+      text-align: center;
+      padding: 60px 0;
+      color: #9ca3af;
+      font-size: 14px;
     }
 
-    /* FAQ */
+    /* 답변 상태 뱃지 */
+    .state-box {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+    .state-box.state-ok   { background: #dcfce7; color: #16a34a; }
+    .state-box.state-wait { background: #fff7ed; color: #ea580c; }
+
+    /* 목록 하단 버튼 */
+    .board-table-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+    .btn-write a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 22px;
+      border-radius: 8px;
+      background: #F44336;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.15s;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-write a:hover { background: #d32f2f; }
+
+    /* 페이지네이션 */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      margin-top: 36px;
+    }
+    .pagination .page {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #374151;
+      cursor: pointer;
+      background: #fff;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .pagination .page:hover     { border-color: #F44336; color: #F44336; }
+    .pagination .page.active    { background: #F44336; border-color: #F44336; color: #fff; font-weight: 700; }
+    .pagination .page.disabled  { opacity: 0.35; pointer-events: none; cursor: default; }
+
+    /* ===================================================
+       게시글 상세
+    =================================================== */
+    .board-detail { border-top: 2px solid #111; }
+    .board-detail-top {
+      padding: 24px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .board-detail-top__title h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #111;
+      line-height: 1.5;
+      margin-bottom: 14px;
+      word-break: break-all;
+    }
+    .board-detail-top__info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .board-detail-top__info__writer {
+      font-size: 13px;
+      color: #9ca3af;
+    }
+    .board-detail-top__info__writer span { color: #374151; font-weight: 500; }
+    .board-detail-top__info__date  { font-size: 13px; color: #9ca3af; }
+    .board-detail-content-main {
+      padding: 36px 0;
+      font-size: 14px;
+      color: #374151;
+      line-height: 1.9;
+      border-bottom: 1px solid #e5e7eb;
+      min-height: 140px;
+      white-space: pre-line;
+    }
+    /* 답변 */
+    .board-detail-content {
+      padding: 24px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .qna-answer-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .qna-answer-profile .answer-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      background: #F44336;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 4px;
+    }
+    .qna-answer-profile .name { font-size: 14px; font-weight: 700; color: #111; }
+    .qna-answer-profile .date { font-size: 12px; color: #9ca3af; }
+    .board-detail-content p {
+      font-size: 14px;
+      color: #374151;
+      line-height: 1.9;
+      white-space: pre-line;
+    }
+    .board-detail-bottom {
+      padding: 20px 0;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .btn-back button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 22px;
+      border-radius: 8px;
+      border: 1.5px solid #e5e7eb;
+      background: #fff;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+      font-family: inherit;
+    }
+    .btn-back button:hover { border-color: #F44336; color: #F44336; }
+    .board-desc {
+      display: flex;
+      justify-content: flex-end;
+      padding-bottom: 10px;
+    }
+    .btn-icon-back a { font-size: 18px; color: #6b7280; }
+    .btn-icon-back a:hover { color: #F44336; }
+
+    /* ===================================================
+       게시글 작성 폼
+    =================================================== */
+    .board-write { border-top: 2px solid #111; }
+    .board-write-list { padding: 8px 0; }
+    .input-label {
+      display: flex;
+      align-items: stretch;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .input-label label {
+      flex-shrink: 0;
+      width: 120px;
+      padding: 16px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      background: #f9fafb;
+      display: flex;
+      align-items: center;
+    }
+    .input-label.required label::after {
+      content: ' *';
+      color: #F44336;
+    }
+    .input-label input[type="text"],
+    .input-label textarea {
+      flex: 1;
+      padding: 14px;
+      font-size: 14px;
+      font-family: inherit;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: #111;
+    }
+    .input-label textarea { min-height: 200px; resize: vertical; }
+    .input-file {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      padding: 10px 14px;
+    }
+    .input-file input[type="file"] { display: none; }
+    .input-file input[type="text"] {
+      flex: 1;
+      padding: 8px 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 13px;
+      background: #f9fafb;
+      color: #6b7280;
+      outline: none;
+    }
+    .input-file > label {
+      width: auto !important;
+      padding: 8px 16px !important;
+      background: #374151 !important;
+      color: #fff !important;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      align-self: auto !important;
+    }
+    .input-file > label:hover { background: #111 !important; }
+    .board-write-bottom {
+      display: flex;
+      justify-content: flex-end;
+      padding: 20px 0;
+    }
+    .board-write-bottom button {
+      padding: 12px 36px;
+      background: #F44336;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    .board-write-bottom button:hover { background: #d32f2f; }
+
+    /* ===================================================
+       FAQ 아코디언
+    =================================================== */
+    .faq-wrap { border-top: 2px solid #111; }
     .faq-item { border-bottom: 1px solid #f0f0f0; }
     .faq-q {
-      width: 100%; text-align: left; padding: 1.25rem 0;
-      display: flex; align-items: flex-start; gap: 0.75rem;
-      font-size: 0.95rem; font-weight: 600; color: #111;
-      background: none; border: none; cursor: pointer; transition: color 0.15s;
+      width: 100%;
+      text-align: left;
+      padding: 1.25rem 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #111;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.15s;
+      font-family: inherit;
     }
-    .faq-q:hover { color: #ef4444; }
-    .faq-q-badge {
-      font-size: 0.85rem; font-weight: 800; color: #ef4444;
-      flex-shrink: 0; margin-top: 1px;
-    }
-    .faq-q-text { flex: 1; text-align: left; }
-    .faq-q-arrow {
-      flex-shrink: 0; transition: transform 0.2s; color: #9ca3af;
-    }
+    .faq-q:hover { color: #F44336; }
+    .faq-q-badge { font-size: 0.85rem; font-weight: 800; color: #F44336; flex-shrink: 0; margin-top: 2px; }
+    .faq-q-text  { flex: 1; text-align: left; line-height: 1.5; }
+    .faq-q-arrow { flex-shrink: 0; transition: transform 0.2s; color: #9ca3af; margin-top: 2px; }
     .faq-item.open .faq-q-arrow { transform: rotate(180deg); }
     .faq-a {
-      display: none; padding: 0 0 1.25rem 2rem;
-      font-size: 0.875rem; color: #6b7280; line-height: 1.8;
+      display: none;
+      padding: 0 0 1.25rem 2.25rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+      line-height: 1.9;
     }
     .faq-item.open .faq-a { display: block; }
 
-    /* 1:1 Contact */
-    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; }
-    .contact-card {
-      border: 1.5px solid #f0f0f0; border-radius: 16px; padding: 1.75rem;
-      text-align: center; transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .contact-card:hover { border-color: #fca5a5; box-shadow: 0 8px 24px rgba(239,68,68,0.08); }
-    .contact-icon {
-      width: 52px; height: 52px; border-radius: 14px; background: #fef2f2;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 1rem;
-    }
-    .contact-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.35rem; }
-    .contact-desc { font-size: 0.82rem; color: #9ca3af; margin-bottom: 1rem; line-height: 1.6; }
-    .contact-btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-      padding: 0.6rem 1.25rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600;
-      cursor: pointer; transition: all 0.15s;
-    }
-    .contact-btn-kakao { background: #FAE100; color: #3c1e1e; border: none; }
-    .contact-btn-kakao:hover { background: #f0d500; }
-    .contact-btn-mail { background: #fff; color: #374151; border: 1.5px solid #e5e7eb; }
-    .contact-btn-mail:hover { border-color: #9ca3af; }
-
-    /* Inquiry form */
-    .inquiry-form { background: #fafafa; border-radius: 16px; padding: 2rem; }
-    .form-label { display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem; }
-    .form-input {
-      width: 100%; padding: 0.72rem 1rem; border: 1.5px solid #e5e7eb; border-radius: 8px;
-      font-size: 0.9rem; outline: none; background: #fff; font-family: inherit;
-      transition: border-color 0.15s;
-    }
-    .form-input:focus { border-color: #ef4444; }
-    .form-textarea { min-height: 120px; resize: vertical; }
-    .form-group { margin-bottom: 1.25rem; }
-    .form-submit {
-      width: 100%; padding: 0.85rem; background: #ef4444; color: #fff;
-      border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 700;
-      cursor: pointer; transition: background 0.15s; font-family: inherit;
-    }
-    .form-submit:hover { background: #dc2626; }
-    .form-success {
-      display: none; text-align: center; padding: 2rem;
-      color: #22c55e; font-weight: 600;
-    }
-
-    @media (max-width: 640px) {
-      .contact-grid { grid-template-columns: 1fr; }
+    /* ===================================================
+       반응형
+    =================================================== */
+    @media (max-width: 768px) {
+      .center-banner { height: 160px; }
+      .center-banner h1 { font-size: 30px; }
+      .center-nav ul li a { padding: 14px 20px; font-size: 14px; }
+      .center-content { padding: 32px 1rem 60px; }
+      .center-title h3 { font-size: 20px; }
+      .board-detail-top__info { flex-direction: column; gap: 6px; align-items: flex-start; }
+      .input-label { flex-direction: column; }
+      .input-label label { width: 100%; border-bottom: none; }
     }
   </style>
 </head>
@@ -141,221 +444,492 @@
 
 <div th:replace="~{fragments/header :: header('support')}"></div>
 
-<div class="page-banner">
+<!-- 배너 -->
+<div class="center-banner">
   <h1>고객센터</h1>
-  <p>브이데스크 서비스에 대해 궁금한 점을 해결해 드립니다.</p>
 </div>
 
-<section class="section">
-  <div class="section-inner">
+<div class="center-wrap board-wrap">
 
-    <!-- Tabs -->
-    <div class="support-tabs">
-      <button class="support-tab active" onclick="switchSupport(this, 'notice')">공지사항</button>
-      <button class="support-tab"        onclick="switchSupport(this, 'faq')">FAQ</button>
-      <button class="support-tab"        onclick="switchSupport(this, 'contact')">1:1 문의</button>
+  <!-- center_nav : 탭 네비 -->
+  <nav class="center-nav">
+    <div class="container1">
+      <ul>
+        <li><a href="javascript:void(0)" id="nav-notice"  class="on" onclick="switchTab('notice',  this)">공지사항</a></li>
+        <li><a href="javascript:void(0)" id="nav-faq"     class=""   onclick="switchTab('faq',     this)">FAQ</a></li>
+        <li><a href="javascript:void(0)" id="nav-inquiry" class=""   onclick="switchTab('inquiry', this)">1 : 1 문의</a></li>
+      </ul>
     </div>
+  </nav>
 
-    <!-- Notice -->
-    <div id="support-notice" class="support-content active">
-      <div class="board-header">
-        <h2>공지사항</h2>
-        <p>공지사항을 확인해주세요.</p>
-      </div>
-      <table class="board-table">
-        <thead>
-          <tr>
-            <th>번호</th>
-            <th>제목</th>
-            <th>작성일</th>
-          </tr>
-        </thead>
-        <tbody id="noticeBody">
-          <tr>
-            <td>1</td>
-            <td><a href="#">브이데스크(V-Desk) 베타 서비스 오픈 안내</a></td>
-            <td>2025-09-09</td>
-          </tr>
-        </tbody>
-      </table>
-      <div style="text-align:center;margin-top:2rem;display:flex;justify-content:center;gap:0.5rem;">
-        <button style="width:32px;height:32px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#fff;font-size:0.8rem;" disabled>«</button>
-        <button style="width:32px;height:32px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#fff;font-size:0.8rem;" disabled>‹</button>
-        <button style="width:32px;height:32px;border:1.5px solid #ef4444;border-radius:6px;cursor:pointer;background:#ef4444;color:#fff;font-size:0.8rem;font-weight:700;">1</button>
-        <button style="width:32px;height:32px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#fff;font-size:0.8rem;" disabled>›</button>
-        <button style="width:32px;height:32px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#fff;font-size:0.8rem;" disabled>»</button>
-      </div>
+  <!-- ===================================================
+       공지사항 (BCODE=1)
+  =================================================== -->
+  <div id="tab-notice" class="tab-section">
+    <div class="center-content container1">
+
+      <!-- 목록 -->
+      <div id="notice-list">
+        <div class="center-title">
+          <h3>공지사항</h3>
+          <p>공지사항을 확인해주세요.</p>
+        </div>
+        <div class="center-table">
+          <table class="notice-table">
+            <thead>
+              <tr>
+                <th>번호</th>
+                <th class="title-th">제목</th>
+                <th style="width:120px">작성일</th>
+              </tr>
+            </thead>
+            <tbody th:if="${notices != null and !#lists.isEmpty(notices)}">
+              <tr th:each="post, stat : ${notices}">
+                <td th:text="${stat.count}">1</td>
+                <td class="text-left title-td">
+                  <a href="javascript:void(0)"
+                     th:onclick="|showDetail('notice', ${post.id})|"
+                     th:text="${post.title}">공지사항 제목</a>
+                </td>
+                <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">2025-01-01</td>
+              </tr>
+            </tbody>
+            <!-- 예시 데이터 (서버 데이터 없을 때) -->
+            <tbody th:if="${notices == null or #lists.isEmpty(notices)}">
+              <tr>
+                <td>1</td>
+                <td class="text-left title-td">
+                  <a href="javascript:void(0)" onclick="showDetail('notice', 1)">
+                    브이데스크(V-Desk) 베타 서비스 오픈 안내
+                  </a>
+                </td>
+                <td>2025-09-09</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="board-table-bottom">
+          <div></div>
+          <div></div>
+        </div>
+        <div class="pagination">
+          <span class="page disabled"><i class="fa-solid fa-angles-left"></i></span>
+          <span class="page disabled"><i class="fa-solid fa-angle-left"></i></span>
+          <a href="javascript:void(0)" class="page active">1</a>
+          <span class="page disabled"><i class="fa-solid fa-angle-right"></i></span>
+          <span class="page disabled"><i class="fa-solid fa-angles-right"></i></span>
+        </div>
+      </div><!-- /notice-list -->
+
+      <!-- 상세 -->
+      <div id="notice-detail" style="display:none">
+        <div class="center-title">
+          <h3>공지사항</h3>
+          <p>공지사항을 확인해주세요.</p>
+        </div>
+        <div class="board-detail">
+          <div class="board-detail-top">
+            <div class="board-detail-top__title">
+              <h2 id="nd-title"></h2>
+            </div>
+            <div class="board-detail-top__info">
+              <div class="board-detail-top__info__writer">작성자 : <span id="nd-writer"></span></div>
+              <div class="board-detail-top__info__date"   id="nd-date"></div>
+            </div>
+          </div>
+          <div class="board-detail-content-main" id="nd-content"></div>
+          <div class="board-detail-bottom">
+            <div class="btn-back">
+              <button type="button" onclick="backToList('notice')">
+                <i class="fa-solid fa-list"></i> 목록
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="board-desc">
+          <div></div>
+          <div class="btn-icon-back">
+            <a href="javascript:void(0)" onclick="backToList('notice')"><i class="fa fa-list"></i></a>
+          </div>
+        </div>
+      </div><!-- /notice-detail -->
+
     </div>
+  </div><!-- /tab-notice -->
 
-    <!-- FAQ -->
-    <div id="support-faq" class="support-content">
-      <div class="board-header">
-        <h2>자주 묻는 질문</h2>
+  <!-- ===================================================
+       FAQ
+  =================================================== -->
+  <div id="tab-faq" class="tab-section" style="display:none">
+    <div class="center-content container1">
+      <div class="center-title">
+        <h3>FAQ</h3>
         <p>자주 문의하시는 내용을 모아놓았습니다.</p>
       </div>
-
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          <span class="faq-q-badge">Q</span>
-          <span class="faq-q-text">브이데스크는 어떤 기기에서 사용할 수 있나요?</span>
-          <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="faq-a">Windows 10/11, macOS 12 이상의 PC와 Android 9.0+, iOS 15+ 스마트폰 및 태블릿에서 사용 가능합니다. 추가 OS 지원은 지속적으로 확대 예정입니다.</div>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          <span class="faq-q-badge">Q</span>
-          <span class="faq-q-text">구독을 취소하면 어떻게 되나요?</span>
-          <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="faq-a">정기결제를 취소하면 현재 구독 기간이 끝날 때까지는 정상적으로 서비스를 이용하실 수 있습니다. 다음 청구일에는 자동으로 갱신되지 않습니다. 마이페이지 > 결제 관리에서 취소하실 수 있습니다.</div>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          <span class="faq-q-badge">Q</span>
-          <span class="faq-q-text">접속이 끊겼을 때 어떻게 해야 하나요?</span>
-          <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="faq-a">인터넷 연결 상태를 확인하신 후 대시보드에서 기기 카드를 다시 더블 클릭하여 재연결을 시도하세요. 원격 PC의 호스트 프로그램이 실행 중인지도 확인해주세요. 문제가 지속되면 호스트 프로그램을 재시작해보세요.</div>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          <span class="faq-q-badge">Q</span>
-          <span class="faq-q-text">여러 명이 동시에 같은 PC에 접속할 수 있나요?</span>
-          <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="faq-a">현재는 1개의 PC에 동시에 1명만 접속 가능합니다. 새 연결이 시도되면 기존 세션은 자동으로 종료됩니다. 추후 멀티 세션 기능 추가를 검토 중입니다.</div>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          <span class="faq-q-badge">Q</span>
-          <span class="faq-q-text">파일 전송 용량 제한이 있나요?</span>
-          <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="faq-a">단일 파일 기준 최대 2GB까지 전송 가능합니다. 대용량 파일의 경우 분할 전송을 권장합니다. 전송 속도는 양쪽 기기의 인터넷 속도에 따라 달라질 수 있습니다.</div>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          <span class="faq-q-badge">Q</span>
-          <span class="faq-q-text">환불이 가능한가요?</span>
-          <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="faq-a">결제 후 7일 이내, 서비스를 사용하지 않은 경우 전액 환불이 가능합니다. 사용 이력이 있는 경우에는 사용 기간에 비례한 차감 후 환불됩니다. 환불 신청은 1:1 문의로 해주세요.</div>
+      <div class="faq-wrap">
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span class="faq-q-badge">Q</span>
+            <span class="faq-q-text">브이데스크는 어떤 기기에서 사용할 수 있나요?</span>
+            <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-a">Windows 10/11, macOS 12 이상의 PC와 Android 9.0+, iOS 15+ 스마트폰 및 태블릿에서 사용 가능합니다. 추가 OS 지원은 지속적으로 확대 예정입니다.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span class="faq-q-badge">Q</span>
+            <span class="faq-q-text">구독을 취소하면 어떻게 되나요?</span>
+            <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-a">정기결제를 취소하면 현재 구독 기간이 끝날 때까지는 정상적으로 서비스를 이용하실 수 있습니다. 다음 청구일에는 자동으로 갱신되지 않습니다.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span class="faq-q-badge">Q</span>
+            <span class="faq-q-text">접속이 끊겼을 때 어떻게 해야 하나요?</span>
+            <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-a">인터넷 연결 상태를 확인하신 후 대시보드에서 기기 카드를 다시 더블 클릭하여 재연결을 시도하세요. 문제가 지속되면 호스트 프로그램을 재시작해보세요.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span class="faq-q-badge">Q</span>
+            <span class="faq-q-text">여러 명이 동시에 같은 PC에 접속할 수 있나요?</span>
+            <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-a">현재는 1개의 PC에 동시에 1명만 접속 가능합니다. 새 연결이 시도되면 기존 세션은 자동으로 종료됩니다.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span class="faq-q-badge">Q</span>
+            <span class="faq-q-text">파일 전송 용량 제한이 있나요?</span>
+            <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-a">단일 파일 기준 최대 2GB까지 전송 가능합니다. 대용량 파일의 경우 분할 전송을 권장합니다.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span class="faq-q-badge">Q</span>
+            <span class="faq-q-text">환불이 가능한가요?</span>
+            <svg class="faq-q-arrow" width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-a">결제 후 7일 이내, 서비스를 사용하지 않은 경우 전액 환불이 가능합니다. 사용 이력이 있는 경우에는 사용 기간에 비례한 차감 후 환불됩니다. 환불 신청은 1:1 문의로 해주세요.</div>
+        </div>
       </div>
     </div>
+  </div><!-- /tab-faq -->
 
-    <!-- Contact -->
-    <div id="support-contact" class="support-content">
-      <div class="board-header">
-        <h2>1:1 문의</h2>
-        <p>궁금하신 점을 편하게 문의해 주세요.</p>
-      </div>
+  <!-- ===================================================
+       1:1 문의 (BCODE=2)
+  =================================================== -->
+  <div id="tab-inquiry" class="tab-section" style="display:none">
+    <div class="center-content container1">
 
-      <div class="contact-grid">
-        <div class="contact-card">
-          <div class="contact-icon">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="#FAE100"><path d="M12 3C6.477 3 2 6.477 2 10.8c0 2.748 1.742 5.163 4.372 6.617L5.188 21l4.637-2.426c.7.133 1.427.206 2.175.206 5.523 0 10-3.477 10-7.8S17.523 3 12 3z"/></svg>
-          </div>
-          <div class="contact-title">카카오톡 상담</div>
-          <div class="contact-desc">실시간 채팅으로 빠른 답변을 받으세요.<br/>운영시간: 평일 09:00 ~ 18:00</div>
-          <a href="https://open.kakao.com/o/sGm2lByh" target="_blank" class="contact-btn contact-btn-kakao">
-            카카오톡 상담하기
-          </a>
+      <!-- 목록 -->
+      <div id="inquiry-list">
+        <div class="center-title">
+          <h3>1 : 1 문의</h3>
+          <p>불편사항이 있으시다면 1:1 문의를 남겨주세요.</p>
         </div>
-        <div class="contact-card">
-          <div class="contact-icon">
-            <svg width="26" height="26" fill="none" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div class="contact-title">이메일 문의</div>
-          <div class="contact-desc">자세한 문의는 이메일로 보내주세요.<br/>coreplatform09@gmail.com</div>
-          <a href="mailto:coreplatform09@gmail.com" class="contact-btn contact-btn-mail">
-            이메일 보내기
-          </a>
+        <div class="center-table">
+          <table class="qna-table">
+            <thead>
+              <tr>
+                <th>번호</th>
+                <th class="title-th">제목</th>
+                <th>작성일</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody th:if="${inquiries != null and !#lists.isEmpty(inquiries)}">
+              <tr th:each="post, stat : ${inquiries}">
+                <td th:text="${stat.count}">1</td>
+                <td class="text-left title-td">
+                  <a href="javascript:void(0)"
+                     th:onclick="|showDetail('inquiry', ${post.id})|"
+                     th:text="${post.title}">문의 제목</a>
+                </td>
+                <td th:text="${#temporals.format(post.createdAt, 'MM-dd')}">01-01</td>
+                <td>
+                  <span th:class="${post.answered} ? 'state-box state-ok' : 'state-box state-wait'"
+                        th:text="${post.answered} ? '답변완료' : '답변대기'">답변대기</span>
+                </td>
+              </tr>
+            </tbody>
+            <tbody th:if="${inquiries == null or #lists.isEmpty(inquiries)}">
+              <tr>
+                <td colspan="4" class="board-empty">등록된 문의가 없습니다.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </div>
+        <div class="board-table-bottom">
+          <div></div>
+          <div class="btn-write">
+            <a href="javascript:void(0)" onclick="showInquiryWrite()">문의 작성</a>
+          </div>
+        </div>
+        <div class="pagination">
+          <span class="page disabled"><i class="fa-solid fa-angles-left"></i></span>
+          <span class="page disabled"><i class="fa-solid fa-angle-left"></i></span>
+          <a href="javascript:void(0)" class="page active">1</a>
+          <span class="page disabled"><i class="fa-solid fa-angle-right"></i></span>
+          <span class="page disabled"><i class="fa-solid fa-angles-right"></i></span>
+        </div>
+      </div><!-- /inquiry-list -->
 
-      <!-- Inquiry form -->
-      <div class="inquiry-form">
-        <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:1.5rem;">문의 남기기</h3>
-        <div id="inquirySuccess" class="form-success">
-          <svg width="40" height="40" fill="none" viewBox="0 0 24 24" style="margin:0 auto 1rem;display:block;"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#22c55e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          문의가 접수되었습니다.<br/>빠른 시일 내에 답변 드리겠습니다.
+      <!-- 상세 -->
+      <div id="inquiry-detail" style="display:none">
+        <div class="center-title">
+          <h3>1 : 1 문의</h3>
+          <p>불편사항이 있으시다면 1:1 문의를 남겨주세요.</p>
         </div>
-        <form id="inquiryForm" onsubmit="submitInquiry(event)">
-          <div class="form-group">
-            <label class="form-label">이메일 <span style="color:#ef4444;">*</span></label>
-            <input type="email" class="form-input" id="inquiryEmail" placeholder="답변 받을 이메일" required/>
+        <div class="board-detail">
+          <div class="board-detail-top">
+            <div class="board-detail-top__title">
+              <h2 id="id-title"></h2>
+            </div>
+            <div class="board-detail-top__info">
+              <div class="board-detail-top__info__writer">작성자 : <span id="id-writer"></span></div>
+              <div class="board-detail-top__info__date"   id="id-date"></div>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">제목 <span style="color:#ef4444;">*</span></label>
-            <input type="text" class="form-input" id="inquirySubject" placeholder="문의 제목을 입력해주세요" required/>
+          <div class="board-detail-content-main" id="id-content"></div>
+          <!-- 답변 (b_reply_is == 'Y' 일 때만 표시) -->
+          <div class="board-detail-content" id="id-answer-wrap" style="display:none">
+            <div class="qna-answer-profile">
+              <span class="answer-badge">답변</span>
+              <span class="name">관리자</span>
+              <span class="date" id="id-answer-date"></span>
+            </div>
+            <p id="id-answer-content"></p>
           </div>
-          <div class="form-group">
-            <label class="form-label">내용 <span style="color:#ef4444;">*</span></label>
-            <textarea class="form-input form-textarea" id="inquiryBody" placeholder="문의 내용을 자세히 적어주세요" required></textarea>
+          <div class="board-detail-bottom">
+            <div class="btn-back">
+              <button type="button" onclick="backToList('inquiry')">
+                <i class="fa-solid fa-list"></i> 목록
+              </button>
+            </div>
           </div>
-          <button type="submit" class="form-submit">문의 보내기</button>
-        </form>
-      </div>
+        </div>
+        <div class="board-desc">
+          <div></div>
+          <div class="btn-icon-back">
+            <a href="javascript:void(0)" onclick="backToList('inquiry')"><i class="fa fa-list"></i></a>
+          </div>
+        </div>
+      </div><!-- /inquiry-detail -->
+
+      <!-- 작성 폼 -->
+      <div id="inquiry-write" style="display:none">
+        <div class="center-title">
+          <h3>1 : 1 문의</h3>
+          <p>문의글을 남겨주시면 답변해드립니다.</p>
+        </div>
+        <div class="board-write">
+          <form id="saveFrmProcess" method="post" enctype="multipart/form-data"
+                onsubmit="submitInquiry(event)">
+            <div class="board-write-list">
+              <div class="input-label required">
+                <label for="b_name">이름</label>
+                <input type="text" name="b_name" id="b_name" placeholder="이름을 입력해주세요"/>
+              </div>
+              <div class="input-label required">
+                <label for="b_title">제목</label>
+                <input type="text" name="b_title" id="b_title" placeholder="제목을 입력해주세요"/>
+              </div>
+              <div class="input-label">
+                <label for="b_contents">내용</label>
+                <textarea name="b_contents" id="b_contents" placeholder="문의 내용을 자세히 적어주세요"></textarea>
+              </div>
+              <div class="input-label">
+                <label for="b_add1">링크</label>
+                <input type="text" name="b_add1" id="b_add1" placeholder="관련 링크 (선택)"/>
+              </div>
+              <div class="input-label">
+                <label>파일</label>
+                <div class="input-file">
+                  <input type="file" name="bf_file_1" id="bf_file_1"/>
+                  <input type="text" readonly placeholder="첨부파일 없음"/>
+                  <label for="bf_file_1">첨부파일</label>
+                </div>
+              </div>
+            </div>
+            <div class="board-write-bottom">
+              <button type="submit" id="saveBtn">등록하기</button>
+            </div>
+          </form>
+        </div>
+      </div><!-- /inquiry-write -->
+
     </div>
+  </div><!-- /tab-inquiry -->
 
-  </div>
-</section>
+</div><!-- /center-wrap -->
 
 <div th:replace="~{fragments/landing-footer :: footer}"></div>
 
 <script>
-  function switchSupport(btn, id) {
-    document.querySelectorAll('.support-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.support-content').forEach(c => c.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('support-' + id).classList.add('active');
+  /* =====================================================
+     탭 전환 — PHP의 BCODE 전환과 동일한 효과
+  ===================================================== */
+  function switchTab(tab, el) {
+    // 네비 active
+    document.querySelectorAll('.center-nav ul li a').forEach(function (a) {
+      a.classList.remove('on');
+    });
+    el.classList.add('on');
+
+    // 섹션 표시/숨김
+    document.querySelectorAll('.tab-section').forEach(function (s) {
+      s.style.display = 'none';
+    });
+    document.getElementById('tab-' + tab).style.display = 'block';
+
+    history.replaceState(null, '', '#' + tab);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function toggleFaq(btn) {
-    const item = btn.closest('.faq-item');
-    item.classList.toggle('open');
-  }
-
-  async function submitInquiry(e) {
-    e.preventDefault();
-    const email   = document.getElementById('inquiryEmail').value;
-    const subject = document.getElementById('inquirySubject').value;
-    const body    = document.getElementById('inquiryBody').value;
-
-    const btn = e.target.querySelector('button[type=submit]');
-    btn.textContent = '전송 중...'; btn.disabled = true;
-
-    try {
-      const res = await fetch('/api/landing/feedback', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, subject, message: body })
+  /* =====================================================
+     게시글 상세 (공지사항 / 1:1 문의 공통)
+  ===================================================== */
+  function showDetail(type, id) {
+    fetch('/api/support/' + (type === 'notice' ? 'notices' : 'inquiries') + '/' + id)
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (type === 'notice') {
+          renderNoticeDetail(data || { title: '공지사항', writer: '관리자', date: '', content: '' });
+        } else {
+          renderInquiryDetail(data || { title: '문의', writer: '', date: '', content: '', answered: false });
+        }
+      })
+      .catch(function () {
+        if (type === 'notice') {
+          renderNoticeDetail({ title: '브이데스크 베타 서비스 오픈 안내', writer: '관리자', date: '2025-09-09 00:00', content: '브이데스크 베타 서비스를 오픈했습니다.\n이용해 주셔서 감사합니다.' });
+        }
       });
-      if (res.ok) {
-        document.getElementById('inquiryForm').style.display = 'none';
-        document.getElementById('inquirySuccess').style.display = 'block';
-      } else {
-        alert('전송에 실패했습니다. 이메일로 직접 문의해 주세요.');
-        btn.textContent = '문의 보내기'; btn.disabled = false;
-      }
-    } catch {
-      alert('서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.');
-      btn.textContent = '문의 보내기'; btn.disabled = false;
+  }
+
+  function renderNoticeDetail(d) {
+    document.getElementById('nd-title').textContent   = d.title   || '';
+    document.getElementById('nd-writer').textContent  = d.writer  || '관리자';
+    document.getElementById('nd-date').textContent    = d.date    || '';
+    document.getElementById('nd-content').textContent = d.content || '';
+    document.getElementById('notice-list').style.display   = 'none';
+    document.getElementById('notice-detail').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderInquiryDetail(d) {
+    document.getElementById('id-title').textContent   = d.title   || '';
+    document.getElementById('id-writer').textContent  = d.writer  || '';
+    document.getElementById('id-date').textContent    = d.date    || '';
+    document.getElementById('id-content').textContent = d.content || '';
+
+    var answerWrap = document.getElementById('id-answer-wrap');
+    if (d.answered && d.answerContent) {
+      document.getElementById('id-answer-date').textContent    = d.answerDate    || '';
+      document.getElementById('id-answer-content').textContent = d.answerContent || '';
+      answerWrap.style.display = 'block';
+    } else {
+      answerWrap.style.display = 'none';
+    }
+    document.getElementById('inquiry-list').style.display   = 'none';
+    document.getElementById('inquiry-write').style.display  = 'none';
+    document.getElementById('inquiry-detail').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function backToList(type) {
+    if (type === 'notice') {
+      document.getElementById('notice-list').style.display   = 'block';
+      document.getElementById('notice-detail').style.display = 'none';
+    } else {
+      document.getElementById('inquiry-list').style.display   = 'block';
+      document.getElementById('inquiry-detail').style.display = 'none';
+      document.getElementById('inquiry-write').style.display  = 'none';
     }
   }
 
-  // URL hash로 탭 선택
-  const hash = window.location.hash.slice(1);
-  if (['notice','faq','contact'].includes(hash)) {
-    const btn = document.querySelector(`.support-tab[onclick*="${hash}"]`);
-    if (btn) switchSupport(btn, hash);
+  /* =====================================================
+     1:1 문의 작성 폼
+  ===================================================== */
+  function showInquiryWrite() {
+    document.getElementById('inquiry-list').style.display   = 'none';
+    document.getElementById('inquiry-detail').style.display = 'none';
+    document.getElementById('inquiry-write').style.display  = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  function submitInquiry(e) {
+    e.preventDefault();
+    var name     = document.getElementById('b_name').value.trim();
+    var title    = document.getElementById('b_title').value.trim();
+    var contents = document.getElementById('b_contents').value.trim();
+
+    if (!name)     { alert('이름을 입력해주세요.'); return; }
+    if (!title)    { alert('제목을 입력해주세요.'); return; }
+    if (!contents) { alert('내용을 입력해주세요.'); return; }
+
+    var btn = document.getElementById('saveBtn');
+    btn.textContent = '등록 중...';
+    btn.disabled    = true;
+
+    fetch('/api/support/inquiry', {
+      method: 'POST',
+      body: new FormData(document.getElementById('saveFrmProcess'))
+    })
+    .then(function (r) {
+      if (r.ok) {
+        alert('문의가 등록되었습니다. 빠른 시일 내에 답변 드리겠습니다.');
+        document.getElementById('saveFrmProcess').reset();
+        backToList('inquiry');
+      } else {
+        alert('등록에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      }
+    })
+    .catch(function () {
+      alert('서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.');
+    })
+    .finally(function () {
+      btn.textContent = '등록하기';
+      btn.disabled    = false;
+    });
+  }
+
+  /* =====================================================
+     FAQ 아코디언
+  ===================================================== */
+  function toggleFaq(btn) {
+    btn.closest('.faq-item').classList.toggle('open');
+  }
+
+  /* =====================================================
+     파일 첨부 텍스트 연동
+  ===================================================== */
+  (function () {
+    document.querySelectorAll('.input-file').forEach(function (wrap) {
+      var file = wrap.querySelector('input[type="file"]');
+      var text = wrap.querySelector('input[type="text"]');
+      if (file && text) {
+        file.addEventListener('change', function (e) {
+          text.value = e.target.files.length ? e.target.files[0].name : '';
+        });
+      }
+    });
+  })();
+
+  /* =====================================================
+     초기 탭 — URL 해시 기반 (PHP의 BCODE 파라미터 역할)
+  ===================================================== */
+  (function () {
+    var validTabs = ['notice', 'faq', 'inquiry'];
+    var hash = window.location.hash.slice(1);
+    var tab  = validTabs.includes(hash) ? hash : 'notice';
+    var el   = document.getElementById('nav-' + tab);
+    if (tab !== 'notice') switchTab(tab, el);  // notice는 기본 표시
+  })();
 </script>
+
 </body>
 </html>
