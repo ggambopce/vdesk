@@ -28,7 +28,7 @@ ul { list-style: none; }
 /* =====================================================
    Layout 공통
 ===================================================== */
-.container1 { width: 1200px; margin: 0 auto; }
+.container1 { width: 1200px; margin-left: auto; margin-right: auto; }
 .sec { padding: 6.5rem 1.5rem; }
 .inner { max-width: 1200px; margin: 0 auto; }
 .sec-gray { background: var(--soft); }
