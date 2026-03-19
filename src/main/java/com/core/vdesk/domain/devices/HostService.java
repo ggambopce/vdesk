@@ -42,6 +42,7 @@ public class HostService {
         device.setHostName(req.getHostName());
         device.setOsType(req.getOsType());
         device.setAppVersion(req.getAppVersion());
+        device.setRelayIp(req.getRelayIp());
         device.setHostStatus(DeviceStatus.ONLINE);
         device.setLastSeenAt(Instant.now());
 
@@ -57,6 +58,9 @@ public class HostService {
         Device device = deviceRepository.findByDeviceKey(req.getDeviceKey())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "등록된 호스트를 찾을 수 없습니다."));
 
+        if (req.getRelayIp() != null && !req.getRelayIp().isBlank()) {
+            device.setRelayIp(req.getRelayIp());
+        }
         device.setHostStatus(DeviceStatus.ONLINE);
         device.setLastSeenAt(Instant.now());
         deviceRepository.save(device);

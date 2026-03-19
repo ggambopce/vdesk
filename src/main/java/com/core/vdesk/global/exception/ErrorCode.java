@@ -26,7 +26,11 @@ public enum ErrorCode {
     PLAN_NOT_FOUND(404, HttpStatus.NOT_FOUND, "플랜을 찾을 수 없습니다."),
     INVALID_PLAN_STATUS(400, HttpStatus.BAD_REQUEST, "현재 상태에서 지원하지 않는 작업입니다."),
     PAYMENT_AMOUNT_MISMATCH(400, HttpStatus.BAD_REQUEST, "결제 금액이 일치하지 않습니다."),
-    DUPLICATE_PAYMENT(409, HttpStatus.CONFLICT, "이미 처리된 결제입니다.");
+    DUPLICATE_PAYMENT(409, HttpStatus.CONFLICT, "이미 처리된 결제입니다."),
+
+    // 세션/에이전트 관련 에러
+    SESSION_NOT_ACTIVE(400, HttpStatus.BAD_REQUEST, "세션이 활성 상태가 아닙니다."),
+    DEVICE_KEY_MISMATCH(403, HttpStatus.FORBIDDEN, "기기 키가 일치하지 않습니다.");
 
     private int code;
     private HttpStatus status;

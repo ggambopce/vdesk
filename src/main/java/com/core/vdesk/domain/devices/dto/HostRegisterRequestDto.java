@@ -23,4 +23,8 @@ public class HostRegisterRequestDto {
 
     @Size(max = 20)
     private String appVersion;
+
+    @NotBlank
+    @Size(max = 64)
+    private String relayIp;
 }

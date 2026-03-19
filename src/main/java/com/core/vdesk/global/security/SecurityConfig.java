@@ -79,7 +79,11 @@ public class SecurityConfig {
                                 "/checkout", "/payments/**", "/billing").permitAll()
                         .requestMatchers(
                                 "/api/host/register",
-                                "/api/host/heartbeat"
+                                "/api/host/heartbeat",
+                                "/api/agent/sessions/poll",
+                                "/api/agent/sessions/activate",
+                                "/api/agent/sessions/relay",
+                                "/api/agent/sessions/end"
                                 ).permitAll()
                         .requestMatchers(
                                 "/api/auth/login",

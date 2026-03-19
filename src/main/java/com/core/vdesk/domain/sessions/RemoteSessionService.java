@@ -13,6 +13,8 @@ import com.core.vdesk.domain.devices.DeviceRepository;
 import com.core.vdesk.domain.devices.DeviceStatus;
 import com.core.vdesk.domain.devices.UserDevice;
 import com.core.vdesk.domain.devices.UserDeviceRepository;
+import com.core.vdesk.domain.sessions.dto.AgentSessionPollResponseDto;
+import com.core.vdesk.domain.sessions.dto.RelayInfoResponseDto;
 import com.core.vdesk.domain.sessions.dto.SessionResponseDto;
 import com.core.vdesk.domain.sessions.dto.StartSessionRequestDto;
 import com.core.vdesk.domain.users.Users;
@@ -52,8 +54,7 @@ public class RemoteSessionService {
         session.setUser(user);
         session.setDevice(device);
         session.setSessionKey(UUID.randomUUID().toString());
-        session.setStatus(SessionStatus.RUNNING);
-        session.setStartedAt(Instant.now());
+        session.setStatus(SessionStatus.REQUESTED);
 
         remoteSessionRepository.save(session);
         return SessionResponseDto.of(session);
@@ -181,5 +182,70 @@ public class RemoteSessionService {
                 .stream()
                 .map(SessionResponseDto::of)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * VM 에이전트 폴링: deviceKey로 REQUESTED 상태 세션 조회
+     */
+    @Transactional(readOnly = true)
+    public AgentSessionPollResponseDto pollForSession(String deviceKey) {
+        deviceRepository.findByDeviceKey(deviceKey)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "등록된 호스트를 찾을 수 없습니다."));
+
+        return remoteSessionRepository
+                .findTopByDevice_DeviceKeyAndStatusOrderByCreatedAtDesc(deviceKey, SessionStatus.REQUESTED)
+                .map(AgentSessionPollResponseDto::of)
+                .orElseGet(AgentSessionPollResponseDto::none);
+    }
+
+    /**
+     * VM 에이전트 수락: deviceKey + sessionKey 검증 후 RUNNING으로 전환
+     */
+    @Transactional
+    public SessionResponseDto activateSessionByAgent(String deviceKey, String sessionKey) {
+        RemoteSession session = remoteSessionRepository.findBySessionKey(sessionKey)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "세션을 찾을 수 없습니다."));
+
+        if (!session.getDevice().getDeviceKey().equals(deviceKey)) {
+            throw new BusinessException(ErrorCode.DEVICE_KEY_MISMATCH);
+        }
+
+        session.setStatus(SessionStatus.RUNNING);
+        session.setStartedAt(Instant.now());
+        remoteSessionRepository.save(session);
+        return SessionResponseDto.of(session);
+    }
+
+    /**
+     * 뷰어: sessionKey로 릴레이 IP 반환 (RUNNING 상태만 허용)
+     */
+    @Transactional(readOnly = true)
+    public RelayInfoResponseDto getRelayInfo(String sessionKey) {
+        RemoteSession session = remoteSessionRepository.findBySessionKey(sessionKey)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "세션을 찾을 수 없습니다."));
+
+        if (session.getStatus() != SessionStatus.RUNNING) {
+            throw new BusinessException(ErrorCode.SESSION_NOT_ACTIVE);
+        }
+
+        return RelayInfoResponseDto.of(session);
+    }
+
+    /**
+     * VM 에이전트 종료: deviceKey 검증 후 ENDED로 전환
+     */
+    @Transactional
+    public SessionResponseDto endSessionByAgent(String deviceKey, String sessionKey) {
+        RemoteSession session = remoteSessionRepository.findBySessionKey(sessionKey)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "세션을 찾을 수 없습니다."));
+
+        if (!session.getDevice().getDeviceKey().equals(deviceKey)) {
+            throw new BusinessException(ErrorCode.DEVICE_KEY_MISMATCH);
+        }
+
+        session.setStatus(SessionStatus.ENDED);
+        session.setEndedAt(Instant.now());
+        remoteSessionRepository.save(session);
+        return SessionResponseDto.of(session);
     }
 }

@@ -47,6 +47,10 @@ public class Device {
     @Column(length = 20)
     private String appVersion;
 
+    /** 호스트가 등록한 릴레이 서버 IP (뷰어가 연결할 주소) */
+    @Column(length = 64)
+    private String relayIp;
+
     private Instant lastSeenAt;
 
     @CreationTimestamp
