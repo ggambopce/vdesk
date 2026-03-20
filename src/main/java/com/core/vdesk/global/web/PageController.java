@@ -66,4 +66,9 @@ public class PageController {
     public String forbidden() {
         return "error/403";
     }
+
+    @GetMapping("/remote/viewer")
+    public String remoteViewer() {
+        return "dashboard/viewer";
+    }
 }

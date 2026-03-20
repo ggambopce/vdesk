@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.core.vdesk.domain.sessions.dto.SessionResponseDto;
@@ -49,7 +50,7 @@ public class RemoteSessionController {
     }
 
     /**
-     * 세션 종료
+     * 세션 종료 (ID 기반)
      * POST /api/remote/sessions/{sessionId}/end
      */
     @PostMapping("/sessions/{sessionId}/end")
@@ -57,6 +58,18 @@ public class RemoteSessionController {
             @AuthenticationPrincipal PrincipalDetails principal,
             @PathVariable Long sessionId) {
         SessionResponseDto result = remoteSessionService.endSession(principal.getUser(), sessionId);
+        return ResponseEntity.ok(ApiResponse.ok("세션 종료 성공", result));
+    }
+
+    /**
+     * 세션 종료 (sessionKey 기반, 뷰어 페이지에서 사용)
+     * POST /api/remote/sessions/end?sessionKey=xxx
+     */
+    @PostMapping("/sessions/end")
+    public ResponseEntity<ApiResponse<SessionResponseDto>> endSessionByKey(
+            @AuthenticationPrincipal PrincipalDetails principal,
+            @RequestParam String sessionKey) {
+        SessionResponseDto result = remoteSessionService.endSessionByKey(principal.getUser(), sessionKey);
         return ResponseEntity.ok(ApiResponse.ok("세션 종료 성공", result));
     }
 }

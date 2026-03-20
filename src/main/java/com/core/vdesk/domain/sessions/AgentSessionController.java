@@ -1,5 +1,7 @@
 package com.core.vdesk.domain.sessions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AgentSessionController {
 
+    private static final Logger log = LoggerFactory.getLogger(AgentSessionController.class);
+
     private final RemoteSessionService remoteSessionService;
 
     /**
@@ -31,7 +35,9 @@ public class AgentSessionController {
     @PostMapping("/poll")
     public ResponseEntity<ApiResponse<AgentSessionPollResponseDto>> poll(
             @Valid @RequestBody AgentPollRequestDto req) {
+        log.info("[POLL] deviceKey={}", req.getDeviceKey());
         AgentSessionPollResponseDto result = remoteSessionService.pollForSession(req.getDeviceKey());
+        log.info("[POLL] 결과 hasPendingSession={}", result.isHasPendingSession());
         return ResponseEntity.ok(ApiResponse.ok("폴링 완료", result));
     }
 

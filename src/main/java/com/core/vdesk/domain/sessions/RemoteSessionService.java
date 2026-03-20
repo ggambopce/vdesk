@@ -54,7 +54,8 @@ public class RemoteSessionService {
         session.setUser(user);
         session.setDevice(device);
         session.setSessionKey(UUID.randomUUID().toString());
-        session.setStatus(SessionStatus.REQUESTED);
+        session.setStatus(SessionStatus.RUNNING);
+        session.setStartedAt(Instant.now());
 
         remoteSessionRepository.save(session);
         return SessionResponseDto.of(session);

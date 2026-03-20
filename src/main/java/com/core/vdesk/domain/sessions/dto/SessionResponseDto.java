@@ -20,8 +20,13 @@ public class SessionResponseDto {
     private Instant startedAt;
     private Instant endedAt;
     private String viewerUrl;
+    private String relayIp;
+    private int relayPort;
 
     public static SessionResponseDto of(RemoteSession session) {
+        String relayIp = session.getDevice().getRelayIp();
+        int relayPort = 20020;
+        String viewerUrl = "/remote/viewer?relayIp=" + relayIp + "&port=" + relayPort;
         return SessionResponseDto.builder()
                 .sessionId(session.getId())
                 .sessionKey(session.getSessionKey())
@@ -31,7 +36,9 @@ public class SessionResponseDto {
                 .deviceName(session.getDevice().getHostName())
                 .startedAt(session.getStartedAt())
                 .endedAt(session.getEndedAt())
-                .viewerUrl("/remote/viewer?sessionKey=" + session.getSessionKey())
+                .relayIp(relayIp)
+                .relayPort(relayPort)
+                .viewerUrl(viewerUrl)
                 .build();
     }
 }

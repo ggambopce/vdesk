@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 import com.core.vdesk.domain.devices.dto.DeviceListResponseDto;
 import com.core.vdesk.domain.devices.dto.DeviceResponseDto;
+import com.core.vdesk.domain.devices.dto.DiscoverDeviceDto;
 import com.core.vdesk.domain.devices.dto.LinkDeviceRequestDto;
 import com.core.vdesk.global.oauth2.PrincipalDetails;
 import com.core.vdesk.global.response.ApiResponse;
@@ -59,6 +62,17 @@ public class UserDeviceController {
             @AuthenticationPrincipal PrincipalDetails principal) {
         DeviceListResponseDto result = userDeviceService.getDeviceList(principal.getUser());
         return ResponseEntity.ok(ApiResponse.ok("기기 목록 조회 성공", result));
+    }
+
+    /**
+     * 아직 연결되지 않은 ONLINE 기기 자동 검색
+     * GET /api/user/device/discover
+     */
+    @GetMapping("/discover")
+    public ResponseEntity<ApiResponse<List<DiscoverDeviceDto>>> discover(
+            @AuthenticationPrincipal PrincipalDetails principal) {
+        List<DiscoverDeviceDto> result = userDeviceService.discoverLinkable(principal.getUser());
+        return ResponseEntity.ok(ApiResponse.ok("검색 완료", result));
     }
 
     /**

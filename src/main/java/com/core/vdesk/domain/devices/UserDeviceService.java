@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.core.vdesk.domain.devices.dto.DeviceListResponseDto;
 import com.core.vdesk.domain.devices.dto.DeviceResponseDto;
+import com.core.vdesk.domain.devices.dto.DiscoverDeviceDto;
 import com.core.vdesk.domain.devices.dto.LinkDeviceRequestDto;
 import com.core.vdesk.domain.sessions.RemoteSessionRepository;
 import com.core.vdesk.domain.sessions.SessionStatus;
@@ -94,6 +95,21 @@ public class UserDeviceService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.FORBIDDEN, "해당 기기에 접근 권한이 없습니다."));
 
         userDeviceRepository.delete(ud);
+    }
+
+    /**
+     * 현재 유저에게 아직 연결되지 않은 ONLINE 기기 목록 반환 (자동 검색)
+     */
+    @Transactional(readOnly = true)
+    public List<DiscoverDeviceDto> discoverLinkable(Users user) {
+        List<Device> alreadyLinked = userDeviceRepository.findByUser(user)
+                .stream().map(UserDevice::getDevice).toList();
+
+        return deviceRepository.findByHostStatus(DeviceStatus.ONLINE)
+                .stream()
+                .filter(d -> !alreadyLinked.contains(d))
+                .map(DiscoverDeviceDto::of)
+                .toList();
     }
 
     private SessionStatus resolveSessionStatus(Device device) {

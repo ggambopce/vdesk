@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>원격 연결 — Vdesk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { font-family: 'DM Sans', 'Noto Sans KR', sans-serif; }
+    body { background: #f8f9fa; min-height: 100vh; }
+
+    .spinner {
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 3px solid #fecaca;
+      border-top-color: #ef4444;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 0.78rem; font-weight: 600;
+    }
+    .badge-waiting  { background: #fef9c3; color: #854d0e; }
+    .badge-running  { background: #dcfce7; color: #166534; }
+    .badge-ended    { background: #f3f4f6; color: #6b7280; }
+    .badge-failed   { background: #fee2e2; color: #991b1b; }
+
+    .info-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 1rem; border: 1.5px solid #f0f0f0;
+      border-radius: 10px; background: #fafafa; margin-bottom: 8px;
+    }
+    .copy-btn {
+      padding: 4px 10px; font-size: 0.75rem; font-weight: 600;
+      background: #fff; border: 1.5px solid #e5e7eb; border-radius: 6px;
+      cursor: pointer; transition: border-color 0.15s;
+      color: #374151;
+    }
+    .copy-btn:hover { border-color: #ef4444; color: #ef4444; }
+
+    .btn-red {
+      padding: 0.65rem 1.4rem; background: #ef4444; color: #fff;
+      border-radius: 8px; font-weight: 600; font-size: 0.9rem;
+      border: none; cursor: pointer; transition: background 0.15s;
+    }
+    .btn-red:hover { background: #dc2626; }
+    .btn-gray {
+      padding: 0.65rem 1.4rem; background: #fff; color: #6b7280;
+      border-radius: 8px; font-weight: 600; font-size: 0.9rem;
+      border: 1.5px solid #e5e7eb; cursor: pointer; transition: border-color 0.15s;
+    }
+    .btn-gray:hover { border-color: #d1d5db; }
+
+    .step-item {
+      display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;
+    }
+    .step-num {
+      width: 24px; height: 24px; border-radius: 50%; background: #ef4444;
+      color: #fff; font-size: 0.78rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="max-w-lg mx-auto px-4 py-12">
+
+  <!-- 헤더 -->
+  <div class="flex items-center gap-3 mb-8">
+    <a href="/dashboard" class="text-gray-400 hover:text-gray-600 transition-colors">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+        <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+    <h1 class="text-xl font-bold text-gray-900">원격 연결</h1>
+  </div>
+
+  <!-- 대기 중 상태 (사용 안 함, 구조 유지용) -->
+  <div id="stateWaiting" style="display:none"></div>
+
+  <!-- 연결 완료 상태 -->
+  <div id="stateRunning" style="display:none">
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm mb-4">
+      <div class="flex items-center justify-between mb-5">
+        <div class="status-badge badge-running">
+          <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>
+          연결됨 (RUNNING)
+        </div>
+        <button onclick="endSession()" class="btn-gray text-sm py-1.5 px-3 text-red-500 border-red-200 hover:border-red-400">세션 종료</button>
+      </div>
+
+      <div id="relayInfo">
+        <div class="info-row">
+          <div>
+            <div class="text-xs text-gray-400 mb-0.5">릴레이 IP</div>
+            <div id="relayIpVal" class="font-mono font-semibold text-gray-900 text-sm"></div>
+          </div>
+          <button class="copy-btn" onclick="copyText(document.getElementById('relayIpVal').textContent)">복사</button>
+        </div>
+        <div class="info-row">
+          <div>
+            <div class="text-xs text-gray-400 mb-0.5">포트</div>
+            <div class="font-mono font-semibold text-gray-900 text-sm">20020</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 뷰어 실행 -->
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm mb-4">
+      <h3 class="font-bold text-gray-900 mb-1 text-sm">뷰어 연결</h3>
+      <p class="text-xs text-gray-400 mb-4">PC에 remotetest.exe가 설치된 경우 아래 버튼으로 바로 실행됩니다.</p>
+      <button onclick="launchViewer()" class="btn-red w-full justify-center mb-3" style="display:flex;align-items:center;gap:8px">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+          <path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653z" fill="white"/>
+        </svg>
+        뷰어 실행하기
+      </button>
+      <p class="text-xs text-gray-400 text-center">
+        설치되지 않은 경우
+        <a id="downloadLink" href="#" class="text-red-500 underline font-medium">remotetest.exe 다운로드</a>
+      </p>
+    </div>
+
+    <button onclick="window.close()" class="btn-gray w-full text-center">창 닫기</button>
+  </div>
+
+  <!-- 세션 종료/실패 상태 -->
+  <div id="stateEnded" style="display:none" class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm text-center">
+    <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
+        <path d="M6 18L18 6M6 6l12 12" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div id="endedBadge" class="status-badge badge-ended mx-auto mb-3"></div>
+    <p class="text-gray-700 font-semibold mb-1" id="endedTitle">세션이 종료됐습니다</p>
+    <p class="text-sm text-gray-400 mb-6" id="endedDesc">연결이 정상적으로 종료됐습니다.</p>
+    <a href="/dashboard" class="btn-red inline-block">대시보드로 돌아가기</a>
+  </div>
+
+</div>
+
+<!-- 토스트 -->
+<div id="toast" style="position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(8px);background:#1f2937;color:#fff;padding:0.6rem 1.3rem;border-radius:8px;font-size:0.875rem;opacity:0;transition:opacity 0.2s,transform 0.2s;z-index:300;white-space:nowrap"></div>
+
+<script>
+  const params   = new URLSearchParams(location.search);
+  const RELAY_IP = params.get('relayIp') || '';
+  const PORT     = params.get('port') || '20020';
+
+  function showState(state) {
+    document.getElementById('stateWaiting').style.display = state === 'waiting' ? '' : 'none';
+    document.getElementById('stateRunning').style.display = state === 'running' ? '' : 'none';
+    document.getElementById('stateEnded').style.display  = state === 'ended'   ? '' : 'none';
+  }
+
+  function showEnded(title, desc, badgeClass) {
+    showState('ended');
+    document.getElementById('endedTitle').textContent = title;
+    document.getElementById('endedDesc').textContent  = desc;
+    const badge = document.getElementById('endedBadge');
+    badge.textContent = title;
+    badge.className = 'status-badge ' + badgeClass + ' mx-auto mb-3';
+  }
+
+  function launchViewer() {
+    window.location.href = 'vdesk://' + RELAY_IP + ':' + PORT;
+  }
+
+  function copyText(text) {
+    navigator.clipboard.writeText(text).then(() => showToast('복사됐습니다.'));
+  }
+
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(8px)';
+    }, 2200);
+  }
+
+  // 시작: relayIp가 있으면 바로 RUNNING 표시
+  if (!RELAY_IP) {
+    showEnded('연결 정보 없음', '대시보드에서 다시 연결하세요.', 'badge-failed');
+  } else {
+    document.getElementById('relayIpVal').textContent = RELAY_IP;
+    showState('running');
+    launchViewer();
+  }
+</script>
+</body>
+</html>

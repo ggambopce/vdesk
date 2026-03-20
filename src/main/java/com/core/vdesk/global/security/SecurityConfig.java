@@ -120,7 +120,7 @@ public class SecurityConfig {
                                 ).permitAll() // 허용
                         .requestMatchers("/", "/index.html",
                                 // 앱 페이지 (Thymeleaf shell — 실제 auth는 JS에서 처리)
-                                "/dashboard", "/mypage",
+                                "/dashboard", "/mypage", "/remote/viewer",
                                 "/check.html", "/success.html", "/fail.html", "/billing.html",
                                 "/paypal-check.html", "/paypal-billing.html","/welcome-check.html","/welcome-billing.html",
                                 "/paddle-check.html", "/paddle-billing.html","/smartro-test.html", "/paddle-check-test.html", "/paddle-billing-test.html",
@@ -142,6 +142,7 @@ public class SecurityConfig {
                                 "/api/user/device/**",
                                 // Remote Session API
                                 "/api/remote/sessions",
+                                "/api/remote/sessions/end",
                                 "/api/remote/session/**",
                                 "/api/remote/sessions/**",
                                 "/api/orders/**",
